@@ -1,12 +1,15 @@
 {% extends 'base.html' %}
+{%load django_bootstrap5%}
 
 {% block title %}Register - Sustainability{% endblock %}
 
 {% block content %}
+    <div class="container">
     <h2>Register</h2>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Register</button>
+        {% bootstrap_form form %}
+        <button class="btn btn-primary" type="submit">Register</button>
     </form>
+    </div>
 {% endblock %}
