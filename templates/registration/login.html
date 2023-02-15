@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
+{% load django_bootstrap5 %}
 
 {% block title %}Login - Sustainability{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
+    <div class="container">
+        <h2>Login</h2>
+        <p>Don't have an account yet? <a href="{% url 'register' %}">Register</a></p>
+        <form method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            {% bootstrap_button button_type="submit" content="Login" %}
+        </form>
+    </div>
 {% endblock %}
