@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Friends</h1>
+
+  {% if friends %}
+    <h2>My Friends</h2>
+    <ul>
+      {% for friend in friends %}
+        <li>
+          {{ friend.friend.username }}
+          <form method="post" action="{% url 'remove_friend' friend.friend.username %}">
+            {% csrf_token %}
+            <button type="submit">Remove</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>You have no friends.</p>
+  {% endif %}
+
+  <hr>
+
+  <h2>Add Friend</h2>
+  <form method="post" action="{% url 'add_friend' %}">
+    {% csrf_token %}
+    <select name="username">
+      {% for user in users %}
+        <option value="{{ user.username }}">{{ user.username }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Add</button>
+  </form>
+
+  <hr>
+
+  <h2>Incoming Friend Requests</h2>
+  {% if incoming_requests %}
+    <ul>
+      {% for request in incoming_requests %}
+        <li>{{ request.from_user.username }}
+          <form method="post" action="{% url 'accept_friend_request' request.id %}">
+            {% csrf_token %}
+            <button type="submit">Accept</button>
+          </form>
+          <form method="post" action="{% url 'decline_friend_request' request.id %}">
+            {% csrf_token %}
+            <button type="submit">Decline</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No incoming friend requests.</p>
+  {% endif %}
+
+  <hr>
+
+  <h2>Outgoing Friend Requests</h2>
+  {% if outgoing_requests %}
+    <ul>
+      {% for request in outgoing_requests %}
+        <li>Friend request sent to {{ request.to_user.username }} </li>
+        <form method="post" action="{% url 'cancel_friend_request' request.id %}">
+          {% csrf_token %}
+          <button type="submit">Cancel</button>
+        </form>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No outgoing friend requests.</p>
+  {% endif %}
+
+{% endblock %}
