@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Remove Friend</h1>
+            <p>Are you sure you want to remove {{ friend.user.username }} from your friends list?</p>
+            <form action="{% url 'friends:remove' friend.user.username %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Remove Friend" class="btn btn-danger">
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

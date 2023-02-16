@@ -1,14 +1,16 @@
 from django.urls import path
 
-from friends.views import profile, friends_list, add_friend, remove_friend, accept_friend_request, \
-    decline_friend_request, cancel_friend_request
+from friends.views import ProfileView, \
+    FriendsListView, RemoveFriendView, CancelFriendRequestView, AddFriendView, \
+    AcceptFriendRequestView, DeclineFriendRequestView
 
+app_name = "friends"
 urlpatterns = [
-    path("profile/", profile, name="profile"),
-    path('', friends_list, name='friends_list'),
-    path('add', add_friend, name='add_friend'),
-    path('remove/<str:username>/', remove_friend, name='remove_friend'),
-    path('accept/<int:request_id>/', accept_friend_request, name='accept_friend_request'),
-    path('decline/<int:request_id>/', decline_friend_request, name='decline_friend_request'),
-    path('cancel/<int:friend_request_id>/', cancel_friend_request, name='cancel_friend_request'),
+    path('', FriendsListView.as_view(), name='list'),
+    path('profile/', ProfileView.as_view(), name='profile'),
+    path('add/', AddFriendView.as_view(), name='add'),
+    path('remove/<str:username>/', RemoveFriendView.as_view(), name='remove'),
+    path('accept/<int:request_id>/', AcceptFriendRequestView.as_view(), name='accept_request'),
+    path('decline/<int:pk>/', DeclineFriendRequestView.as_view(), name='decline_request'),
+    path('cancel/<int:friend_request_id>/', CancelFriendRequestView.as_view(), name='cancel_request'),
 ]

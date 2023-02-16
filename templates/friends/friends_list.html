@@ -9,10 +9,9 @@
       {% for friend in friends %}
         <li>
           {{ friend.username }}
-          <form method="post" action="{% url 'remove_friend' friend.username %}">
-            {% csrf_token %}
-            <button type="submit">Remove</button>
-          </form>
+          <a href="{% url 'friends:remove' friend.username %}">
+              <button class="btn btn-danger">Remove</button>
+          </a>
         </li>
       {% endfor %}
     </ul>
@@ -23,15 +22,13 @@
   <hr>
 
   <h2>Add Friend</h2>
-  <form method="post" action="{% url 'add_friend' %}">
+  <form method="post" action="{% url 'friends:add' %}">
     {% csrf_token %}
     <select name="username">
       {% for user in users %}
-        {% if user not in friends %}
           <option value="{{ user.username }}">{{ user.username }}</option>
-        {% endif %}
-      {% endfor %} 
-      
+      {% endfor %}
+
     </select>
     <button type="submit">Add</button>
   </form>
@@ -43,11 +40,11 @@
     <ul>
       {% for request in incoming_requests %}
         <li>{{ request.from_user.username }}
-          <form method="post" action="{% url 'accept_friend_request' request.id %}">
+          <form method="post" action="{% url 'friends:accept_request' request.id %}">
             {% csrf_token %}
             <button type="submit">Accept</button>
           </form>
-          <form method="post" action="{% url 'decline_friend_request' request.id %}">
+          <form method="post" action="{% url 'friends:decline_request' request.id %}">
             {% csrf_token %}
             <button type="submit">Decline</button>
           </form>
@@ -65,7 +62,7 @@
     <ul>
       {% for request in outgoing_requests %}
         <li>Friend request sent to {{ request.to_user.username }} </li>
-        <form method="post" action="{% url 'cancel_friend_request' request.id %}">
+        <form method="post" action="{% url 'friends:cancel_request' request.id %}">
           {% csrf_token %}
           <button type="submit">Cancel</button>
         </form>
