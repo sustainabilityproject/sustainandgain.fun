@@ -8,8 +8,8 @@
     <ul>
       {% for friend in friends %}
         <li>
-          {{ friend.friend.username }}
-          <form method="post" action="{% url 'remove_friend' friend.friend.username %}">
+          {{ friend.username }}
+          <form method="post" action="{% url 'remove_friend' friend.username %}">
             {% csrf_token %}
             <button type="submit">Remove</button>
           </form>
@@ -27,8 +27,11 @@
     {% csrf_token %}
     <select name="username">
       {% for user in users %}
-        <option value="{{ user.username }}">{{ user.username }}</option>
-      {% endfor %}
+        {% if user not in friends %}
+          <option value="{{ user.username }}">{{ user.username }}</option>
+        {% endif %}
+      {% endfor %} 
+      
     </select>
     <button type="submit">Add</button>
   </form>

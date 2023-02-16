@@ -20,16 +20,18 @@ def profile(request):
 # render the friends list page with the incoming and outgoing friend requests
 @login_required
 def friends_list(request):
-    friends = request.user.friends.all()
+    # list of friends as user objects
+    friends = [friend.friend for friend in request.user.friends.all()]
+    # list of users
     users = User.objects.exclude(id=request.user.id)
 
     incoming_requests = FriendRequest.objects.filter(to_user=request.user)
     outgoing_requests = FriendRequest.objects.filter(from_user=request.user)
-
     return render(request, 'account/friends_list.html', {'friends': friends,
                                                          'users': users,
                                                          'incoming_requests': incoming_requests,
-                                                         'outgoing_requests': outgoing_requests})
+                                                         'outgoing_requests': outgoing_requests,
+                                                         })
 
 # remove friend from both users friends lists
 @login_required
