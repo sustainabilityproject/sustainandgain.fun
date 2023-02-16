@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BuiltinUserAdmin
+
 from accounts.forms import UserCreationForm, UserChangeForm
 from accounts.models import User
 
