@@ -1,13 +1,27 @@
-from django.shortcuts import render
+# TODO class rather than function views
 from .models import *
-from django.http import HttpResponse
+from django.views.generic import TemplateView
 
 
-def index(request):
-    tasks_list = Task.objects.all()
-    context = {'tasks_list': tasks_list}
-    return render(request, 'tasks/index_bootstrap.html', context)
+class MyTasksView(TemplateView):
+    template_name = "tasks/mytasks.html"
+
+    def get_context_data(self, **kwargs):
+        current_user = self.request.user
+        user_tasks = TaskInstance.objects.filter(user=current_user)
+
+        context = super().get_context_data(**kwargs)
+        context['current_user'] = current_user
+        context['user_tasks'] = user_tasks
+
+        return context
 
 
-def my_tasks(request):
-    return HttpResponse("Here are the tasks you currently have active!")
+class IndexView(TemplateView):
+    template_name = "tasks/index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tasks_list'] = Task.objects.all()
+        return context
+
