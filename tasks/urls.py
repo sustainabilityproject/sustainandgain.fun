@@ -1,8 +1,9 @@
 from django.urls import path
+from tasks.views import IndexView, MyTasksView
 
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('', views.my_tasks, name='my_tasks')
-    ]
+    path('', IndexView.as_view(), name='tasks_index'),
+    path('mytasks/', MyTasksView.as_view(), name='my_tasks')
+]

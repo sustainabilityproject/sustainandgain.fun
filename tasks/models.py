@@ -43,7 +43,7 @@ class TaskInstance(models.Model):
     # Set this to the time that TaskInstance is instantiated
     time_accepted = models.DateTimeField(auto_now_add=True)
 
-    time_completed = models.DateTimeField(default=None)
+    time_completed = models.DateTimeField(null=True, blank=True)
 
     # The user who has accepted the task
     # TODO make sure this is consistent with the user profile system
@@ -75,5 +75,5 @@ class TaskInstance(models.Model):
         self.status = self.PENDING_APPROVAL
 
     def __str__(self):
-        return self.task.title, self.user.username
+        return f"Task:{self.task.title}; User:{self.user.username}"
 
