@@ -2,7 +2,10 @@ from django.urls import path
 
 from . import views
 
+app_name = "tasks"
+
 urlpatterns = [
     path('', views.index, name='index'),
-    path('', views.my_tasks, name='my_tasks')
+    path('', views.my_tasks, name='my_tasks'),
+    path('take-photo/', views.TakePhotoView.as_view(), name='take_photo')
     ]
