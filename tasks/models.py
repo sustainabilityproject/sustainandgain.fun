@@ -93,7 +93,7 @@ class TaskInstance(models.Model):
         # TODO add more complex validation from Gamekeepers
         self.status = self.COMPLETED
 
-    # When the user reports themself as having completed a task
+    # When the user reports themselves as having completed a task
     def report_task_complete(self):
         self.status = self.PENDING_APPROVAL
         self.time_completed = datetime.now()
