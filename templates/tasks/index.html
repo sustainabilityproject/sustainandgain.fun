@@ -15,6 +15,7 @@
 
 {% block content %}
 {% if tasks_list %}
+<h1>available tasks</h1>
   <div class="py-5">
     <div class="container">
       <div class="row hidden-md-up">
@@ -28,9 +29,8 @@
               <h6 class="card-subtitle text-muted">{{ task.category }}</h6>
               <p class="card-text p-y-1">{{ task.description }}</p>
               <p class="card-text p-y-1" style="color: green; font-style: italic; font-weight: bolder">{{ task.points }} points</p>
-                  <button type="submit" class="btn btn-primary" style="background-color: green">
-                  Accept
-                  </button>
+                <a href="{% url 'accept_task' task.pk %}"><button class = "btn btn=primary" style = "background-color: green">Accept</button></a>
+
 
 
             </div>
