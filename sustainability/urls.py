@@ -19,6 +19,9 @@ urlpatterns = [
     # Friends routes
     path('friends/', include('friends.urls')),
 
+    # Leagues routes
+    path('leagues/', include('leagues.urls')),
+
     # Feed
     path('feed/', include('feed.urls')),
 
