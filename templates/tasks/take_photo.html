@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+  <canvas id="canvas"></canvas>
+  <button id="take-photo-btn">Take Photo {% csrf_token %}</button>
+  
+  
+  <script src="{% static 'js/script.js' %}"></script>
+{% endblock %}

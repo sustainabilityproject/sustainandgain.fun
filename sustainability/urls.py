@@ -19,6 +19,9 @@ urlpatterns = [
     # Friends routes
     path('friends/', include('friends.urls')),
 
+    # Feed
+    path('feed/', include('feed.urls')),
+
     # Home route
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
 ]
