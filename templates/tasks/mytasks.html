@@ -15,7 +15,7 @@
 
 {% block content %}
 {% if user_tasks %}
-<h1>PLACEHOLDER - NEEDS UPDATING TO ACTUALLY SHOW USER TASKS</h1>
+      <h1>my active tasks</h1>
   <div class="py-5">
     <div class="container">
       <div class="row hidden-md-up">
@@ -30,7 +30,7 @@
               <p class="card-text p-y-1">{{ task_instance.task.description }}</p>
               <p class="card-text p-y-1" style="color: green; font-style: italic; font-weight: bolder">{{ task_instance.task.points }} points</p>
                   <button type="submit" class="btn btn-primary" style="background-color: green">
-                  Accept
+                  Completed
                   </button>
 
 

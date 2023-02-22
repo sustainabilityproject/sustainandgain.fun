@@ -11,6 +11,11 @@ class TaskCategory(models.Model):
     def __str__(self):
         return self.category_name
 
+    # Ensures the plural of category is correctly 'categories' in the admin page
+    # (otherwise Django thinks it is 'categorys')
+    class Meta:
+        verbose_name_plural = "categories"
+
 
 class Task(models.Model):
     """Tasks are created and maintained by Gamekeepers."""
@@ -21,10 +26,28 @@ class Task(models.Model):
     points = models.IntegerField(default=0)
 
     # by default, tasks can be repeated after a day
-    time_to_repeat = models.DurationField(datetime.timedelta(days=1))
+    time_to_repeat = models.DurationField()
 
     # PROTECT means that a category cannot be deleted while tasks exist under that category
     category = models.ForeignKey(TaskCategory, on_delete=models.PROTECT)
+
+    def is_available(self, user):
+        """
+        Check if this task should be available for a given user.
+        If the user has ACTIVE or PENDING_APPROVAL instances of this task, or the time_to_repeat has not elapsed since
+        the user completed an instance of this task, return false. Otherwise, return true.
+        """
+        this_task_instances = TaskInstance.objects.filter(task=self.pk, user=user)
+
+        for instance in this_task_instances:
+            if instance.status in [TaskInstance.PENDING_APPROVAL, TaskInstance.ACTIVE]:
+                return False
+
+            else:
+                if datetime.now() < instance.time_completed + instance.time_to_repeat:
+                    return False
+
+        return True
 
     def __str__(self):
         return self.title
@@ -47,7 +70,7 @@ class TaskInstance(models.Model):
 
     # The user who has accepted the task
     # TODO make sure this is consistent with the user profile system
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
@@ -73,7 +96,7 @@ class TaskInstance(models.Model):
     # When the user reports themself as having completed a task
     def report_task_complete(self):
         self.status = self.PENDING_APPROVAL
+        self.time_completed = datetime.now()
 
     def __str__(self):
         return f"Task:{self.task.title}; User:{self.user.username}"
-
