@@ -4,8 +4,20 @@
         <div>
             <img src="{{ profile.image.url }}" style="max-width:400px;max-height: 400px;">
             <div>
-                <h2>{{ profile }}</h2>
+                <h2>{{ profile.user.username }}</h2>
             </div>
         </div>
+        <hr>
+        <h2>Friends</h2>
+        {% if friends %}
+            <ul>
+                {% for friend in friends %}
+                    <li>{{ friend.user.username }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>You have no friends.</p>
+        {% endif %}
+        <a href="{% url 'friends:list' %}">View Friends Page</a>
     </div>
 {% endblock content %}
