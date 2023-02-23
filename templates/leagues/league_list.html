@@ -1,6 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
-    {% for league in leagues %}
-        {{ league }}
-    {% endfor %}
+    <div class="container">
+        {% for league in leagues %}
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h2 class="card-title">{{ league }}</h2>
+                    <p class="card-text">{{ league.description }}</p>
+                    <ul class="list-inline">
+                        <li class="list-inline-item">{{ league.members.count }}
+                            member{{ league.members.count|pluralize }}</li>
+                        <li class="list-inline-item"><a href="#" class="btn btn-primary">View</a></li>
+                    </ul>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock content %}
