@@ -1,9 +1,11 @@
 # TODO proper code comments and documentation
 import datetime
 
+from django.core.exceptions import ValidationError
+
 from accounts.models import User
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.utils import timezone
 
 
 class TaskCategory(models.Model):
@@ -27,7 +29,7 @@ class Task(models.Model):
     points = models.IntegerField(default=0)
 
     # by default, tasks can be repeated after a day
-    time_to_repeat = models.DurationField(validators=[MinValueValidator(1)])
+    time_to_repeat = models.DurationField(default=datetime.timedelta(days=1))
 
     # PROTECT means that a category cannot be deleted while tasks exist under that category
     category = models.ForeignKey(TaskCategory, on_delete=models.PROTECT)
@@ -45,16 +47,16 @@ class Task(models.Model):
                 return False
 
             else:
-                if datetime.now() < instance.time_completed + instance.time_to_repeat:
+                if timezone.now() < instance.time_completed + instance.time_to_repeat:
                     return False
 
         return True
 
     def clean(self):
-        time_to_repeat = self.cleaned_data.get('time_to_repeat')
-        if time_to_repeat < 0:
-            raise forms.ValidationError("Time to repeat cannot be negative.")
-        return self.cleaned_data
+        time_to_repeat = self.time_to_repeat
+        if time_to_repeat < datetime.timedelta(0):
+            raise ValidationError('Time to repeat cannot be negative')
+        return self
 
     def __str__(self):
         return self.title
@@ -96,22 +98,23 @@ class TaskInstance(models.Model):
     )
 
     def clean(self):
-        time_completed = self.cleaned_data.get('time_completed')
-        time_accepted = self.cleaned_data.get('time_accepted')
-        status = self.cleaned_data.get('status')
+        time_completed = self.time_completed
+        time_accepted = self.time_accepted
+        status = self.status
 
-        if time_completed < time_accepted :
-            raise forms.ValidationError("Tasks cannot have been completed before they were accepted.")
-        if time_completed > datetime.now():
-            raise forms.ValidationError("Tasks cannot have been completed in the future.")
+        if time_completed is not None:
+            if time_completed < time_accepted:
+                raise ValidationError("Tasks cannot have been completed before they were accepted.")
+            if time_completed > timezone.now():
+                raise ValidationError("Tasks cannot have been completed in the future.")
 
         # Validate that there is only a time_completed when the task is Completed or Pending, and vice versa
         if status == TaskInstance.ACTIVE and time_completed is not None:
-            raise forms.ValidationError("Tasks cannot have a time completed while they are active.")
+            raise ValidationError("Tasks cannot have a time completed while they are active.")
         elif status != TaskInstance.ACTIVE and time_completed is None:
-            raise forms.ValidationError("If a task is no longer active, it must have a time completed")
+            raise ValidationError("If a task is no longer active, it must have a time completed")
 
-        return self.cleaned_data
+        return self
 
     # When the task has been validated as completed (e.g. by a Gamekeeper, or automatically for simple tasks)
     def validate_task(self):
@@ -121,7 +124,7 @@ class TaskInstance(models.Model):
     # When the user reports themselves as having completed a task
     def report_task_complete(self):
         self.status = self.PENDING_APPROVAL
-        self.time_completed = datetime.now()
+        self.time_completed = timezone.now()
 
     def __str__(self):
         return f"Task:{self.task.title}; User:{self.user.username}"
