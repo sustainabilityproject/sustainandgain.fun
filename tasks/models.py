@@ -2,13 +2,14 @@
 import datetime
 
 from django.core.exceptions import ValidationError
-
-from accounts.models import User
 from django.db import models
 from django.utils import timezone
 
+from accounts.models import User
+
 
 class TaskCategory(models.Model):
+    """Categories are created and maintained by Gamekeepers."""
     category_name = models.CharField(max_length=30)
 
     def __str__(self):
@@ -129,7 +130,6 @@ class TaskInstance(models.Model):
 
     # When the user reports themselves as having completed a task
     def report_task_complete(self):
-        print("Reporting task complete")
         self.status = self.PENDING_APPROVAL
         self.time_completed = timezone.now()
 
