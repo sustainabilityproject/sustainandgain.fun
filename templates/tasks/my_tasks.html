@@ -9,14 +9,16 @@
             {% if active_tasks %}
                 <div class="row">
                     {% for task in active_tasks %}
-                        {% url 'complete_task' task.id as action_url %}
+                        {% url 'tasks:complete' task.id as action_url %}
                         {% include 'tasks/_task_card.html' with title=task.task.title description=task.task.description points=task.task.points action_text="Complete" %}
                     {% endfor %}
                 </div>
             {% else %}
                 <p>You have no active tasks!</p>
-                <a href="{% url 'tasks_index' %}">Get some more tasks!</a>
             {% endif %}
+            <div class="mt-3">
+                <a href="{% url 'tasks:available' %}" class="btn btn-success text-bg-success">Get some more tasks!</a>
+            </div>
         </div>
 
         <div class="active p-3 mt-3">
@@ -43,7 +45,7 @@
                             <td>{{ task.task.title }}</td>
                             <td>+{{ task.task.points }}</td>
                             <td>
-                                <a href="{% url 'complete_task' task.id %}">Pending Approval</a>
+                                <a href="{% url 'tasks:complete' task.id %}">Pending Approval</a>
                             </td>
                         </tr>
                     {% endfor %}
@@ -51,7 +53,6 @@
                 </table>
             {% else %}
                 <p>You have no completed tasks!</p>
-                <a href="{% url 'tasks_index' %}">Get some more tasks!</a>
             {% endif %}
         </div>
     </div>

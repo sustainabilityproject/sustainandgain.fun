@@ -10,7 +10,7 @@
             {% if tasks_list %}
                 <div class="row">
                     {% for task in tasks_list %}
-                        {% url 'accept_task' task.id as action_url %}
+                        {% url 'tasks:accept' task.id as action_url %}
                         {% include 'tasks/_task_card.html' with title=task.title description=task.description points=task.points action_text="Accept" %}
                     {% endfor %}
                 </div>
