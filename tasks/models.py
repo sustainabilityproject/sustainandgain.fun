@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 from accounts.models import User
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.utils import timezone
 
 
 class TaskCategory(models.Model):
@@ -47,7 +47,7 @@ class Task(models.Model):
                 return False
 
             else:
-                if datetime.datetime.now() < instance.time_completed + instance.time_to_repeat:
+                if timezone.now() < instance.time_completed + instance.time_to_repeat:
                     return False
 
         return True
@@ -102,10 +102,11 @@ class TaskInstance(models.Model):
         time_accepted = self.time_accepted
         status = self.status
 
-        if time_completed < time_accepted:
-            raise ValidationError("Tasks cannot have been completed before they were accepted.")
-        if time_completed > datetime.datetime.now():
-            raise ValidationError("Tasks cannot have been completed in the future.")
+        if time_completed is not None:
+            if time_completed < time_accepted:
+                raise ValidationError("Tasks cannot have been completed before they were accepted.")
+            if time_completed > timezone.now():
+                raise ValidationError("Tasks cannot have been completed in the future.")
 
         # Validate that there is only a time_completed when the task is Completed or Pending, and vice versa
         if status == TaskInstance.ACTIVE and time_completed is not None:
@@ -123,7 +124,7 @@ class TaskInstance(models.Model):
     # When the user reports themselves as having completed a task
     def report_task_complete(self):
         self.status = self.PENDING_APPROVAL
-        self.time_completed = datetime.datetime.now()
+        self.time_completed = timezone.now()
 
     def __str__(self):
         return f"Task:{self.task.title}; User:{self.user.username}"
