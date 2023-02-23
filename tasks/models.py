@@ -2,13 +2,14 @@
 import datetime
 
 from django.core.exceptions import ValidationError
-
-from accounts.models import User
 from django.db import models
 from django.utils import timezone
 
+from accounts.models import User
+
 
 class TaskCategory(models.Model):
+    """Categories are created and maintained by Gamekeepers."""
     category_name = models.CharField(max_length=30)
 
     def __str__(self):
@@ -47,7 +48,7 @@ class Task(models.Model):
                 return False
 
             else:
-                if timezone.now() < instance.time_completed + instance.time_to_repeat:
+                if timezone.now() < instance.time_completed + instance.task.time_to_repeat:
                     return False
 
         return True
@@ -77,6 +78,12 @@ class TaskInstance(models.Model):
 
     time_completed = models.DateTimeField(null=True, blank=True)
 
+    # Photo evidence of the task being completed
+    photo = models.ImageField(upload_to='task_photos', null=True, blank=True)
+
+    # Completion note
+    note = models.CharField(max_length=500, null=True, blank=True)
+
     # The user who has accepted the task
     # TODO make sure this is consistent with the user profile system
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -88,7 +95,7 @@ class TaskInstance(models.Model):
 
     TASK_STATE_CHOICES = (
         (COMPLETED, 'Completed'),
-        (PENDING_APPROVAL, 'Pending'),
+        (PENDING_APPROVAL, 'Pending Approval'),
         (ACTIVE, 'Active'),
     )
     status = models.CharField(

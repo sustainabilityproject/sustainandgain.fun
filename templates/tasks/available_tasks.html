@@ -1,0 +1,25 @@
+<head>
+    {% extends 'base.html' %}
+    {% block title %}Available Tasks{% endblock %}
+</head>
+
+{% block content %}
+    <div class="container mx-auto">
+        <div class="active p-3 mt-3">
+            <h1>Available Tasks</h1>
+            {% if tasks_list %}
+                <div class="row">
+                    {% for task in tasks_list %}
+                        {% url 'tasks:accept' task.id as action_url %}
+                        {% include 'tasks/_task_card.html' with title=task.title description=task.description points=task.points action_text="Accept" %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>No tasks are currently available :(</p>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+{% endblock %}
+
+

@@ -5,31 +5,41 @@ import uuid
 
 import autoencoder
 from PIL import Image, ImageOps
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
-from django.views.generic import TemplateView
+from django.urls import reverse_lazy
+from django.views import View
+from django.views.generic import TemplateView, ListView, UpdateView
 
 from sustainability.settings import BASE_DIR
+from .forms import CompleteTaskForm
 from .models import *
 
 
-class MyTasksView(LoginRequiredMixin, TemplateView):
-    template_name = "tasks/mytasks.html"
+class MyTasksView(LoginRequiredMixin, ListView):
+    """
+    View all the task assigned to the current user.
+    """
+    model = TaskInstance
+    template_name = "tasks/my_tasks.html"
+    context_object_name = "tasks"
+
+    def get_queryset(self):
+        return TaskInstance.objects.filter(user=self.request.user)
 
     def get_context_data(self, **kwargs):
-        current_user = self.request.user
-        user_tasks = TaskInstance.objects.filter(user=current_user)
-
         context = super().get_context_data(**kwargs)
-        context['current_user'] = current_user
-        context['user_tasks'] = user_tasks
-
+        context['active_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.ACTIVE]
+        context['completed_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.COMPLETED]
+        context['pending_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.PENDING_APPROVAL]
         return context
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
-    template_name = "tasks/index.html"
+    """
+    List of all tasks that are available for the current user.
+    """
+    template_name = "tasks/available_tasks.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -41,20 +51,44 @@ class IndexView(LoginRequiredMixin, TemplateView):
         return context
 
 
-@login_required
-def accept_task(request, task_id):
-    """When the user accepts a task, create a new active TaskInstance referencing that user and the accepted task"""
-    task_accepted = Task.objects.get(pk=task_id)
+class AcceptTaskView(LoginRequiredMixin, View):
+    """
+    When the user accepts a task, create a new active TaskInstance referencing that user and the accepted task
+    """
 
-    if task_accepted.is_available(request.user):
-        t = TaskInstance(
-            task=task_accepted,
-            user=request.user,
-            status=TaskInstance.ACTIVE
-        )
-        t.save()
+    def get(self, request, *args, **kwargs):
+        task_accepted = Task.objects.get(pk=self.kwargs['pk'])
+        if task_accepted.is_available(request.user):
+            t = TaskInstance(
+                task=task_accepted,
+                user=request.user,
+                status=TaskInstance.ACTIVE
+            )
+            t.save()
+        return redirect('tasks:list')
 
-    return redirect('my_tasks')
+
+class CompleteTaskView(LoginRequiredMixin, UpdateView):
+    """
+    User can complete a task by uploading a photo of the completed task and has the option to add a note.
+    """
+    template_name = 'tasks/complete_task.html'
+    form_class = CompleteTaskForm
+    success_url = reverse_lazy('tasks:list')
+    context_object_name = 'task'
+
+    def dispatch(self, request, *args, **kwargs):
+        task = TaskInstance.objects.get(pk=self.kwargs['pk'])
+        # Redirect if the user is not the owner of the task
+        if task.user != request.user:
+            return redirect('my_tasks')
+        # Redirect if the task is already completed
+        if task.status == TaskInstance.COMPLETED:
+            return redirect('my_tasks')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        return TaskInstance.objects.get(pk=self.kwargs['pk'])
 
 
 class TakePhotoView(TemplateView):

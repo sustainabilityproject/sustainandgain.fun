@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}My Tasks{% endblock %}
+
+{% block content %}
+    <div class="container mx-auto">
+        <div class="active p-3 mt-3">
+            <h1>Active Tasks</h1>
+            {% if active_tasks %}
+                <div class="row">
+                    {% for task in active_tasks %}
+                        {% url 'tasks:complete' task.id as action_url %}
+                        {% include 'tasks/_task_card.html' with title=task.task.title description=task.task.description points=task.task.points action_text="Complete" %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>You have no active tasks!</p>
+            {% endif %}
+            <div class="mt-3">
+                <a href="{% url 'tasks:available' %}" class="btn btn-success text-bg-success">Get some more tasks!</a>
+            </div>
+        </div>
+
+        <div class="active p-3 mt-3">
+            <h1>Completed Tasks</h1>
+            {% if completed_tasks %}
+                <table class="table table-success w-50">
+                    <thead>
+                    <tr>
+                        <th scope="col">Task</th>
+                        <th scope="col">Points</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for task in completed_tasks %}
+                        <tr>
+                            <td>{{ task.task.title }}</td>
+                            <td>+{{ task.task.points }}</td>
+                            <td>Complete</td>
+                        </tr>
+                    {% endfor %}
+                    {% for task in pending_tasks %}
+                        <tr class="table-warning">
+                            <td>{{ task.task.title }}</td>
+                            <td>+{{ task.task.points }}</td>
+                            <td>
+                                <a href="{% url 'tasks:complete' task.id %}">Pending Approval</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>You have no completed tasks!</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+
