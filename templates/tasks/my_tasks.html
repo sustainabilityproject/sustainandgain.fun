@@ -23,7 +23,7 @@
 
         <div class="active p-3 mt-3">
             <h1>Completed Tasks</h1>
-            {% if completed_tasks %}
+            {% if completed_tasks or pending_tasks %}
                 <table class="table table-success w-50">
                     <thead>
                     <tr>
