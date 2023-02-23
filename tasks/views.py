@@ -1,27 +1,17 @@
 # TODO class rather than function views
 import base64
-import uuid
-import autoencoder
 import os
-from PIL import Image, ImageOps
-import base64
 import uuid
+
 import autoencoder
-import os
 from PIL import Image, ImageOps
-from django.shortcuts import render
-from .models import *
-from django.views.generic import TemplateView
-from django.shortcuts import redirect
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404, redirect
+
 from sustainability.settings import BASE_DIR
-from django.http import HttpResponse
-from django.views.generic import TemplateView
-from django.shortcuts import get_object_or_404, redirect
-from sustainability.settings import BASE_DIR
+from .models import *
 
 
 class MyTasksView(LoginRequiredMixin, TemplateView):
@@ -36,7 +26,6 @@ class MyTasksView(LoginRequiredMixin, TemplateView):
         context['user_tasks'] = user_tasks
 
         return context
-
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -69,7 +58,6 @@ def accept_task(request, task_id):
 
 
 class TakePhotoView(TemplateView):
-
     template_name = 'tasks/take_photo.html'
 
     def post(self, request):
