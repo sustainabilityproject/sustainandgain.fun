@@ -3,6 +3,7 @@ import datetime
 
 from accounts.models import User
 from django.db import models
+from django.core.validators import MinValueValidator
 
 
 class TaskCategory(models.Model):
@@ -10,6 +11,11 @@ class TaskCategory(models.Model):
 
     def __str__(self):
         return self.category_name
+
+    # Ensures the plural of category is correctly 'categories' in the admin page
+    # (otherwise Django thinks it is 'categorys')
+    class Meta:
+        verbose_name_plural = "categories"
 
 
 class Task(models.Model):
@@ -21,10 +27,34 @@ class Task(models.Model):
     points = models.IntegerField(default=0)
 
     # by default, tasks can be repeated after a day
-    time_to_repeat = models.DurationField(datetime.timedelta(days=1))
+    time_to_repeat = models.DurationField(validators=[MinValueValidator(1)])
 
     # PROTECT means that a category cannot be deleted while tasks exist under that category
     category = models.ForeignKey(TaskCategory, on_delete=models.PROTECT)
+
+    def is_available(self, user):
+        """
+        Check if this task should be available for a given user.
+        If the user has ACTIVE or PENDING_APPROVAL instances of this task, or the time_to_repeat has not elapsed since
+        the user completed an instance of this task, return false. Otherwise, return true.
+        """
+        this_task_instances = TaskInstance.objects.filter(task=self.pk, user=user)
+
+        for instance in this_task_instances:
+            if instance.status in [TaskInstance.PENDING_APPROVAL, TaskInstance.ACTIVE]:
+                return False
+
+            else:
+                if datetime.now() < instance.time_completed + instance.time_to_repeat:
+                    return False
+
+        return True
+
+    def clean(self):
+        time_to_repeat = self.cleaned_data.get('time_to_repeat')
+        if time_to_repeat < 0:
+            raise forms.ValidationError("Time to repeat cannot be negative.")
+        return self.cleaned_data
 
     def __str__(self):
         return self.title
@@ -43,11 +73,11 @@ class TaskInstance(models.Model):
     # Set this to the time that TaskInstance is instantiated
     time_accepted = models.DateTimeField(auto_now_add=True)
 
-    time_completed = models.DateTimeField(default=None)
+    time_completed = models.DateTimeField(null=True, blank=True)
 
     # The user who has accepted the task
     # TODO make sure this is consistent with the user profile system
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
@@ -65,15 +95,33 @@ class TaskInstance(models.Model):
         default=ACTIVE,
     )
 
+    def clean(self):
+        time_completed = self.cleaned_data.get('time_completed')
+        time_accepted = self.cleaned_data.get('time_accepted')
+        status = self.cleaned_data.get('status')
+
+        if time_completed < time_accepted :
+            raise forms.ValidationError("Tasks cannot have been completed before they were accepted.")
+        if time_completed > datetime.now():
+            raise forms.ValidationError("Tasks cannot have been completed in the future.")
+
+        # Validate that there is only a time_completed when the task is Completed or Pending, and vice versa
+        if status == TaskInstance.ACTIVE and time_completed is not None:
+            raise forms.ValidationError("Tasks cannot have a time completed while they are active.")
+        elif status != TaskInstance.ACTIVE and time_completed is None:
+            raise forms.ValidationError("If a task is no longer active, it must have a time completed")
+
+        return self.cleaned_data
+
     # When the task has been validated as completed (e.g. by a Gamekeeper, or automatically for simple tasks)
     def validate_task(self):
         # TODO add more complex validation from Gamekeepers
         self.status = self.COMPLETED
 
-    # When the user reports themself as having completed a task
+    # When the user reports themselves as having completed a task
     def report_task_complete(self):
         self.status = self.PENDING_APPROVAL
+        self.time_completed = datetime.now()
 
     def __str__(self):
-        return self.task.title, self.user.username
-
+        return f"Task:{self.task.title}; User:{self.user.username}"
