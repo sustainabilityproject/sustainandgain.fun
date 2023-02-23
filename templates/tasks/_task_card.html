@@ -1,0 +1,14 @@
+<div class="col-6 mt-3">
+    <div class="d-flex justify-content-between px-2 py-1 border rounded">
+        <div class="d-flex flex-column">
+            <h3>{{ title }} <span
+                    class="badge text-bg-success fs-6">+{{ points }}</span></h3>
+            <p>{{ description }}</p>
+        </div>
+        <div class="my-auto">
+            <form method="get" action="{{ action_url }}">
+                <input type="submit" value="{{ action_text }}" class="btn btn-success">
+            </form>
+        </div>
+    </div>
+</div>
