@@ -1,0 +1,29 @@
+{% extends 'base.html'%}
+
+{% block title %}
+<title>Feed</title>
+{% endblock %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        Logged in as {{ user.username }}
+        <p>
+            <a href="{% url 'friends:profile' %}">Profile</a>
+            <a href="{% url 'friends:list' %}">Friends</a>
+
+            <h1>Feed of Completed Tasks</h1>
+            <ul>
+            {% for task in completed_tasks %}
+                <li>{{ task }}</li>
+            {% empty %}
+                <li>No completed tasks</li>
+            {% endfor %}
+            </ul>
+        </p>
+        <p><a href="{% url 'logout' %}">Log Out</a></p>
+    {% else %}
+        <p>You are not logged in</p>
+        <a href="{% url 'login' %}">Log In</a>
+        <a href="{% url 'accounts:register' %}">Register</a>
+    {% endif %}
+{% endblock %}
