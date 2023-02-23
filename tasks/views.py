@@ -1,22 +1,27 @@
 # TODO class rather than function views
-from .models import *
-from django.views.generic import TemplateView
-from django.shortcuts import redirect
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic import TemplateView, ListView, UpdateView
+
+from .forms import CompleteTaskForm
+from .models import *
 
 
-class MyTasksView(LoginRequiredMixin, TemplateView):
-    template_name = "tasks/mytasks.html"
+class MyTasksView(LoginRequiredMixin, ListView):
+    model = TaskInstance
+    template_name = "tasks/my_tasks.html"
+    context_object_name = "tasks"
+
+    def get_queryset(self):
+        return TaskInstance.objects.filter(user=self.request.user)
 
     def get_context_data(self, **kwargs):
-        current_user = self.request.user
-        user_tasks = TaskInstance.objects.filter(user=current_user)
-
         context = super().get_context_data(**kwargs)
-        context['current_user'] = current_user
-        context['user_tasks'] = user_tasks
-
+        context['active_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.ACTIVE]
+        context['completed_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.COMPLETED]
+        context['pending_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.PENDING_APPROVAL]
         return context
 
 
@@ -47,3 +52,21 @@ def accept_task(request, task_id):
         t.save()
 
     return redirect('my_tasks')
+
+
+class CompleteTaskView(LoginRequiredMixin, UpdateView):
+    template_name = 'tasks/complete_task.html'
+    form_class = CompleteTaskForm
+    success_url = reverse_lazy('my_tasks')
+    context_object_name = 'task'
+
+    def dispatch(self, request, *args, **kwargs):
+        task = TaskInstance.objects.get(pk=self.kwargs['pk'])
+        if task.user != request.user:
+            return redirect('my_tasks')
+        if task.status == TaskInstance.COMPLETED:
+            return redirect('my_tasks')
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        return TaskInstance.objects.get(pk=self.kwargs['pk'])

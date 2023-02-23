@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Tasks{% endblock %}
+
+{% block content %}
+    <div class="container mx-auto">
+        <div class="active p-3 mt-3">
+            <h1>Active Tasks</h1>
+            {% if active_tasks %}
+                <div class="row">
+                    {% for task in active_tasks %}
+                        <div class="col-6">
+                            <div class="d-flex justify-content-between px-2 py-1 border rounded">
+                                <div class="d-flex flex-column">
+                                    <h3>{{ task.task.title }}  <span class="badge text-bg-success fs-6">+{{ task.task.points }}</span></h3>
+                                    <p>{{ task.task.description }}</p>
+                                </div>
+                                <div class="my-auto">
+                                    <form method="get" action="{% url 'complete_task' task.id %}">
+                                        <input type="submit" value="Mark as done" class="btn btn-success">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>You have no active tasks!</p>
+                <a href="{% url 'tasks_index' %}">Get some more tasks!</a>
+            {% endif %}
+        </div>
+
+        <div class="active p-3 mt-3">
+            <h1>Completed Tasks</h1>
+            {% if completed_tasks %}
+                <table class="table table-success w-50">
+                    <thead>
+                    <tr>
+                        <th scope="col">Task</th>
+                        <th scope="col">Points</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for task in completed_tasks %}
+                        <tr>
+                            <td>{{ task.task.title }}</td>
+                            <td>+{{ task.task.points }}</td>
+                            <td>Complete</td>
+                        </tr>
+                    {% endfor %}
+                    {% for task in pending_tasks %}
+                        <tr class="table-warning">
+                            <td>{{ task.task.title }}</td>
+                            <td>+{{ task.task.points }}</td>
+                            <td>
+                                <a href="{% url 'complete_task' task.id %}">Pending Approval</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>You have no completed tasks!</p>
+                <a href="{% url 'tasks_index' %}">Get some more tasks!</a>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+

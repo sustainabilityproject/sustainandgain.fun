@@ -47,7 +47,7 @@ class Task(models.Model):
                 return False
 
             else:
-                if timezone.now() < instance.time_completed + instance.time_to_repeat:
+                if timezone.now() < instance.time_completed + instance.task.time_to_repeat:
                     return False
 
         return True
@@ -77,6 +77,12 @@ class TaskInstance(models.Model):
 
     time_completed = models.DateTimeField(null=True, blank=True)
 
+    # Photo evidence of the task being completed
+    photo = models.ImageField(upload_to='task_photos', null=True, blank=True)
+
+    # Completion note
+    note = models.CharField(max_length=500, null=True, blank=True)
+
     # The user who has accepted the task
     # TODO make sure this is consistent with the user profile system
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -88,7 +94,7 @@ class TaskInstance(models.Model):
 
     TASK_STATE_CHOICES = (
         (COMPLETED, 'Completed'),
-        (PENDING_APPROVAL, 'Pending'),
+        (PENDING_APPROVAL, 'Pending Approval'),
         (ACTIVE, 'Active'),
     )
     status = models.CharField(
@@ -123,6 +129,7 @@ class TaskInstance(models.Model):
 
     # When the user reports themselves as having completed a task
     def report_task_complete(self):
+        print("Reporting task complete")
         self.status = self.PENDING_APPROVAL
         self.time_completed = timezone.now()
 
