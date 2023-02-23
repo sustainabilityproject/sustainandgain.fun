@@ -4,3 +4,5 @@ from .models import Task, TaskCategory, TaskInstance
 admin.site.register(Task)
 admin.site.register(TaskCategory)
 admin.site.register(TaskInstance)
+
+

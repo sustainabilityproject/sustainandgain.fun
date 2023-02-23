@@ -37,7 +37,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
 def accept_task(request, task_id):
     """When the user accepts a task, create a new active TaskInstance referencing that user and the accepted task"""
     task_accepted = Task.objects.get(pk=task_id)
-    
+
     if task_accepted.is_available(request.user):
         t = TaskInstance(
             task=task_accepted,
