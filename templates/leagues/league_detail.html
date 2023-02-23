@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h1>{{ league }}</h1>
+        <p>{{ league.description }}</p>
+        <h2>Members</h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Username</th>
+                <th>Points</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for member in league.members.all %}
+                <tr>
+                    <td>1</td>
+                    <td>{{ member.user.username }}</td>
+                    <td>{{ member.total_points }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+    </div>
+{% endblock %}

@@ -6,5 +6,10 @@ class League(models.Model):
     description = models.TextField(default='')
     members = models.ManyToManyField('friends.Profile', related_name='leagues', blank=True)
 
+    def ranked_members(self):
+        members = self.members.all()
+        ranked_members = sorted(members, key=lambda member: member.total_points(), reverse=True)
+        return ranked_members
+
     def __str__(self):
         return self.name
