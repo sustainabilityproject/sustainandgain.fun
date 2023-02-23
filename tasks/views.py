@@ -17,6 +17,9 @@ from .models import *
 
 
 class MyTasksView(LoginRequiredMixin, ListView):
+    """
+    View all the task assigned to the current user.
+    """
     model = TaskInstance
     template_name = "tasks/my_tasks.html"
     context_object_name = "tasks"
@@ -33,6 +36,9 @@ class MyTasksView(LoginRequiredMixin, ListView):
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
+    """
+    List of all tasks that are available for the current user.
+    """
     template_name = "tasks/index.html"
 
     def get_context_data(self, **kwargs):
@@ -62,6 +68,9 @@ def accept_task(request, task_id):
 
 
 class CompleteTaskView(LoginRequiredMixin, UpdateView):
+    """
+    User can complete a task by uploading a photo of the completed task and has the option to add a note.
+    """
     template_name = 'tasks/complete_task.html'
     form_class = CompleteTaskForm
     success_url = reverse_lazy('my_tasks')
@@ -69,8 +78,10 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         task = TaskInstance.objects.get(pk=self.kwargs['pk'])
+        # Redirect if the user is not the owner of the task
         if task.user != request.user:
             return redirect('my_tasks')
+        # Redirect if the task is already completed
         if task.status == TaskInstance.COMPLETED:
             return redirect('my_tasks')
         return super().dispatch(request, *args, **kwargs)
