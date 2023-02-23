@@ -1,6 +1,7 @@
 from django.db import models
 
 from accounts.models import User
+from tasks.models import TaskInstance
 
 
 class Profile(models.Model):
@@ -25,6 +26,13 @@ class Profile(models.Model):
         friends = Profile.objects.filter(id__in=friend_ids)
 
         return friends
+
+    def total_points(self):
+        task_instances = TaskInstance.objects.filter(user=self.user, status=TaskInstance.COMPLETED)
+        total_points = 0
+        for task_instance in task_instances:
+            total_points += task_instance.task.points
+        return total_points
 
 
 class FriendRequest(models.Model):
