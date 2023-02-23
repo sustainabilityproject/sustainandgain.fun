@@ -2,9 +2,10 @@ from django.urls import path
 
 from tasks.views import IndexView, MyTasksView, accept_task, CompleteTaskView
 
+app_name = 'tasks'
 urlpatterns = [
-    path('', IndexView.as_view(), name='tasks_index'),
-    path('mytasks/', MyTasksView.as_view(), name='my_tasks'),
-    path('<int:task_id>/accept', accept_task, name='accept_task'),
-    path('<int:pk>/complete', CompleteTaskView.as_view(), name='complete_task'),
+    path('', MyTasksView.as_view(), name='list'),
+    path('available/', IndexView.as_view(), name='available'),
+    path('<int:task_id>/accept/', accept_task, name='accept'),
+    path('<int:pk>/complete/', CompleteTaskView.as_view(), name='complete'),
 ]

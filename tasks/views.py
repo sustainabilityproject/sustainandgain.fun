@@ -32,7 +32,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
     """
     List of all tasks that are available for the current user.
     """
-    template_name = "tasks/index.html"
+    template_name = "tasks/available_tasks.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -57,7 +57,7 @@ def accept_task(request, task_id):
         )
         t.save()
 
-    return redirect('my_tasks')
+    return redirect('tasks:list')
 
 
 class CompleteTaskView(LoginRequiredMixin, UpdateView):
@@ -66,7 +66,7 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
     """
     template_name = 'tasks/complete_task.html'
     form_class = CompleteTaskForm
-    success_url = reverse_lazy('my_tasks')
+    success_url = reverse_lazy('tasks:list')
     context_object_name = 'task'
 
     def dispatch(self, request, *args, **kwargs):
