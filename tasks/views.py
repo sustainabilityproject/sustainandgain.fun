@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.views import View
 from django.views.generic import TemplateView, ListView, UpdateView
 
 from sustainability.settings import BASE_DIR
@@ -51,20 +52,35 @@ class IndexView(LoginRequiredMixin, TemplateView):
         return context
 
 
-@login_required
-def accept_task(request, task_id):
-    """When the user accepts a task, create a new active TaskInstance referencing that user and the accepted task"""
-    task_accepted = Task.objects.get(pk=task_id)
+# @login_required
+# def accept_task(request, task_id):
+#     """When the user accepts a task, create a new active TaskInstance referencing that user and the accepted task"""
+#     task_accepted = Task.objects.get(pk=task_id)
+#
+#     if task_accepted.is_available(request.user):
+#         t = TaskInstance(
+#             task=task_accepted,
+#             user=request.user,
+#             status=TaskInstance.ACTIVE
+#         )
+#         t.save()
+#
+#     return redirect('tasks:list')
 
-    if task_accepted.is_available(request.user):
-        t = TaskInstance(
-            task=task_accepted,
-            user=request.user,
-            status=TaskInstance.ACTIVE
-        )
-        t.save()
-
-    return redirect('tasks:list')
+class AcceptTaskView(LoginRequiredMixin, View):
+    """
+    When the user accepts a task, create a new active TaskInstance referencing that user and the accepted task
+    """
+    def get(self, request, *args, **kwargs):
+        task_accepted = Task.objects.get(pk=self.kwargs['pk'])
+        if task_accepted.is_available(request.user):
+            t = TaskInstance(
+                task=task_accepted,
+                user=request.user,
+                status=TaskInstance.ACTIVE
+            )
+            t.save()
+        return redirect('tasks:list')
 
 
 class CompleteTaskView(LoginRequiredMixin, UpdateView):
