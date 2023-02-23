@@ -1,6 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm as BuiltinUserCreationForm
 from django.contrib.auth.forms import UserChangeForm as BuiltinUserChangeForm
+from django.contrib.auth.forms import UserCreationForm as BuiltinUserCreationForm
 
 from accounts.models import User
 

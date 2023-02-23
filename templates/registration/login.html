@@ -6,7 +6,7 @@
 {% block content %}
     <div class="container">
         <h2>Login</h2>
-        <p>Don't have an account yet? <a href="{% url 'register' %}">Register</a></p>
+        <p>Don't have an account yet? <a href="{% url 'accounts:register' %}">Register</a></p>
         <form method="post">
             {% csrf_token %}
             {% bootstrap_form form %}
