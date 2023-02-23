@@ -3,6 +3,7 @@ import datetime
 
 from accounts.models import User
 from django.db import models
+from django.core.validators import MinValueValidator
 
 
 class TaskCategory(models.Model):
@@ -26,7 +27,7 @@ class Task(models.Model):
     points = models.IntegerField(default=0)
 
     # by default, tasks can be repeated after a day
-    time_to_repeat = models.DurationField()
+    time_to_repeat = models.DurationField(validators=[MinValueValidator(1)])
 
     # PROTECT means that a category cannot be deleted while tasks exist under that category
     category = models.ForeignKey(TaskCategory, on_delete=models.PROTECT)
@@ -48,6 +49,12 @@ class Task(models.Model):
                     return False
 
         return True
+
+    def clean(self):
+        time_to_repeat = self.cleaned_data.get('time_to_repeat')
+        if time_to_repeat < 0:
+            raise forms.ValidationError("Time to repeat cannot be negative.")
+        return self.cleaned_data
 
     def __str__(self):
         return self.title
@@ -87,6 +94,24 @@ class TaskInstance(models.Model):
         choices=TASK_STATE_CHOICES,
         default=ACTIVE,
     )
+
+    def clean(self):
+        time_completed = self.cleaned_data.get('time_completed')
+        time_accepted = self.cleaned_data.get('time_accepted')
+        status = self.cleaned_data.get('status')
+
+        if time_completed < time_accepted :
+            raise forms.ValidationError("Tasks cannot have been completed before they were accepted.")
+        if time_completed > datetime.now():
+            raise forms.ValidationError("Tasks cannot have been completed in the future.")
+
+        # Validate that there is only a time_completed when the task is Completed or Pending, and vice versa
+        if status == TaskInstance.ACTIVE and time_completed is not None:
+            raise forms.ValidationError("Tasks cannot have a time completed while they are active.")
+        elif status != TaskInstance.ACTIVE and time_completed is None:
+            raise forms.ValidationError("If a task is no longer active, it must have a time completed")
+
+        return self.cleaned_data
 
     # When the task has been validated as completed (e.g. by a Gamekeeper, or automatically for simple tasks)
     def validate_task(self):
