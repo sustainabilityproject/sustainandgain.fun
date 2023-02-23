@@ -1,25 +1,23 @@
-{% extends 'base.html'%}
+{% extends 'base.html' %}
 
-{% block title %}
-<title>Feed</title>
-{% endblock %}
+{% block title %}Task Feed{% endblock %}
 
 {% block content %}
     {% if user.is_authenticated %}
         Logged in as {{ user.username }}
-        <p>
+        <div>
             <a href="{% url 'friends:profile' %}">Profile</a>
             <a href="{% url 'friends:list' %}">Friends</a>
 
             <h1>Feed of Completed Tasks</h1>
             <ul>
-            {% for task in completed_tasks %}
-                <li>{{ task }}</li>
-            {% empty %}
-                <li>No completed tasks</li>
-            {% endfor %}
+                {% for task in completed_tasks %}
+                    <li>{{ task }}</li>
+                {% empty %}
+                    <li>No completed tasks</li>
+                {% endfor %}
             </ul>
-        </p>
+        </div>
         <p><a href="{% url 'logout' %}">Log Out</a></p>
     {% else %}
         <p>You are not logged in</p>

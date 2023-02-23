@@ -3,19 +3,24 @@
     <div class="container">
         {% if user.is_authenticated %}
             <h1>My Leagues</h1>
-            {% for league in user_leagues %}
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h2 class="card-title">{{ league }}</h2>
-                        <p class="card-text">{{ league.description }}</p>
-                        <ul class="list-inline">
-                            <li class="list-inline-item">{{ league.members.count }}
-                                member{{ league.members.count|pluralize }}</li>
-                            <li class="list-inline-item"><a href="#" class="btn btn-primary">View</a></li>
-                        </ul>
+            {% if user_leagues %}
+                {% for league in user_leagues %}
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h2 class="card-title">{{ league }}</h2>
+                            <p class="card-text">{{ league.description }}</p>
+                            <ul class="list-inline">
+                                <li class="list-inline-item">{{ league.members.count }}
+                                    member{{ league.members.count|pluralize }}</li>
+                                <li class="list-inline-item"><a href="{% url 'leagues:detail' league.id %}"
+                                                                class="btn btn-primary">View</a></li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            {% else %}
+                <p>You are not a member of any leagues</p>
+            {% endif %}
         {% endif %}
         <h1>Public Leagues</h1>
         {% if leagues %}
@@ -27,7 +32,8 @@
                         <ul class="list-inline">
                             <li class="list-inline-item">{{ league.members.count }}
                                 member{{ league.members.count|pluralize }}</li>
-                            <li class="list-inline-item"><a href="#" class="btn btn-primary">View</a></li>
+                            <li class="list-inline-item"><a href="{% url 'leagues:detail' league.id %}"
+                                                            class="btn btn-primary">View</a></li>
                         </ul>
                     </div>
                 </div>

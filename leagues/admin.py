@@ -1,11 +1,15 @@
 from django.contrib import admin
 
-from leagues.models import League
+from .models import League, LeagueMember
+
+
+class LeagueMemberInline(admin.TabularInline):
+    model = LeagueMember
+    extra = 0
 
 
 class LeagueAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description',)
-    filter_horizontal = ('members',)
+    inlines = [LeagueMemberInline]
 
 
 admin.site.register(League, LeagueAdmin)

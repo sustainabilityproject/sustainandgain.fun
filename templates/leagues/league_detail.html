@@ -1,9 +1,51 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ league }}{% endblock %}
+
 {% block content %}
     <div class="container">
         <h1>{{ league }}</h1>
         <p>{{ league.description }}</p>
+        {% if is_member %}
+            <form action="{% url 'leagues:leave' league.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Leave</button>
+            </form>
+        {% elif is_pending %}
+            <p>You have requested to join {{ league }}</p>
+            <form action="{% url 'leagues:leave' league.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Cancel Request</button>
+            </form>
+        {% elif is_invited %}
+            <p>You have been invited to join</p>
+            <form action="{% url 'leagues:join' league.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Accept</button>
+            </form>
+            <form action="{% url 'leagues:leave' league.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Reject</button>
+            </form>
+        {% else %}
+            {% if not league.invite_only %}
+                <form action="{% url 'leagues:join' league.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Join</button>
+                </form>
+            {% else %}
+                <form action="{% url 'leagues:join' league.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Request to Join</button>
+                </form>
+            {% endif %}
+        {% endif %}
+
+        {% if admin %}
+            <div class="mt-3">
+                <a href="{% url 'leagues:delete' league.id %}" class="btn btn-danger">Delete League</a>
+            </div>
+        {% endif %}
         <h2>Members</h2>
         <table class="table">
             <thead>
@@ -16,11 +58,44 @@
             <tbody>
             {% for member in league.members.all %}
                 <tr>
-                    <td>1</td>
+                    <td>{{ forloop.counter }}</td>
                     <td>{{ member.user.username }}</td>
                     <td>{{ member.total_points }}</td>
                 </tr>
             {% endfor %}
             </tbody>
+        </table>
+
+        {% if admin %}
+            {% if pending_members %}
+                <h2>Pending Members</h2>
+                <p>These people have requested to join {{ league }}</p>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for member in pending_members.all %}
+                        <tr>
+                            <td>{{ member.user.username }}</td>
+                            <td>
+                                <form action="{% url 'leagues:approve' league.id member.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success">Approve</button>
+                                </form>
+                                <form action="{% url 'leagues:reject' league.id member.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Reject</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        {% endif %}
     </div>
 {% endblock %}
