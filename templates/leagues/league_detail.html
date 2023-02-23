@@ -96,6 +96,31 @@
                     </tbody>
                 </table>
             {% endif %}
+            {% if invited_members %}
+                <h2>Invited Members</h2>
+                <p>These people have been invited to join {{ league }}</p>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for member in invited_members.all %}
+                        <tr>
+                            <td>{{ member.user.username }}</td>
+                            <td>
+                                <form action="{% url 'leagues:reject' league.id member.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">Cancel</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
         {% endif %}
     </div>
 {% endblock %}
