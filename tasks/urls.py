@@ -3,7 +3,7 @@ from tasks.views import IndexView, MyTasksView, accept_task
 
 from . import views
 
-app_name = "tasks"
+
 urlpatterns = [
     path('', IndexView.as_view(), name='tasks_index'),
     path('mytasks/', MyTasksView.as_view(), name='my_tasks'),
