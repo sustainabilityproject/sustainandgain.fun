@@ -1,0 +1,18 @@
+[package]
+name = "autoencoder"
+version = "0.1.1"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "autoencoder"
+crate-type = ["cdylib"]
+
+[dependencies]
+rand_distr = "0.4.3"
+rand = "0.8.5"
+image = "0.24.5"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+base64 = "0.21.0"
+pyo3 = { version = "0.18.0", features = ["extension-module"] }
