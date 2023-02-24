@@ -57,6 +57,10 @@ class Task(models.Model):
         time_to_repeat = self.time_to_repeat
         if time_to_repeat < datetime.timedelta(0):
             raise ValidationError('Time to repeat cannot be negative')
+
+        if self.points < 0:
+            raise ValidationError('Tasks must grant a positive number of points')
+
         return self
 
     def __str__(self):
