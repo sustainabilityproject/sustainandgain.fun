@@ -1,11 +1,11 @@
 import os
 import uuid
 
-from PIL import Image, ImageOps
 import autoencoder
+from PIL import Image, ImageOps
 from django import forms
-from sustainability.settings import BASE_DIR
 
+from sustainability.settings import BASE_DIR
 from tasks.models import TaskInstance
 
 
@@ -14,6 +14,7 @@ class CompleteTaskForm(forms.ModelForm):
     Form for a user to complete a task.
     Allows a user to upload a photo and add a note about the task.
     """
+
     class Meta:
         model = TaskInstance
         fields = ['photo', 'note']
@@ -56,14 +57,14 @@ class CompleteTaskForm(forms.ModelForm):
                 # save the cropped and resized image
                 img.save(bin_path)
 
-            confidence = autoencoder.mug_confidence(os.path.join(BASE_DIR), "\\media\\bin\\" + task_instance.photo.name[12:])
+            confidence = autoencoder.mug_confidence(os.path.join(BASE_DIR),
+                                                    os.path.join("/media", "bin", task_instance.photo.name[12:]))
 
             if os.path.exists(bin_path):
                 os.remove(bin_path)
             else:
                 print("Failed to delete file")
 
-            
             print(f"My reconstruction loss: {confidence}")
             if confidence < 0.03:
                 task_instance.status = task_instance.COMPLETED
