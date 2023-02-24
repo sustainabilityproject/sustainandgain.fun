@@ -1,10 +1,13 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
 class League(models.Model):
+    """
+    A League is a group of users who can compete against each other.
+    """
     name = models.CharField(max_length=100)
     description = models.TextField(default='', blank=True, max_length=500)
-    invite_only = models.BooleanField(default=False)
     members = models.ManyToManyField('friends.Profile', through='LeagueMember')
 
     VISIBILITY_CHOICES = (
@@ -12,7 +15,14 @@ class League(models.Model):
         ('private', 'Private'),
     )
 
+    # A league can either be public (anyone can view it) or private (only members can view it)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES, default='public')
+
+    # Invite-only: user must request to join or can be invited by an admin
+    invite_only = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.name
 
     def get_members(self):
         return self.leaguemember_set.filter(status='joined')
@@ -28,13 +38,25 @@ class League(models.Model):
         ranked_members = sorted(members, key=lambda member: member.profile.total_points(), reverse=True)
         return ranked_members
 
-    def __str__(self):
-        return self.name
+    def clean(self):
+        # If the league is private, it must be invite-only
+        if self.visibility == 'private' and not self.invite_only:
+            raise ValidationError('Private leagues must be invite-only')
+        return self
 
 
 class LeagueMember(models.Model):
+    """
+    A LeagueMember is a user who is a member of a league.
+    """
     league = models.ForeignKey(League, on_delete=models.CASCADE)
     profile = models.ForeignKey('friends.Profile', on_delete=models.CASCADE)
+
+    """
+    Invited: user has been invited to join the league by an admin
+    Pending: user has requested to join an invite-only league
+    Joined: user is a member of the league
+    """
     status = models.CharField(max_length=20, choices=(('invited', 'Invited'),
                                                       ('joined', 'Joined'), ('pending', 'Pending')), default='pending')
 

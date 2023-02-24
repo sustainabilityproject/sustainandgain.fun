@@ -18,109 +18,83 @@
                 <button type="submit" class="btn btn-danger">Cancel Request</button>
             </form>
         {% elif is_invited %}
-            <p>You have been invited to join</p>
+            <p>You have been invited!</p>
+            <div class="btn-group">
+                <div class="mx-1">
+                    <form action="{% url 'leagues:join' league.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">Accept</button>
+                    </form>
+                </div>
+                <div class="mx-1">
+                    <form action="{% url 'leagues:leave' league.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Reject</button>
+                    </form>
+                </div>
+            </div>
+        {% elif not league.invite_only %}
             <form action="{% url 'leagues:join' league.id %}" method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Accept</button>
-            </form>
-            <form action="{% url 'leagues:leave' league.id %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Reject</button>
+                <button type="submit" class="btn btn-primary">Join</button>
             </form>
         {% else %}
-            {% if not league.invite_only %}
-                <form action="{% url 'leagues:join' league.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Join</button>
-                </form>
-            {% else %}
-                <form action="{% url 'leagues:join' league.id %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary">Request to Join</button>
-                </form>
-            {% endif %}
+            <form action="{% url 'leagues:join' league.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Request to Join</button>
+            </form>
         {% endif %}
 
         {% if admin %}
-            <div class="mt-3">
-                <a href="{% url 'leagues:delete' league.id %}" class="btn btn-danger">Delete League</a>
+            <div class="mt-2 p-2 border border-3 border-danger">
+                <h1>Admin Area</h1>
+                <div class="mt-3">
+                    {% if pending_members %}
+                        <a href="{% url 'leagues:pending' league.id %}" class="btn btn-success">
+                            {{ pending_members.count }} Request{{ pluralize }}
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'leagues:invite' league.id %}" class="btn btn-primary">Invite Members</a>
+                    <a href="{% url 'leagues:delete' league.id %}" class="btn btn-danger">Delete League</a>
+                </div>
             </div>
         {% endif %}
         <h2>Members</h2>
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Rank</th>
-                <th>Username</th>
-                <th>Points</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for member in league.members.all %}
+        {% if is_public or is_member or is_invited %}
+            <table class="table">
+                <thead>
                 <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ member.user.username }}</td>
-                    <td>{{ member.total_points }}</td>
+                    <th>Rank</th>
+                    <th>Username</th>
+                    <th>Points</th>
+                    {% if admin %}
+                        <th>Actions</th>
+                    {% endif %}
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-
-        {% if admin %}
-            {% if pending_members %}
-                <h2>Pending Members</h2>
-                <p>These people have requested to join {{ league }}</p>
-                <table class="table">
-                    <thead>
+                </thead>
+                <tbody>
+                {% for member in members %}
                     <tr>
-                        <th>Username</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for member in pending_members.all %}
-                        <tr>
-                            <td>{{ member.user.username }}</td>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ member.profile.user.username }}</td>
+                        <td>{{ member.profile.total_points }}</td>
+                        {% if admin %}
                             <td>
-                                <form action="{% url 'leagues:approve' league.id member.id %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-success">Approve</button>
-                                </form>
-                                <form action="{% url 'leagues:reject' league.id member.id %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger">Reject</button>
-                                </form>
+                                {% if member.profile != user.profile %}
+                                    <form action="{% url 'leagues:remove' league.id member.profile.user.username %}"
+                                          method="post">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Kick</button>
+                                    </form>
+                                {% endif %}
                             </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            {% endif %}
-            {% if invited_members %}
-                <h2>Invited Members</h2>
-                <p>These people have been invited to join {{ league }}</p>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Username</th>
-                        <th>Actions</th>
+                        {% endif %}
                     </tr>
-                    </thead>
-                    <tbody>
-                    {% for member in invited_members.all %}
-                        <tr>
-                            <td>{{ member.user.username }}</td>
-                            <td>
-                                <form action="{% url 'leagues:reject' league.id member.id %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger">Cancel</button>
-                                </form>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>This league is private. Request to join to view members.</p>
         {% endif %}
     </div>
 {% endblock %}

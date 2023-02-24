@@ -22,6 +22,25 @@
                 <p>You are not a member of any leagues</p>
             {% endif %}
         {% endif %}
+        <hr>
+        {% if invited_leagues %}
+            <h1>Invites</h1>
+            {% for league in invited_leagues %}
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body">
+                        <h2 class="card-title">{{ league }}</h2>
+                        <p class="card-text">{{ league.description }}</p>
+                        <ul class="list-inline">
+                            <li class="list-inline-item">{{ league.members.count }}
+                                member{{ league.members.count|pluralize }}</li>
+                            <li class="list-inline-item"><a href="{% url 'leagues:detail' league.id %}"
+                                                            class="btn btn-primary">View</a></li>
+                        </ul>
+                    </div>
+                </div>
+            {% endfor %}
+            <hr>
+        {% endif %}
         <h1>Public Leagues</h1>
         {% if leagues %}
             {% for league in leagues %}
@@ -40,6 +59,22 @@
             {% endfor %}
         {% else %}
             <p>No public leagues available</p>
+        {% endif %}
+        {% if pending_leagues %}
+            <hr>
+            <div class="dropdown">
+                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                   aria-expanded="false">
+                    Pending Leagues
+                </a>
+
+                <ul class="dropdown-menu">
+                    {% for league in pending_leagues %}
+                        <li><a class="dropdown-item" href="{% url 'leagues:detail' league.id %}">{{ league }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+
         {% endif %}
     </div>
 {% endblock content %}
