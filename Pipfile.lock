@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "bed80233e689dd544c7ba6e0f8b5a1ee310fc0e6d78b7cd52d99cdc099a6ea9d"
+            "sha256": "1c340ee85a4283bfe9caf464add3fb1d343f6e13ec78a0dc1ee50caeabf2f749"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -26,10 +26,10 @@
         },
         "autoencoder": {
             "hashes": [
-                "sha256:2e210d7933bec94f43dfc255a06159be6f91fd8352800e1486ec58bf80957732"
+                "sha256:dd6a5188ec80a8368a524e57a6ef09b914070b8841635e7a6cd416906c1fc4e6"
             ],
-            "path": "./autoencoder/autoencoder-0.1.0-cp310-none-win_amd64.whl",
-            "version": "==0.1.0"
+            "path": "./autoencoder/autoencoder-0.1.1-cp310-none-win_amd64.whl",
+            "version": "==0.1.1"
         },
         "django": {
             "hashes": [
