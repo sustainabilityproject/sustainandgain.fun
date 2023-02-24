@@ -1,5 +1,7 @@
 db.sqlite3
 .idea/
 *.pyc
+media/bin/
 media/*.jpg
+media/*.png
 media/task_photos/
