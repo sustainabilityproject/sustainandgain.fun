@@ -77,7 +77,7 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ member.profile.user.username }}</td>
-                        <td>{{ member.profile.total_points }}</td>
+                        <td>{{ member.total_points }}</td>
                         {% if admin %}
                             <td>
                                 {% if member.profile != user.profile %}

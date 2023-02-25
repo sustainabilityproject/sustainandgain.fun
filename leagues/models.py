@@ -1,6 +1,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
+from tasks.models import TaskInstance
+
 
 class League(models.Model):
     """
@@ -35,8 +37,8 @@ class League(models.Model):
 
     def get_ranked_members(self):
         members = self.leaguemember_set.filter(status='joined')
-        ranked_members = sorted(members, key=lambda member: member.profile.total_points(), reverse=True)
-        return ranked_members
+        members = sorted(members, key=lambda member: member.total_points(), reverse=True)
+        return members
 
     def clean(self):
         # If the league is private, it must be invite-only
@@ -67,3 +69,10 @@ class LeagueMember(models.Model):
 
     def __str__(self):
         return f'{self.profile.user.username} in {self.league.name}'
+
+    def total_points(self):
+        task_instances = TaskInstance.objects.filter(profile=self.profile, status=TaskInstance.COMPLETED)
+        total_points = 0
+        for task_instance in task_instances:
+            total_points += task_instance.task.points
+        return total_points
