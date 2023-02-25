@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from accounts.models import User
+from friends.models import Profile
 
 
 class TaskCategory(models.Model):
@@ -35,13 +35,13 @@ class Task(models.Model):
     # PROTECT means that a category cannot be deleted while tasks exist under that category
     category = models.ForeignKey(TaskCategory, on_delete=models.PROTECT)
 
-    def is_available(self, user):
+    def is_available(self, profile):
         """
         Check if this task should be available for a given user.
         If the user has ACTIVE or PENDING_APPROVAL instances of this task, or the time_to_repeat has not elapsed since
         the user completed an instance of this task, return false. Otherwise, return true.
         """
-        this_task_instances = TaskInstance.objects.filter(task=self.pk, user=user)
+        this_task_instances = TaskInstance.objects.filter(task=self.pk, profile=profile.pk)
 
         for instance in this_task_instances:
             if instance.status in [TaskInstance.PENDING_APPROVAL, TaskInstance.ACTIVE]:
@@ -88,9 +88,8 @@ class TaskInstance(models.Model):
     # Completion note
     note = models.CharField(max_length=500, null=True, blank=True)
 
-    # The user who has accepted the task
-    # TODO make sure this is consistent with the user profile system
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # The profile of the user who has accepted the task
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, default=None)
 
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
@@ -107,6 +106,9 @@ class TaskInstance(models.Model):
         choices=TASK_STATE_CHOICES,
         default=ACTIVE,
     )
+
+    def __str__(self):
+        return f"Task:{self.task.title}; User:{self.profile.user.username}"
 
     def clean(self):
         time_completed = self.time_completed
@@ -136,6 +138,3 @@ class TaskInstance(models.Model):
     def report_task_complete(self):
         self.status = self.PENDING_APPROVAL
         self.time_completed = timezone.now()
-
-    def __str__(self):
-        return f"Task:{self.task.title}; User:{self.user.username}"
