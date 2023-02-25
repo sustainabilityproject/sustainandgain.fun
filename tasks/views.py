@@ -1,17 +1,11 @@
 # TODO class rather than function views
-import base64
-import os
-import uuid
 
-import autoencoder
-from PIL import Image, ImageOps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, ListView, UpdateView
 
-from sustainability.settings import BASE_DIR
 from .forms import CompleteTaskForm
 from .models import *
 
@@ -25,7 +19,7 @@ class MyTasksView(LoginRequiredMixin, ListView):
     context_object_name = "tasks"
 
     def get_queryset(self):
-        return TaskInstance.objects.filter(user=self.request.user)
+        return TaskInstance.objects.filter(profile=self.request.user.profile)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -45,8 +39,8 @@ class IndexView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         # Generate a list of all tasks that are available for this user
-        current_user = self.request.user
-        tasks_list = [task for task in Task.objects.all() if task.is_available(current_user)]
+        current_profile = self.request.user.profile
+        tasks_list = [task for task in Task.objects.all() if task.is_available(current_profile)]
         context['tasks_list'] = tasks_list
         return context
 
@@ -58,10 +52,10 @@ class AcceptTaskView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         task_accepted = Task.objects.get(pk=self.kwargs['pk'])
-        if task_accepted.is_available(request.user):
+        if task_accepted.is_available(request.user.profile):
             t = TaskInstance(
                 task=task_accepted,
-                user=request.user,
+                profile=request.user.profile,
                 status=TaskInstance.ACTIVE
             )
             t.save()
@@ -80,7 +74,7 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         task = TaskInstance.objects.get(pk=self.kwargs['pk'])
         # Redirect if the user is not the owner of the task
-        if task.user != request.user:
+        if task.profile != request.user.profile:
             return redirect('my_tasks')
         # Redirect if the task is already completed
         if task.status == TaskInstance.COMPLETED:
