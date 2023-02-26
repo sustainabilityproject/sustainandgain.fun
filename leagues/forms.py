@@ -20,6 +20,22 @@ class CreateLeagueForm(forms.ModelForm):
         return name
 
 
+class EditLeagueForm(forms.ModelForm):
+    """
+    Form used by a league admin to update the league details.
+    """
+
+    class Meta:
+        model = League
+        fields = ['name', 'description']
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if League.objects.filter(name=name).exclude(pk=self.instance.pk).exists():
+            raise forms.ValidationError('A league with that name already exists')
+        return name
+
+
 class InviteMemberForm(forms.ModelForm):
     """
     Form used by an admin of a league to invite a user to join the league.

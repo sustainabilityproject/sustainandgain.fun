@@ -1,7 +1,7 @@
 from django.urls import path
 
 from leagues.views import LeaguesListView, LeagueDetailView, JoinLeagueView, LeaveLeagueView, DeleteLeagueView, \
-    InviteMemberView, RemoveMemberView, PendingMembersView, CreateLeagueView
+    InviteMemberView, RemoveMemberView, PendingMembersView, CreateLeagueView, EditLeagueView
 
 app_name = "leagues"
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     path('create/', CreateLeagueView.as_view(), name='create'),
 
     # League admin only
+    path('<int:pk>/edit/', EditLeagueView.as_view(), name='edit'),
     path('<int:pk>/delete/', DeleteLeagueView.as_view(), name='delete'),
     path('<int:pk>/invite/', InviteMemberView.as_view(), name='invite'),
     path('<int:pk>/remove/<str:username>/', RemoveMemberView.as_view(), name='remove'),

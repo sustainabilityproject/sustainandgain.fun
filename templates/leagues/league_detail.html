@@ -16,9 +16,9 @@
                                 </a>
                             {% endif %}
                             <a href="{% url 'leagues:invite' league.id %}" class="btn btn-primary">Invite Members</a>
-                            <a href="{% url 'leagues:delete' league.id %}" class="btn btn-danger">Delete League</a>
+                            <a href="{% url 'leagues:edit' league.id %}" class="btn btn-warning">Edit League</a>
                         </div>
-                    <p class="text-muted m-0">You cannot leave while admin</p>
+                        <p class="text-muted m-0">You cannot leave while admin</p>
                     </div>
                 {% elif is_member %}
                     <form action="{% url 'leagues:leave' league.id %}" method="post">
@@ -71,6 +71,7 @@
                     <th>Username</th>
                     <th>Points</th>
                     {% if admin %}
+                        <th>Role</th>
                         <th>Actions</th>
                     {% endif %}
                 </tr>
@@ -82,6 +83,9 @@
                         <td>{{ member.profile.user.username }}</td>
                         <td>{{ member.total_points }}</td>
                         {% if admin %}
+                            <td>
+                                {{ member.role }}
+                            </td>
                             <td>
                                 {% if member.profile != user.profile %}
                                     <form action="{% url 'leagues:remove' league.id member.profile.user.username %}"

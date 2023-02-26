@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 
 from friends.models import Profile
-from leagues.forms import InviteMemberForm, CreateLeagueForm
+from leagues.forms import InviteMemberForm, CreateLeagueForm, EditLeagueForm
 from leagues.models import League, LeagueMember
 
 
@@ -166,6 +166,27 @@ class CreateLeagueView(LoginRequiredMixin, CreateView):
 
 
 # Admin views
+
+class EditLeagueView(LoginRequiredMixin, UpdateView):
+    """
+    If the user is an admin, they can update the league
+    """
+    model = League
+    form_class = EditLeagueForm
+    template_name = 'leagues/league_edit.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        # Check if the user is an admin of the league
+        if not LeagueMember.objects.filter(league=obj, profile=request.user.profile, role='admin').exists():
+            return redirect('leagues:detail', pk=obj.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        league = form.save()
+        messages.success(self.request, f'You have updated {league.name}')
+        return redirect('leagues:detail', pk=league.pk)
+
 
 class DeleteLeagueView(LoginRequiredMixin, DeleteView):
     """
