@@ -58,7 +58,7 @@ class Task(models.Model):
         if time_to_repeat < datetime.timedelta(0):
             raise ValidationError('Time to repeat cannot be negative')
 
-        if self.points < 0:
+        if self.points <= 0:
             raise ValidationError('Tasks must grant a positive number of points')
 
         return self
@@ -109,6 +109,15 @@ class TaskInstance(models.Model):
 
     def __str__(self):
         return f"Task:{self.task.title}; User:{self.profile.user.username}"
+    
+    @property
+    def status_colour(self):
+        if self.status == TaskInstance.ACTIVE:
+            return 'bg-primary'
+        elif self.status == TaskInstance.PENDING_APPROVAL:
+            return 'bg-warning text-dark'
+        elif self.status == TaskInstance.COMPLETED:
+            return 'text-bg-success'
 
     def clean(self):
         time_completed = self.time_completed
