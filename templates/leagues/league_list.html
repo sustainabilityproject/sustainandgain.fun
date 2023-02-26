@@ -2,7 +2,12 @@
 {% block content %}
     <div class="container">
         {% if user.is_authenticated %}
-            <h1>My Leagues</h1>
+            <div class="d-flex justify-content-between">
+                <h1>My Leagues</h1>
+                <div class="my-auto">
+                    <a href="{% url 'leagues:create' %}" class="btn btn-success">+ New League</a>
+                </div>
+            </div>
             {% if user_leagues %}
                 {% for league in user_leagues %}
                     <div class="card" style="width: 18rem;">

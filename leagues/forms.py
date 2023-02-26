@@ -4,6 +4,22 @@ from accounts.models import User
 from leagues.models import LeagueMember, League
 
 
+class CreateLeagueForm(forms.ModelForm):
+    """
+    Form used by a user to create a new league.
+    """
+
+    class Meta:
+        model = League
+        fields = ['name', 'description']
+
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if League.objects.filter(name=name).exists():
+            raise forms.ValidationError('A league with that name already exists')
+        return name
+
+
 class InviteMemberForm(forms.ModelForm):
     """
     Form used by an admin of a league to invite a user to join the league.

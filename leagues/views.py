@@ -3,10 +3,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 
 from friends.models import Profile
-from leagues.forms import InviteMemberForm
+from leagues.forms import InviteMemberForm, CreateLeagueForm
 from leagues.models import League, LeagueMember
 
 
@@ -148,6 +148,24 @@ class LeaveLeagueView(LoginRequiredMixin, UpdateView):
             messages.success(request, f'You have left {league.name}')
             return redirect('leagues:detail', pk=league.pk)
 
+
+class CreateLeagueView(LoginRequiredMixin, CreateView):
+    """
+    Create a new league
+    """
+    model = League
+    form_class = CreateLeagueForm
+
+    def form_valid(self, form):
+        league = form.save()
+        member = LeagueMember.objects.create(league=league, profile=self.request.user.profile, role='admin',
+                                             status='joined')
+        member.save()
+        messages.success(self.request, f'You have created {league.name}')
+        return redirect('leagues:detail', pk=league.pk)
+
+
+# Admin views
 
 class DeleteLeagueView(LoginRequiredMixin, DeleteView):
     """
