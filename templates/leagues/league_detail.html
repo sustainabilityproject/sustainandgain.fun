@@ -87,13 +87,31 @@
                                 {{ member.role }}
                             </td>
                             <td>
-                                {% if member.profile != user.profile %}
-                                    <form action="{% url 'leagues:remove' league.id member.profile.user.username %}"
-                                          method="post">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger">Kick</button>
-                                    </form>
-                                {% endif %}
+                                <div class="btn-group">
+                                    {% if member.role == 'member' %}
+                                        <form class="mx-1"
+                                              action="{% url 'leagues:promote' league.id member.profile.user.username %}"
+                                              method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-primary">Promote</button>
+                                        </form>
+                                    {% elif member.role == 'admin' %}
+                                        <form class="mx-1"
+                                              action="{% url 'leagues:demote' league.id member.profile.user.username %}"
+                                              method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-warning">Demote</button>
+                                        </form>
+                                    {% endif %}
+                                    {% if member.profile != user.profile %}
+                                        <form class="mx-1"
+                                              action="{% url 'leagues:remove' league.id member.profile.user.username %}"
+                                              method="post">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger">Kick</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
                             </td>
                         {% endif %}
                     </tr>
