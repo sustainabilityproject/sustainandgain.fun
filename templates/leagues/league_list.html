@@ -34,7 +34,7 @@
             <h1>Invites</h1>
             <div class="row row-cols-1 overflow-auto" style="max-height: 15rem;">
                 {% for league in invited_leagues %}
-                    <div class="card" style="width: 18rem;">
+                    <div class="col card m-2" style="width: 18rem;">
                         <div class="card-body">
                             <h2 class="card-title">{{ league }}</h2>
                             <p class="card-text">{{ league.description }}</p>
@@ -54,7 +54,7 @@
         {% if leagues %}
             <div class="row row-cols-1 overflow-auto" style="max-height: 15rem;">
                 {% for league in leagues %}
-                    <div class="card" style="width: 18rem;">
+                    <div class="col card m-2" style="width: 18rem;">
                         <div class="card-body">
                             <h2 class="card-title">{{ league }}</h2>
                             <p class="card-text">{{ league.description }}</p>
