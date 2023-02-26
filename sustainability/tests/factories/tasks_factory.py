@@ -18,7 +18,7 @@ class TaskFactory(factory.django.DjangoModelFactory):
     title = "Test Task"
     description = "Details about the task"
     points = 10
-    task_category = factory.SubFactory(TaskCategoryFactory)
+    category = factory.SubFactory(TaskCategoryFactory)
 
 class TaskInstanceFactory(factory.django.DjangoModelFactory):
     class Meta:
