@@ -1,0 +1,29 @@
+<article class="col-6 mt-3">
+    <section class="d-flex justify-content-between px-2 py-1 border rounded">
+        <div class="d-flex flex-column">
+            <header>
+                <div>
+                    <h3 class="d-inline">
+                        <img src="{{ task.profile.image.url }}" alt="{{ task.profile.user.username }}'s profile picture"
+                             width="5%"/>
+                        {{ task.profile.user.username }}
+                    </h3>
+                </div>
+
+                <h2>{{ task.task.title }} <span class="badge text-bg-success fs-6">+{{ task.task.points }}</span></h2>
+                <p><i>{{ task.task.description }}</i></p>
+                <p class="text-muted">Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}</p>
+            </header>
+            <figure>
+                <img src="{{ task.photo.url }}" alt="{{ task.profile.user.username }}'s task photo" width="30%"/>
+                <figcaption>{{ task.profile.user.username }}'s photo</figcaption>
+            </figure>
+            <footer>
+                <p>{{ task.note }}</p>
+                <div class="d-flex justify-content-between">
+                    <span class="badge {{ task.status_colour }} fs-6">{{ task.status }}</span>
+                </div>
+            </footer>
+        </div>
+    </section>
+</article>
