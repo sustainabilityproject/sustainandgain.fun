@@ -9,6 +9,7 @@ django-bootstrap5 = "*"
 tzdata = "*"
 pillow = "*"
 mug-detect-autoencoder = "*"
+factory-boy = "*"
 
 [dev-packages]
 
