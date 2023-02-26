@@ -10,14 +10,13 @@
             <a href="{% url 'friends:list' %}">Friends</a>
 
             <h1>Feed of Completed Tasks</h1>
-            <ul>
-                {% for task in completed_tasks %}
-                    <li>{{ task }}</li>
-                {% empty %}
-                    <li>No completed tasks</li>
+            <div class="row">
+                {% for task_inst in completed_tasks %}
+                    {% include 'feed/_feed_task.html' with status=task_inst.status status_color=task_inst.status_colour username=task_inst.profile.user time_completed=task_inst.time_completed user_photo=task_inst.photo user_note=task_inst.note title=task_inst.task.title description=task_inst.task.description points=task_inst.task.points %}
                 {% endfor %}
-            </ul>
+            </div>
         </div>
+        <br />
         <p><a href="{% url 'logout' %}">Log Out</a></p>
     {% else %}
         <p>You are not logged in</p>

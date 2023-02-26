@@ -1,0 +1,26 @@
+<article class="col-6 mt-3">
+    <section class="d-flex justify-content-between px-2 py-1 border rounded">
+      <div class="d-flex flex-column">
+        <header>
+          <figure>
+            <img src="../media/profile_pics/default.jpg" alt="{{username}}'s profile picture" width="5%" style="display: inline-block; vertical-align: middle;" />
+            <h3 style="display: inline-block; vertical-align: middle;">{{ username }} </h3>
+          </figure>
+          
+          <h2>{{ title }} <span class="badge text-bg-success fs-6">+{{ points }}</span></h2>
+          <p><i>{{ description }}</i></p>
+          <time datetime="{{ time_completed }}">{{ time_completed }}</time>
+        </header>
+        <figure>
+          <img src="../media/{{user_photo}}" alt="{{username}} photo" width="30%" />
+          <figcaption>{{ username }}'s photo</figcaption>
+        </figure>
+        <footer>
+          <p>{{ user_note }}</p>
+          <div class="d-flex justify-content-between">
+            <span class="badge {{ status_color }} fs-6">{{ status }}</span>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </article>

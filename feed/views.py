@@ -9,6 +9,5 @@ class FeedView(ListView):
     model = TaskInstance
 
     def get_queryset(self):
-        tasks = TaskInstance.objects.filter(Q(status=TaskInstance.PENDING_APPROVAL) or Q(status=TaskInstance.COMPLETED))
-        print(tasks)
+        tasks = TaskInstance.objects.exclude(Q(status=TaskInstance.ACTIVE))
         return tasks
