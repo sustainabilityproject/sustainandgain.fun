@@ -8,7 +8,7 @@ Install pipenv
 pip install pipenv
 ```
 
-Rename `.env.example` to `.env`
+Set values in `.env`
 
 Enter virtual environment
 
