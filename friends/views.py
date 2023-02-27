@@ -5,10 +5,14 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import DetailView, ListView, DeleteView
+from django.views.generic import DetailView, ListView, DeleteView, FormView
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
 
 from accounts.models import User
 from friends.models import FriendRequest, Profile
+from friends.forms import UpdateProfileForm
 
 
 class ProfileView(LoginRequiredMixin, DetailView):
@@ -202,3 +206,25 @@ class DeclineFriendRequestView(LoginRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, 'Friend request declined.')
         return super().form_valid(form)
+
+
+class UpdateProfile(LoginRequiredMixin, FormView):
+
+    model = Profile
+
+    form_class = UpdateProfileForm
+    success_url = reverse_lazy("friends:profile")
+    template_name = 'friends/profile_update.html'
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Profile pic changed')
+        return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        form = UpdateProfileForm(request.POST,
+                                   request.FILES,
+                                   instance=request.user.profile)
+        
+        if form.is_valid():
+            form.save()
+            return redirect('friends:profile')
