@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ "master", "production" ]
+    branches: [ "master" ]
 
 jobs:
   deploy:
@@ -13,7 +13,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Push to dokku
+      - name: Deploy to production
         uses: dokku/github-action@master
         with:
           git_remote_url: 'ssh://dokku@on.chrlie.net:22/sustainability'
