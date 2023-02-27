@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Create League{% endblock %}
+
+{% block content %}
+    <div class="container">
+    <h1>Create League</h1>
+        <form action="{% url 'leagues:create' %}" method="post">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+             {% bootstrap_button button_type="submit" content="Create" %}
+        </form>
+    </div>
+{% endblock %}

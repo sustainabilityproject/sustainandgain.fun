@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Create League{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Update "{{ league }}"</h1>
+        <h2>Details</h2>
+        <div class="border border-dark rounded-3 p-3 mb-4">
+            <form action="{% url 'leagues:edit' league.id %}" method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% bootstrap_button button_type="submit" content="Update" %}
+            </form>
+        </div>
+        <div class="border border-5 border-danger rounded p-3 mb-4">
+            <h1>Danger Zone</h1>
+            <a href="{% url 'leagues:delete' league.id %}" class="btn btn-danger">Delete "{{ league }}"</a>
+        </div>
+    </div>
+{% endblock %}

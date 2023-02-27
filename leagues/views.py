@@ -3,10 +3,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 
 from friends.models import Profile
-from leagues.forms import InviteMemberForm
+from leagues.forms import InviteMemberForm, CreateLeagueForm, EditLeagueForm
 from leagues.models import League, LeagueMember
 
 
@@ -149,6 +149,45 @@ class LeaveLeagueView(LoginRequiredMixin, UpdateView):
             return redirect('leagues:detail', pk=league.pk)
 
 
+class CreateLeagueView(LoginRequiredMixin, CreateView):
+    """
+    Create a new league
+    """
+    model = League
+    form_class = CreateLeagueForm
+
+    def form_valid(self, form):
+        league = form.save()
+        member = LeagueMember.objects.create(league=league, profile=self.request.user.profile, role='admin',
+                                             status='joined')
+        member.save()
+        messages.success(self.request, f'You have created {league.name}')
+        return redirect('leagues:detail', pk=league.pk)
+
+
+# Admin views
+
+class EditLeagueView(LoginRequiredMixin, UpdateView):
+    """
+    If the user is an admin, they can update the league
+    """
+    model = League
+    form_class = EditLeagueForm
+    template_name = 'leagues/league_edit.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        # Check if the user is an admin of the league
+        if not LeagueMember.objects.filter(league=obj, profile=request.user.profile, role='admin').exists():
+            return redirect('leagues:detail', pk=obj.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        league = form.save()
+        messages.success(self.request, f'You have updated {league.name}')
+        return redirect('leagues:detail', pk=league.pk)
+
+
 class DeleteLeagueView(LoginRequiredMixin, DeleteView):
     """
     If the user is an admin, they can delete the league
@@ -251,3 +290,59 @@ class PendingMembersView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['pending_members'] = self.object.get_pending_members()
         return context
+
+
+class PromoteMemberView(LoginRequiredMixin, UpdateView):
+    """
+    If the user is an admin, they can promote a member to admin
+    """
+    model = League
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if not LeagueMember.objects.filter(league=obj, profile=request.user.profile, role='admin').exists():
+            return redirect('leagues:detail', pk=obj.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return redirect('leagues:detail', pk=self.get_object().pk)
+
+    def post(self, request, *args, **kwargs):
+        league = self.get_object()
+        member = get_object_or_404(LeagueMember, league=league, profile__user__username=kwargs['username'])
+        # Can't promote yourself
+        if member.profile == request.user.profile:
+            messages.error(request, 'You cannot promote yourself to admin.')
+            return redirect('leagues:detail', pk=league.pk)
+        member.role = 'admin'
+        member.save()
+        messages.success(request, f'{member.profile.user.username} has been promoted to admin in {league.name}')
+        return redirect('leagues:detail', pk=league.pk)
+
+
+class DemoteMemberView(LoginRequiredMixin, UpdateView):
+    """
+    If the user is an admin, they can demote a member from admin
+    """
+    model = League
+
+    def dispatch(self, request, *args, **kwargs):
+        obj = self.get_object()
+        if not LeagueMember.objects.filter(league=obj, profile=request.user.profile, role='admin').exists():
+            return redirect('leagues:detail', pk=obj.pk)
+        return super().dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return redirect('leagues:detail', pk=self.get_object().pk)
+
+    def post(self, request, *args, **kwargs):
+        league = self.get_object()
+        member = get_object_or_404(LeagueMember, league=league, profile__user__username=kwargs['username'])
+        # Can't demote yourself
+        if member.profile == request.user.profile:
+            messages.error(request, 'You cannot demote yourself from admin.')
+            return redirect('leagues:detail', pk=league.pk)
+        member.role = 'member'
+        member.save()
+        messages.success(request, f'{member.profile.user.username} has been demoted from admin in {league.name}')
+        return redirect('leagues:detail', pk=league.pk)

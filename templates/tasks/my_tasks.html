@@ -24,7 +24,7 @@
         <div class="active p-3 mt-3">
             <h1>Completed Tasks</h1>
             {% if completed_tasks or pending_tasks %}
-                <table class="table table-success w-50">
+                <table class="table table-dark w-50">
                     <thead>
                     <tr>
                         <th scope="col">Task</th>
@@ -34,10 +34,10 @@
                     </thead>
                     <tbody>
                     {% for task in completed_tasks %}
-                        <tr>
+                        <tr class="table-success">
                             <td>{{ task.task.title }}</td>
                             <td>+{{ task.task.points }}</td>
-                            <td>Complete</td>
+                            <td>Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}</td>
                         </tr>
                     {% endfor %}
                     {% for task in pending_tasks %}

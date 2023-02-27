@@ -2,10 +2,39 @@
 {% block content %}
     <div class="container">
         {% if user.is_authenticated %}
-            <h1>My Leagues</h1>
+            <div class="d-flex flex-row sm:flex-column justify-content-between my-2">
+                <h1>My Leagues</h1>
+                <div class="my-auto">
+                    <a href="{% url 'leagues:create' %}" class="btn btn-success">+ New League</a>
+                </div>
+            </div>
             {% if user_leagues %}
-                {% for league in user_leagues %}
-                    <div class="card" style="width: 18rem;">
+                <div class="row row-cols-1 overflow-auto" style="max-height: 15rem;">
+                    {% for league in user_leagues %}
+                        <div class="col card m-2" style="width: 18rem;">
+                            <div class="card-body">
+                                <h2 class="card-title">{{ league }}</h2>
+                                <p class="card-text">{{ league.description }}</p>
+                                <ul class="list-inline">
+                                    <li class="list-inline-item">{{ league.members.count }}
+                                        member{{ league.members.count|pluralize }}</li>
+                                    <li class="list-inline-item"><a href="{% url 'leagues:detail' league.id %}"
+                                                                    class="btn btn-primary">View</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>You are not a member of any leagues</p>
+            {% endif %}
+        {% endif %}
+        <hr>
+        {% if invited_leagues %}
+            <h1>Invites</h1>
+            <div class="row row-cols-1 overflow-auto" style="max-height: 15rem;">
+                {% for league in invited_leagues %}
+                    <div class="col card m-2" style="width: 18rem;">
                         <div class="card-body">
                             <h2 class="card-title">{{ league }}</h2>
                             <p class="card-text">{{ league.description }}</p>
@@ -18,45 +47,27 @@
                         </div>
                     </div>
                 {% endfor %}
-            {% else %}
-                <p>You are not a member of any leagues</p>
-            {% endif %}
-        {% endif %}
-        <hr>
-        {% if invited_leagues %}
-            <h1>Invites</h1>
-            {% for league in invited_leagues %}
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h2 class="card-title">{{ league }}</h2>
-                        <p class="card-text">{{ league.description }}</p>
-                        <ul class="list-inline">
-                            <li class="list-inline-item">{{ league.members.count }}
-                                member{{ league.members.count|pluralize }}</li>
-                            <li class="list-inline-item"><a href="{% url 'leagues:detail' league.id %}"
-                                                            class="btn btn-primary">View</a></li>
-                        </ul>
-                    </div>
-                </div>
-            {% endfor %}
+            </div>
             <hr>
         {% endif %}
         <h1>Public Leagues</h1>
         {% if leagues %}
-            {% for league in leagues %}
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h2 class="card-title">{{ league }}</h2>
-                        <p class="card-text">{{ league.description }}</p>
-                        <ul class="list-inline">
-                            <li class="list-inline-item">{{ league.members.count }}
-                                member{{ league.members.count|pluralize }}</li>
-                            <li class="list-inline-item"><a href="{% url 'leagues:detail' league.id %}"
-                                                            class="btn btn-primary">View</a></li>
-                        </ul>
+            <div class="row row-cols-1 overflow-auto" style="max-height: 15rem;">
+                {% for league in leagues %}
+                    <div class="col card m-2" style="width: 18rem;">
+                        <div class="card-body">
+                            <h2 class="card-title">{{ league }}</h2>
+                            <p class="card-text">{{ league.description }}</p>
+                            <ul class="list-inline">
+                                <li class="list-inline-item">{{ league.members.count }}
+                                    member{{ league.members.count|pluralize }}</li>
+                                <li class="list-inline-item"><a href="{% url 'leagues:detail' league.id %}"
+                                                                class="btn btn-primary">View</a></li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         {% else %}
             <p>No public leagues available</p>
         {% endif %}
