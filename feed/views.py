@@ -23,6 +23,17 @@ class FeedView(ListView):
                 task.save()
         return tasks
     
+class ReportedView(ListView):
+    template_name = 'feed/reported_tasks.html'
+    context_object_name = 'reported_tasks'
+    model = TaskInstance
+
+    def get_queryset(self):
+        tasks = TaskInstance.objects.all()
+        tasks = [task for task in tasks if task.reports.count() > 0]
+
+        return tasks
+    
 class HomeView(TemplateView):
     template_name = "home.html"
 
@@ -45,8 +56,8 @@ class LikeView(TemplateView):
         task.save()
         messages.success(request, 'You liked this post')
 
-        # If the task has 3 more likes than reports, it is approved
-        if task.likes.count() - task.reports.count() >= 3:
+        # If the task gets 3 likes, it is approved
+        if task.likes.count() >= 3:
             task.status = TaskInstance.COMPLETED
             task.save()
 
@@ -63,5 +74,33 @@ class ReportView(TemplateView):
         task = get_object_or_404(TaskInstance, pk=pk)
         task.reports.add(request.user.profile)
         task.save()
-        messages.success(request, 'You reported this post. An admin will review it shortly.')
+        if request.user.is_staff:
+            task.delete()
+            messages.success(request, "You deleted this post.")
+        else:
+            messages.success(request, "You reported this post. An admin will review it shortly.")
         return redirect('feed:feed')
+    
+
+class DeleteView(TemplateView):
+
+    def get(self, request, pk):
+        return redirect('feed:reported')
+
+    def post(self, request, pk):
+        task = get_object_or_404(TaskInstance, pk=pk)
+        task.delete()
+        messages.success(request, 'You deleted this post.')
+        return redirect('feed:reported')
+
+class RestoreView(TemplateView):
+
+    def get(self, request, pk):
+        return redirect('feed:reported')
+
+    def post(self, request, pk):
+        task = get_object_or_404(TaskInstance, pk=pk)
+        task.reports.clear()
+        task.save()
+        messages.success(request, 'You restored this post.')
+        return redirect('feed:reported')

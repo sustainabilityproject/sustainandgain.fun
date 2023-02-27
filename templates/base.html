@@ -36,6 +36,11 @@
                         <li class="nav-item">
                             <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends</a>
                         </li>
+                        {% if user.is_staff %}
+                            <li class="nav-item">
+                                <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                     <li class="nav-item">
                         <a class="nav-item nav-link" href="{% url 'leagues:list' %}">Leagues</a>
