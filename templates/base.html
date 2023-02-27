@@ -38,7 +38,8 @@
                         </li>
                         {% if user.is_staff %}
                             <li class="nav-item">
-                                <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks</a>
+                                {% load poll_extras %}
+                                <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks ({% get_reported_count %})</a>
                             </li>
                         {% endif %}
                     {% endif %}
