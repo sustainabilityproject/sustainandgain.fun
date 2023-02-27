@@ -2,6 +2,8 @@
 
 import tasks.models
 import factory
+from .friends_factory import ProfileFactory
+from django.utils import timezone
 
 class TaskCategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
@@ -13,7 +15,6 @@ class TaskCategoryFactory(factory.django.DjangoModelFactory):
 class TaskFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = tasks.models.Task
-        # django_get_or_create = ('title',)
 
     title = "Test Task"
     description = "Details about the task"
@@ -25,5 +26,7 @@ class TaskInstanceFactory(factory.django.DjangoModelFactory):
         model = tasks.models.TaskInstance
 
     task = factory.SubFactory(TaskFactory)
+    profile = factory.SubFactory(ProfileFactory)
+    time_accepted = timezone.now()
 
 
