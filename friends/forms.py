@@ -1,8 +1,18 @@
 from django import forms
 from .models import Profile
 
-class UpdateProfileForm(forms.ModelForm):
+class UpdateProfileImage(forms.ModelForm):
+
+    type = 'profile'
 
     class Meta:
         model = Profile
-        fields = ("image","bio")
+        fields = ("image",)
+
+class UpdateProfileBio(forms.ModelForm):
+
+    type = 'bio'
+
+    class Meta:
+        model = Profile
+        fields = ("bio",)

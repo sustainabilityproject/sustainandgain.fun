@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect
 
 from accounts.models import User
 from friends.models import FriendRequest, Profile
-from friends.forms import UpdateProfileForm
+from friends.forms import UpdateProfileImage, UpdateProfileBio
 
 
 class ProfileView(LoginRequiredMixin, DetailView):
@@ -208,11 +208,11 @@ class DeclineFriendRequestView(LoginRequiredMixin, DeleteView):
         return super().form_valid(form)
 
 
-class UpdateProfile(LoginRequiredMixin, FormView):
+class UpdateProfileImageView(LoginRequiredMixin, FormView):
 
     model = Profile
 
-    form_class = UpdateProfileForm
+    form_class = UpdateProfileImage
     success_url = reverse_lazy("friends:profile")
     template_name = 'friends/profile_update.html'
     
@@ -221,10 +221,40 @@ class UpdateProfile(LoginRequiredMixin, FormView):
         return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
-        form = UpdateProfileForm(request.POST,
+        form = UpdateProfileImage(request.POST,
                                    request.FILES,
                                    instance=request.user.profile)
         
         if form.is_valid():
             form.save()
             return redirect('friends:profile')
+        
+class UpdateProfileBioView(LoginRequiredMixin, FormView):
+
+    model = Profile
+
+    form_class = UpdateProfileBio
+    success_url = reverse_lazy("friends:profile")
+    template_name = 'friends/profile_update.html'
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Bio has been updated')
+        return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        form = UpdateProfileBio(request.POST,
+                                   request.FILES,
+                                   instance=request.user.profile)
+        
+        
+        if form.is_valid():
+            request.user.profile.image
+            form.save()
+            return redirect('friends:profile')
+        
+class DeleteProfileImageView(LoginRequiredMixin, FormView):
+    
+    
+    def post(pk):
+        image = Profile.objects.filter(id=pk).image
+        
