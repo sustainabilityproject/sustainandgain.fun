@@ -1,9 +1,7 @@
 from django.test import TestCase
-from ..factories.tasks_factory import TaskCategoryFactory, TaskFactory, TaskInstanceFactory
-from ..factories.friends_factory import ProfileFactory
+from tasks.tests.factories import TaskFactory, TaskInstanceFactory
+from friends.tests.factories import ProfileFactory
 from tasks.models import *
-from friends.models import Profile
-from django.contrib.auth.models import User
 from datetime import timedelta
 
 

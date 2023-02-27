@@ -2,7 +2,7 @@
 
 import tasks.models
 import factory
-from .friends_factory import ProfileFactory
+from friends.tests.factories import ProfileFactory
 from django.utils import timezone
 
 class TaskCategoryFactory(factory.django.DjangoModelFactory):
