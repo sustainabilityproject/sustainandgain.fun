@@ -4,11 +4,7 @@
 
 {% block content %}
     {% if user.is_authenticated %}
-        Logged in as {{ user.username }}
         <div>
-            <a href="{% url 'friends:profile' %}">Profile</a>
-            <a href="{% url 'friends:list' %}">Friends</a>
-
             <h1>Feed of Completed Tasks</h1>
             <div class="row">
                 {% for task in completed_tasks %}

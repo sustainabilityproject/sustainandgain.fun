@@ -91,6 +91,12 @@ class TaskInstance(models.Model):
     # The profile of the user who has accepted the task
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, default=None)
 
+    # The profiles of the users who have liked the task, users can only like one post once
+    likes = models.ManyToManyField(Profile, related_name='likes', blank=True)
+
+    # The profiles of the users who have reported the task, users can only report one post once
+    reports = models.ManyToManyField(Profile, related_name='reports', blank=True)
+
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
     PENDING_APPROVAL = 'PENDING'
