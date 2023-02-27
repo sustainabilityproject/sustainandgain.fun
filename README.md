@@ -8,6 +8,8 @@ Install pipenv
 pip install pipenv
 ```
 
+Rename `.env.example` to `.env`
+
 Enter virtual environment
 
 ```bash
