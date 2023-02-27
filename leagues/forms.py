@@ -46,6 +46,16 @@ class EditLeagueForm(forms.ModelForm):
             raise forms.ValidationError('A league with that name already exists')
         return name
 
+    def clean(self):
+        """
+        If the league is private, it must be invite-only.
+        """
+        cleaned_data = super().clean()
+        visibility = cleaned_data.get('visibility')
+        invite_only = cleaned_data.get('invite_only')
+        if visibility == 'private' and not invite_only:
+            raise forms.ValidationError('Private leagues must be invite only')
+        return cleaned_data
 
 class InviteMemberForm(forms.ModelForm):
     """
