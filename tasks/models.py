@@ -144,11 +144,6 @@ class TaskInstance(models.Model):
 
         return self
 
-    # When the task has been validated as completed (e.g. by a Gamekeeper, or automatically for simple tasks)
-    def validate_task(self):
-        # TODO add more complex validation from Gamekeepers
-        self.status = self.COMPLETED
-
     # When the user reports themselves as having completed a task
     def report_task_complete(self):
         self.status = self.PENDING_APPROVAL

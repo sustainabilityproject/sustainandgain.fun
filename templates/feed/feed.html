@@ -7,7 +7,7 @@
         <div>
             <h1>Feed of Completed Tasks</h1>
             <div class="row">
-                {% for task in completed_tasks %}
+                {% for task in friend_tasks %}
                     {% include 'feed/_feed_task.html' with task=task %}
                 {% endfor %}
             </div>
