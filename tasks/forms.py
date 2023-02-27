@@ -33,7 +33,7 @@ class CompleteTaskForm(forms.ModelForm):
         if commit:
             task_instance.save()
 
-        if "coffee" in task_instance.task.title.lower():
+        if "coffee" in task_instance.task.title.lower() or "caffeine" in task_instance.task.title.lower():
             bin_path = os.path.join(BASE_DIR, "media", "bin", task_instance.photo.name[12:])
             with Image.open(os.path.join(BASE_DIR, "media", task_instance.photo.name), 'r') as img:
                 # get dimensions of image
