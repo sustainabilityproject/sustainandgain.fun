@@ -26,6 +26,7 @@ class MyTasksView(LoginRequiredMixin, ListView):
         context['active_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.ACTIVE]
         context['completed_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.COMPLETED]
         context['pending_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.PENDING_APPROVAL]
+        context['friends'] = self.request.user.profile.get_friends()
         return context
 
 

@@ -30,6 +30,7 @@
                         <th scope="col">Task</th>
                         <th scope="col">Points</th>
                         <th scope="col">Status</th>
+                        <th scope="col">Tag a friend</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -38,6 +39,21 @@
                             <td>{{ task.task.title }}</td>
                             <td>+{{ task.task.points }}</td>
                             <td>Complete</td>
+                            <td>
+                                {% if friends %}
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <select name="username">
+                                            {% for friend in friends %}
+                                                <option value="{{friend.user.username}}">{{friend.user.username}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button type="submit">Tag</button>
+                                    </form>
+                                {% else %}
+                                    <p>You have no friends yet, try making a request from your profile</p>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     {% for task in pending_tasks %}
@@ -47,6 +63,7 @@
                             <td>
                                 <a href="{% url 'tasks:complete' task.id %}">Pending Approval</a>
                             </td>
+                            <td>Once this task is approved you can tag a friend</td>
                         </tr>
                     {% endfor %}
                     </tbody>
