@@ -21,8 +21,12 @@ class UpdateProfileForm(forms.ModelForm):
 
     def save(self, commit=True):
         profile = super().save(commit=False)
-        if self.cleaned_data['image'] != profile.image:
+        current_image = Profile.objects.get(user=self.instance.user).image
+        if self.cleaned_data['image'] != current_image:
+            current_image.delete()
             profile.image.name = f'{profile.user.username}{os.path.splitext(self.cleaned_data["image"].name)[1]}'
+        else:
+            profile.image = current_image
 
         profile.user.first_name = self.cleaned_data['first_name']
         profile.user.last_name = self.cleaned_data['last_name']
