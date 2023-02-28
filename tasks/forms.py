@@ -4,6 +4,7 @@ import uuid
 import autoencoder
 from PIL import Image, ImageOps
 from django import forms
+from geopy import Nominatim
 
 from sustainability.settings import BASE_DIR
 from tasks.models import TaskInstance
@@ -21,6 +22,8 @@ class CompleteTaskForm(forms.ModelForm):
 
     photo = forms.ImageField(required=True, help_text="Required.", label="Photo of completed task")
     note = forms.CharField(required=False, help_text="Optional.", label="Extra notes")
+    latitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
+    longitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
 
     def save(self, commit=True):
         """
@@ -30,6 +33,16 @@ class CompleteTaskForm(forms.ModelForm):
         # Rename the photo to a random UUID to avoid collisions
         task_instance.photo.name = uuid.uuid4().hex + os.path.splitext(task_instance.photo.name)[1]
         task_instance.report_task_complete()
+
+        # Get the address from the latitude and longitude
+        longitude = self.cleaned_data.get('longitude')
+        latitude = self.cleaned_data.get('latitude')
+        geolocator = Nominatim(user_agent="admin@sustainandgain.fun")
+        if longitude is not None and latitude is not None:
+            location = geolocator.reverse(f"{latitude}, {longitude}")
+            if location.address is not None:
+                task_instance.location = location.address
+
         if commit:
             task_instance.save()
 

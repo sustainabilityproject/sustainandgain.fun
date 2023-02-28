@@ -81,15 +81,6 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
         # Redirect if the task is already completed
         if task.status == TaskInstance.COMPLETED:
             return redirect('my_tasks')
-        
-        longitude = request.POST.get('longitude')
-        latitude = request.POST.get('latitude')
-        geolocator = Nominatim(user_agent="admin@sustainandgain.fun")
-        if longitude is not None and latitude is not None:
-            location = geolocator.reverse(f"{latitude}, {longitude}")
-            if location.address is not None:
-                task.location = location.address
-                task.save()
         return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
