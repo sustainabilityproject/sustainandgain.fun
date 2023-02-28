@@ -250,11 +250,11 @@ class UpdateProfileBioView(LoginRequiredMixin, FormView):
         if form.is_valid():
             request.user.profile.image
             form.save()
+            messages.success(self.request, 'Bio updated.')
             return redirect('friends:profile')
-        
-class DeleteProfileImageView(LoginRequiredMixin, FormView):
-    
-    
-    def post(pk):
-        image = Profile.objects.filter(id=pk).image
+        else:
+            request.user.profile.bio = ''
+            messages.error(self.request, 'Bio failed to update.')
+            return redirect('friends:profile')
+
         
