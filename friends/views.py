@@ -2,17 +2,15 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse_lazy
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
+from django.urls import reverse_lazy, reverse
 from django.views import View
-from django.views.generic import DetailView, ListView, DeleteView, FormView
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.views.generic import DetailView, ListView, DeleteView, UpdateView
 
 from accounts.models import User
+from friends.forms import UpdateProfileForm
 from friends.models import FriendRequest, Profile
-from friends.forms import UpdateProfileImage, UpdateProfileBio
 from tasks.models import TaskInstance
 
 
@@ -24,31 +22,10 @@ class ProfileView(LoginRequiredMixin, DetailView):
     template_name = 'friends/profile.html'
     context_object_name = 'profile'
 
-    """
-    def get_object(self, queryset=None):
-    """
-        # Returns the current user
-    """
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        # Get the profile of the current user or create one if it doesn't exist
-        obj= Profile.objects.get(user=self.request.user)
-        return obj
-    
-    def get_queryset(self):
-        """
-        #Returns the current user's friends
-    """
-        # List of user's friends where the request is accepted
-        friends = self.request.user.profile.get_friends()
-
-        return friends
-    """
     def get_context_data(self, **kwargs):
-        
+
         context = super().get_context_data(**kwargs)
-        # defines profile depending on the existance of user_id and its value relative to the current logged in user
+        # defines profile depending on the existence of user_id and its value relative to the current logged in user
         try:
             user_id = self.kwargs['pk']
 
@@ -63,7 +40,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
         except KeyError:
             profile = self.request.user.profile
-        
+
         # Gets friends of profile
         friends = profile.get_friends()
 
@@ -75,7 +52,6 @@ class ProfileView(LoginRequiredMixin, DetailView):
         context['points'] = sum([task.task.points for task in tasks if task.status == TaskInstance.COMPLETED])
 
         return context
-
 
 
 class FriendsListView(LoginRequiredMixin, ListView):
@@ -251,53 +227,23 @@ class DeclineFriendRequestView(LoginRequiredMixin, DeleteView):
         return super().form_valid(form)
 
 
-class UpdateProfileImageView(LoginRequiredMixin, FormView):
+class UpdateProfileView(LoginRequiredMixin, UpdateView):
     """
-    View to update profile picture
+    View to update a user's profile
     """
+    model = Profile
+    form_class = UpdateProfileForm
+    template_name = 'friends/update_profile.html'
 
-    form_class = UpdateProfileImage
-    template_name = 'friends/profile_update.html'
-    
+    def get_success_url(self):
+        return reverse('friends:profile', kwargs={'pk': self.request.user.profile.id})
+
+    def get_object(self, queryset=None):
+        """
+        Returns the profile of the current user
+        """
+        return self.request.user.profile
+
     def form_valid(self, form):
-        messages.success(self.request, 'Profile pic changed')
+        messages.success(self.request, 'Profile updated!')
         return super().form_valid(form)
-
-    def post(self, request, *args, **kwargs):
-        form = UpdateProfileImage(request.POST,
-                                   request.FILES,
-                                   instance=request.user.profile)
-        
-        if form.is_valid():
-            form.save()
-            messages.success(self.request, 'Profile picture changed')
-            return redirect('friends:profile',pk=request.user.id)
-        else:
-            messages.error(self.request, 'Failed to change profile picture')
-            return redirect('friends:profile_update_image')
-        
-
-class UpdateProfileBioView(LoginRequiredMixin, FormView):
-    """
-    View to update profile bio
-    """
-
-    form_class = UpdateProfileBio
-    template_name = 'friends/profile_update.html'
-    
-    def post(self, request, *args, **kwargs):
-        form = UpdateProfileBio(request.POST,
-                                   request.FILES,
-                                   instance=request.user.profile)
-        
-        if form.is_valid():
-            request.user.profile.image
-            form.save()
-            messages.success(self.request, 'Bio updated.')
-            return redirect('friends:profile',pk=request.user.id)
-        else:
-            messages.error(self.request, 'Bio update failed.')
-            return redirect('friends:profile_update_bio')
-            
-
-        
