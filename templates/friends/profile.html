@@ -4,7 +4,7 @@
         <div>
             <img class="rounded-circle account-img" src="{{ profile.image.url }}"style="max-width:5%;max-height: 5%;">
             {% if not other_user %}
-            <a href="{% url 'friends:profile_update_image' %}">change</a>
+            <a href="{% url 'friends:update_profile' %}">change</a>
             {% endif %}
             <div>
                 <h2>{{ profile }}</h2>
@@ -12,15 +12,15 @@
         </div>
         <hr>
         <h2>About</h2>
-
         <p>{{ profile.bio }}</p>
         {% if not other_user %}
             {% if profile.bio != '' %}
-                <a href="{% url 'friends:profile_update_bio' %}">change</a>
+                <a href="{% url 'friends:update_profile' %}">change</a>
             {% else %}
-                <a href="{% url 'friends:profile_update_bio' %}">add</a>
+                <a href="{% url 'friends:update_profile' %}">add</a>
             {% endif %}
         {% endif %}
+
         <hr>
         <h2>Friends</h2>
         {% if friends %}
