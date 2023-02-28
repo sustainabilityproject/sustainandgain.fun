@@ -39,3 +39,8 @@ python manage.py createsuperuser
 ```bash
 python manage.py runserver 8000
 ```
+
+## Test
+```bash
+python manage.py test
+```
