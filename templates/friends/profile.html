@@ -3,30 +3,42 @@
     <div>
         <div>
             <img class="rounded-circle account-img" src="{{ profile.image.url }}"style="max-width:5%;max-height: 5%;">
+            {% if not other_user %}
             <a href="{% url 'friends:profile_update_image' %}">change</a>
+            {% endif %}
             <div>
-                <h2>{{ profile.user.username }}</h2>
+                <h2>{{ profile }}</h2>
             </div>
         </div>
         <hr>
         <h2>About</h2>
-        <p>{{ user.profile.bio }}</p>
-        {% if user.profile.bio != '' %}
-            <a href="{% url 'friends:profile_update_bio' %}">change</a>
-        {% else %}
-            <a href="{% url 'friends:profile_update_bio' %}">add</a>
+        <p>{{ profile.bio }}</p>
+        {% if not other_user %}
+            {% if profile.bio != '' %}
+                <a href="{% url 'friends:profile_update_bio' %}">change</a>
+            {% else %}
+                <a href="{% url 'friends:profile_update_bio' %}">add</a>
+            {% endif %}
         {% endif %}
         <hr>
         <h2>Friends</h2>
         {% if friends %}
             <ul>
                 {% for friend in friends %}
-                    <li>{{ friend.user.username }}</li>
+                    <li><a href="{% url 'friends:profile' friend.id %}">{{ friend }}</a></li>
                 {% endfor %}
             </ul>
         {% else %}
             <p>You have no friends.</p>
         {% endif %}
+        {% if not other_user %}
         <a href="{% url 'friends:list' %}">View Friends Page</a>
+        {% endif %}
+        <hr>
+        <h2>Points</h2>
+        <p>{{ points }}</p>
+        {% if not other_user %}
+        <a href="{% url 'tasks:available' %}">Get more :)</a>
+        {% endif %}
     </div>
 {% endblock content %}
