@@ -3,14 +3,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
-from django.views.generic import TemplateView
 
 from feed.views import HomeView
 
-urlpatterns = [
-    # Admin routes
-    path('admin/', admin.site.urls),
+admin.site.site_header = 'Gamekeeper Area'
+admin.site.site_title = 'Gamekeeper Area'
+admin.site.index_title = 'Gamekeeper Area'
 
+urlpatterns = [
     # Account routes
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
@@ -29,6 +29,10 @@ urlpatterns = [
 
     # Home route
     path('', HomeView.as_view(), name='home'),
+
+    # Gamekeeper routes
+    path('gamekeeper/', admin.site.urls),
+
 ]
 
 if settings.DEBUG:
