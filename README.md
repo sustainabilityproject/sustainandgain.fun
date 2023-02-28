@@ -8,6 +8,8 @@ Install pipenv
 pip install pipenv
 ```
 
+Set values in `.env`
+
 Enter virtual environment
 
 ```bash
@@ -36,4 +38,9 @@ python manage.py createsuperuser
 
 ```bash
 python manage.py runserver 8000
+```
+
+## Test
+```bash
+python manage.py test
 ```

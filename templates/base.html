@@ -11,64 +11,18 @@
     <title>{% block title %}Sustainability Project{% endblock %}</title>
 </head>
 <body>
+
 <header class="site-header">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home' %}">Sustain and Gain</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                Tasks
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{% url 'tasks:list' %}">My Tasks</a></li>
-                                <li><a class="dropdown-item" href="{% url 'tasks:available' %}">Available Tasks</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends</a>
-                        </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-item nav-link" href="{% url 'leagues:list' %}">Leagues</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav me-right mb-2 mb-lg-0">
-                    {% if user.is_authenticated %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'friends:profile' %}">{{ user.username }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-                        </li>
-                    {% else %}
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}"> Login </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'accounts:register' %}"> Register </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
+    {% include "_navbar.html" %}
 </header>
+
 <main role="main" class="container-fluid">
-        <div class="position-absolute bottom-0">
-            {% bootstrap_messages %}
-        </div>
-        <div class="w-100">
-            {% block content %}{% endblock %}
-        </div>
+    <div class="position-fixed bottom-0">
+        {% bootstrap_messages %}
+    </div>
+    <div class="w-100">
+        {% block content %}{% endblock %}
+    </div>
 </main>
 
 </body>
