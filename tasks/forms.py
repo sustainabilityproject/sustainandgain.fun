@@ -30,8 +30,13 @@ class CompleteTaskForm(forms.ModelForm):
         Mark the task as Pending Approval and save the photo with a random UUID filename.
         """
         task_instance = super().save(commit=False)
-        # Rename the photo to a random UUID to avoid collisions
-        task_instance.photo.name = uuid.uuid4().hex + os.path.splitext(task_instance.photo.name)[1]
+
+        current_photo = TaskInstance.objects.get(pk=task_instance.pk).photo
+        if current_photo.name != self.instance.photo.name:
+            # Rename the photo to a random UUID to avoid collisions
+            task_instance.photo.name = uuid.uuid4().hex + os.path.splitext(task_instance.photo.name)[1]
+        else:
+            task_instance.photo.name = self.instance.photo.name
         task_instance.report_task_complete()
 
         # Get the address from the latitude and longitude
