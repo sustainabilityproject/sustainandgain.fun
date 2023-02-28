@@ -16,7 +16,7 @@ from friends.forms import UpdateProfileImage, UpdateProfileBio
 from tasks.models import TaskInstance
 
 
-class ProfileView(LoginRequiredMixin, ListView):
+class ProfileView(LoginRequiredMixin, DetailView):
     """
     View to display the current user's profile
     """
@@ -46,14 +46,11 @@ class ProfileView(LoginRequiredMixin, ListView):
         return friends
     """
     def get_context_data(self, **kwargs):
-        """
-        Adds friend requests to context
-        """
-
+        
         context = super().get_context_data(**kwargs)
         # defines profile depending on the existance of user_id and its value relative to the current logged in user
         try:
-            user_id = self.kwargs['user_id']
+            user_id = self.kwargs['pk']
 
             if user_id != self.request.user.id:
                 profile = Profile.objects.filter(id=user_id).first()
@@ -260,7 +257,6 @@ class UpdateProfileImageView(LoginRequiredMixin, FormView):
     """
 
     form_class = UpdateProfileImage
-    success_url = reverse_lazy("friends:profile")
     template_name = 'friends/profile_update.html'
     
     def form_valid(self, form):
@@ -275,7 +271,7 @@ class UpdateProfileImageView(LoginRequiredMixin, FormView):
         if form.is_valid():
             form.save()
             messages.success(self.request, 'Profile picture changed')
-            return redirect('friends:profile')
+            return redirect('friends:profile',pk=request.user.id)
         else:
             messages.error(self.request, 'Failed to change profile picture')
             return redirect('friends:profile_update_image')
@@ -287,7 +283,6 @@ class UpdateProfileBioView(LoginRequiredMixin, FormView):
     """
 
     form_class = UpdateProfileBio
-    success_url = reverse_lazy("friends:profile")
     template_name = 'friends/profile_update.html'
     
     def post(self, request, *args, **kwargs):
@@ -299,7 +294,7 @@ class UpdateProfileBioView(LoginRequiredMixin, FormView):
             request.user.profile.image
             form.save()
             messages.success(self.request, 'Bio updated.')
-            return redirect('friends:profile')
+            return redirect('friends:profile',pk=request.user.id)
         else:
             messages.error(self.request, 'Bio update failed.')
             return redirect('friends:profile_update_bio')

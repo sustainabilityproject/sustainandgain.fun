@@ -25,11 +25,7 @@
         {% if friends %}
             <ul>
                 {% for friend in friends %}
-                    {% if friend.id != user.id%}
-                        <li><a href="{% url 'friends:profile_of_user' friend.id %}">{{ friend }}</a></li>
-                    {% else %}
-                        <li><a href="{% url 'friends:profile' %}">{{ friend }}</a></li>
-                    {% endif %}
+                    <li><a href="{% url 'friends:profile' friend.id %}">{{ friend }}</a></li>
                 {% endfor %}
             </ul>
         {% else %}

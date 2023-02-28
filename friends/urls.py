@@ -8,7 +8,6 @@ from friends.views import ProfileView, \
 app_name = "friends"
 urlpatterns = [
     path('', FriendsListView.as_view(), name='list'),
-    path('profile/', ProfileView.as_view(), name='profile'),
     path('add/', AddFriendView.as_view(), name='add'),
     path('remove/<str:username>/', RemoveFriendView.as_view(), name='remove'),
     path('accept/<int:request_id>/', AcceptFriendRequestView.as_view(), name='accept_request'),
@@ -16,5 +15,5 @@ urlpatterns = [
     path('cancel/<int:friend_request_id>/', CancelFriendRequestView.as_view(), name='cancel_request'),
     path('profile_update_image/', UpdateProfileImageView.as_view(), name='profile_update_image'),
     path('profile_update_bio/', UpdateProfileBioView.as_view(), name='profile_update_bio'),
-    path('profile/<int:user_id>/', ProfileView.as_view(), name='profile_of_user'),
+    path('profile/<int:pk>/', ProfileView.as_view(), name='profile'),
 ]
