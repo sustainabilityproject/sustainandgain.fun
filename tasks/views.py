@@ -9,8 +9,6 @@ from django.views.generic import TemplateView, ListView, UpdateView
 from .forms import CompleteTaskForm
 from .models import *
 
-from geopy.geocoders import Nominatim
-
 
 class MyTasksView(LoginRequiredMixin, ListView):
     """
