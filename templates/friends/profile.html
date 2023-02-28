@@ -2,11 +2,20 @@
 {% block content %}
     <div>
         <div>
-            <img src="{{ profile.image.url }}" style="max-width:5%;max-height: 5%;">
+            <img class="rounded-circle account-img" src="{{ profile.image.url }}"style="max-width:5%;max-height: 5%;">
+            <a href="{% url 'friends:profile_update_image' %}">change</a>
             <div>
                 <h2>{{ profile.user.username }}</h2>
             </div>
         </div>
+        <hr>
+        <h2>About</h2>
+        <p>{{ user.profile.bio }}</p>
+        {% if user.profile.bio != '' %}
+            <a href="{% url 'friends:profile_update_bio' %}">change</a>
+        {% else %}
+            <a href="{% url 'friends:profile_update_bio' %}">add</a>
+        {% endif %}
         <hr>
         <h2>Friends</h2>
         {% if friends %}

@@ -5,6 +5,8 @@
     {{ title }} | {{ site_title }}
 {% endblock %}
 
+{% block dark-mode-vars %}{% endblock %}
+
 {% block extrastyle %}{{ block.super }}
     {% bootstrap_css %}
     {% bootstrap_javascript %}
