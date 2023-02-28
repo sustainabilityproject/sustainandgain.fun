@@ -1,0 +1,63 @@
+{% extends 'admin/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+    {{ title }} | {{ site_title }}
+{% endblock %}
+
+{% block extrastyle %}{{ block.super }}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <style>
+        :root {
+            --primary: #003c3c;
+            --secondary: #00c896;
+            --link-fg: #00c896;
+            --link-selected-fg: #003c3c;
+            --link-hover-fg: #00c896;
+        }
+
+        * {
+            box-sizing: unset;
+        }
+
+        div.module caption {
+            caption-side: top !important;
+        }
+
+        .collapse {
+            display: block !important;
+        }
+
+        .nav-link {
+            font-size: 1rem;
+        }
+
+        .navbar-brand {
+            color: #000000 !important;
+        }
+
+        header ul > li {
+            list-style-type: none;
+        }
+
+        header a {
+            color: #6c757d !important;
+        }
+
+        header a:hover {
+            text-decoration: none;
+        }
+
+        header a:focus {
+            text-decoration: none;
+        }
+    </style>
+{% endblock %}
+
+
+{% block header %}
+    <header class="site-header">
+        {% include '_navbar.html' %}
+    </header>
+{% endblock %}
