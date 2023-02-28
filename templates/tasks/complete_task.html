@@ -16,6 +16,19 @@
             {% endif %}
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+                <script>
+                    // Get the user's location using the Geolocation API
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        var latitude = position.coords.latitude;
+                        var longitude = position.coords.longitude;
+                    
+                        // Set the values of the hidden input fields
+                        document.getElementById("latitude").value = latitude;
+                        document.getElementById("longitude").value = longitude;
+                    });
+                </script>
                 {% bootstrap_form form %}
                 {% bootstrap_button button_type="submit" content="Complete" %}
             </form>

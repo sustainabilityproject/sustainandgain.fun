@@ -17,6 +17,9 @@
                 <h2>{{ task.task.title }} <span class="badge text-bg-success fs-6">+{{ task.task.points }}</span></h2>
                 <p><i>{{ task.task.description }}</i></p>
                 <p class="text-muted">Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}</p>
+                {% if task.location %}
+                    <p class="text-muted">{{ task.location }}</p>
+                {% endif %}
             </header>
             <figure>
                 <img src="{{ task.photo.url }}" alt="{{ task.profile.user.username }}'s task photo" width="30%" />

@@ -97,6 +97,9 @@ class TaskInstance(models.Model):
     # The profiles of the users who have reported the task, users can only report one post once
     reports = models.ManyToManyField(Profile, related_name='reports', blank=True)
 
+    # The location of where the task was completed
+    location = models.CharField(max_length=500, null=True, blank=True)
+
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
     PENDING_APPROVAL = 'PENDING'
