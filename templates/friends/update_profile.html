@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+    Update Profile
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Update Profile</h1>
+        <form action="{% url 'friends:update_profile' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+{% endblock %}
