@@ -13,9 +13,10 @@ from django.shortcuts import render, redirect
 from accounts.models import User
 from friends.models import FriendRequest, Profile
 from friends.forms import UpdateProfileImage, UpdateProfileBio
+from tasks.models import TaskInstance
 
 
-class ProfileView(LoginRequiredMixin, DetailView):
+class ProfileView(LoginRequiredMixin, ListView):
     """
     View to display the current user's profile
     """
@@ -31,8 +32,36 @@ class ProfileView(LoginRequiredMixin, DetailView):
             queryset = self.get_queryset()
 
         # Get the profile of the current user or create one if it doesn't exist
-        obj, created = Profile.objects.get_or_create(user=self.request.user)
+        obj= Profile.objects.get(user=self.request.user)
         return obj
+    
+    def get_queryset(self):
+        """
+        Returns the current user's friends
+        """
+        # List of user's friends where the request is accepted
+        friends = self.request.user.profile.get_friends()
+
+        return friends
+    
+    def get_context_data(self, **kwargs):
+        """
+        Adds friend requests to context
+        """
+        context = super().get_context_data(**kwargs)
+
+        # Excluding friends and requested friends from the users queryset
+        friends = self.get_queryset()
+
+        context['user'] = self.request.user
+        context['friends'] = friends
+
+        # calcs the number of point a player has
+        tasks = TaskInstance.objects.filter(profile=self.request.user.profile)
+        context['points'] = sum([task.task.points for task in tasks if task.status == TaskInstance.COMPLETED])
+
+
+        return context
 
 
 class FriendsListView(LoginRequiredMixin, ListView):
@@ -209,8 +238,9 @@ class DeclineFriendRequestView(LoginRequiredMixin, DeleteView):
 
 
 class UpdateProfileImageView(LoginRequiredMixin, FormView):
-
-    model = Profile
+    """
+    View to update profile picture
+    """
 
     form_class = UpdateProfileImage
     success_url = reverse_lazy("friends:profile")
@@ -227,25 +257,26 @@ class UpdateProfileImageView(LoginRequiredMixin, FormView):
         
         if form.is_valid():
             form.save()
+            messages.success(self.request, 'Profile picture changed')
             return redirect('friends:profile')
+        else:
+            messages.error(self.request, 'Failed to change profile picture')
+            return redirect('friends:profile_update_image')
         
-class UpdateProfileBioView(LoginRequiredMixin, FormView):
 
-    model = Profile
+class UpdateProfileBioView(LoginRequiredMixin, FormView):
+    """
+    View to update profile bio
+    """
 
     form_class = UpdateProfileBio
     success_url = reverse_lazy("friends:profile")
     template_name = 'friends/profile_update.html'
     
-    def form_valid(self, form):
-        messages.success(self.request, 'Bio has been updated')
-        return super().form_valid(form)
-
     def post(self, request, *args, **kwargs):
         form = UpdateProfileBio(request.POST,
                                    request.FILES,
                                    instance=request.user.profile)
-        
         
         if form.is_valid():
             request.user.profile.image
@@ -253,8 +284,8 @@ class UpdateProfileBioView(LoginRequiredMixin, FormView):
             messages.success(self.request, 'Bio updated.')
             return redirect('friends:profile')
         else:
-            request.user.profile.bio = ''
-            messages.error(self.request, 'Bio failed to update.')
-            return redirect('friends:profile')
+            messages.error(self.request, 'Bio update failed.')
+            return redirect('friends:profile_update_bio')
+            
 
         

@@ -33,6 +33,8 @@
             </select>
             <button type="submit">Add</button>
         </form>
+    {% elif incoming_requests or outgoing_requests%}
+        <p>You will be friends with everyone!</p>
     {% else %}
         <p>You are friends with everyone!</p>
     {% endif %}
