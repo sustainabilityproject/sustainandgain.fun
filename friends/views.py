@@ -22,32 +22,10 @@ class ProfileView(LoginRequiredMixin, DetailView):
     template_name = 'friends/profile.html'
     context_object_name = 'profile'
 
-    """
-    def get_object(self, queryset=None):
-    """
-    # Returns the current user
-    """
-        if queryset is None:
-            queryset = self.get_queryset()
-
-        # Get the profile of the current user or create one if it doesn't exist
-        obj= Profile.objects.get(user=self.request.user)
-        return obj
-    
-    def get_queryset(self):
-        """
-    # Returns the current user's friends
-    """
-        # List of user's friends where the request is accepted
-        friends = self.request.user.profile.get_friends()
-
-        return friends
-    """
-
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-        # defines profile depending on the existance of user_id and its value relative to the current logged in user
+        # defines profile depending on the existence of user_id and its value relative to the current logged in user
         try:
             user_id = self.kwargs['pk']
 

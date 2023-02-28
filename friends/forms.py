@@ -6,7 +6,6 @@ from .models import Profile
 
 
 class UpdateProfileForm(forms.ModelForm):
-
     first_name = forms.CharField(max_length=30, required=False)
     last_name = forms.CharField(max_length=30, required=False)
 
