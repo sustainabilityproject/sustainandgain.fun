@@ -14,12 +14,14 @@ class Profile(models.Model):
     def __str__(self):
         return f'{self.user.username}'
 
-    def get_friends(self, status='a'):
+    def get_friends(self, status='a', id = None):
         """
         Returns a list of friends where the request has status specified by the status parameter
         a = accepted
         p = pending
         """
+
+
         friend_requests_sent = FriendRequest.objects.filter(from_profile=self, status=status).values_list(
             'to_profile_id', flat=True)
         friend_requests_received = FriendRequest.objects.filter(to_profile=self, status=status).values_list(
@@ -28,6 +30,7 @@ class Profile(models.Model):
         friends = Profile.objects.filter(id__in=friend_ids)
 
         return friends
+    
 
 
 class FriendRequest(models.Model):

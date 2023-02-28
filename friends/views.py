@@ -24,10 +24,11 @@ class ProfileView(LoginRequiredMixin, ListView):
     template_name = 'friends/profile.html'
     context_object_name = 'profile'
 
+    """
     def get_object(self, queryset=None):
-        """
-        Returns the current user
-        """
+    """
+        # Returns the current user
+    """
         if queryset is None:
             queryset = self.get_queryset()
 
@@ -37,31 +38,47 @@ class ProfileView(LoginRequiredMixin, ListView):
     
     def get_queryset(self):
         """
-        Returns the current user's friends
-        """
+        #Returns the current user's friends
+    """
         # List of user's friends where the request is accepted
         friends = self.request.user.profile.get_friends()
 
         return friends
-    
+    """
     def get_context_data(self, **kwargs):
         """
         Adds friend requests to context
         """
+
         context = super().get_context_data(**kwargs)
+        # defines profile depending on the existance of user_id and its value relative to the current logged in user
+        try:
+            user_id = self.kwargs['user_id']
 
-        # Excluding friends and requested friends from the users queryset
-        friends = self.get_queryset()
+            if user_id != self.request.user.id:
+                profile = Profile.objects.filter(id=user_id).first()
+                if profile is None:
+                    profile = self.request.user.profile
+                else:
+                    context['other_user'] = True
+            else:
+                profile = self.request.user.profile
 
-        context['user'] = self.request.user
+        except KeyError:
+            profile = self.request.user.profile
+        
+        # Gets friends of profile
+        friends = profile.get_friends()
+
+        context['profile'] = profile
         context['friends'] = friends
 
         # calcs the number of point a player has
-        tasks = TaskInstance.objects.filter(profile=self.request.user.profile)
+        tasks = TaskInstance.objects.filter(profile=profile)
         context['points'] = sum([task.task.points for task in tasks if task.status == TaskInstance.COMPLETED])
 
-
         return context
+
 
 
 class FriendsListView(LoginRequiredMixin, ListView):

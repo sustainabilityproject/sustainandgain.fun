@@ -8,7 +8,7 @@
         <ul>
             {% for friend in friends %}
                 <li>
-                    {{ friend.user.username }}
+                    <a href="{% url 'friends:profile_of_user' friend.id %}">{{ friend }}</a>
                     <a href="{% url 'friends:remove' friend.user.username %}">
                         <button class="btn btn-danger">Remove</button>
                     </a>
@@ -45,7 +45,7 @@
     {% if incoming_requests %}
         <ul>
             {% for request in incoming_requests %}
-                <li>{{ request.from_profile.user.username }}
+                <li><a href="{% url 'friends:profile_of_user' request.to_profile.user.id %}">{{ request.from_profile.user }}</a>
                     <form method="post" action="{% url 'friends:accept_request' request.id %}">
                         {% csrf_token %}
                         <button type="submit">Accept</button>
@@ -67,7 +67,7 @@
     {% if outgoing_requests %}
         <ul>
             {% for request in outgoing_requests %}
-                <li>Friend request sent to {{ request.to_profile.user.username }} </li>
+                <li>Friend request sent to <a href="{% url 'friends:profile_of_user' request.to_profile.user.id %}">{{ request.to_profile.user }}</a></li>
                 <form method="post" action="{% url 'friends:cancel_request' request.id %}">
                     {% csrf_token %}
                     <button type="submit">Cancel</button>

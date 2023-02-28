@@ -16,5 +16,5 @@ urlpatterns = [
     path('cancel/<int:friend_request_id>/', CancelFriendRequestView.as_view(), name='cancel_request'),
     path('profile_update_image/', UpdateProfileImageView.as_view(), name='profile_update_image'),
     path('profile_update_bio/', UpdateProfileBioView.as_view(), name='profile_update_bio'),
-    
+    path('profile/<int:user_id>/', ProfileView.as_view(), name='profile_of_user'),
 ]
