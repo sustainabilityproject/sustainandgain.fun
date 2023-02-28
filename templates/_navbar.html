@@ -38,7 +38,7 @@
                 {% if user.is_authenticated %}
                     {% if user.is_superuser %}
                         <li class="nav-item">
-                            <a class="btn btn-success text-white nav-item nav-link" href="{% url 'feed:reported' %}">Gamekeeper
+                            <a class="btn btn-success text-white nav-item nav-link" href="{% url 'admin:index' %}">Gamekeeper
                                 Area</a>
                         </li>
                     {% endif %}
