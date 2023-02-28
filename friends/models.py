@@ -4,7 +4,9 @@ from accounts.models import User
 
 
 class Profile(models.Model):
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    # single profile image
     image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
     friends = models.ManyToManyField('self', blank=True, symmetrical=True, through='FriendRequest')
     bio = models.TextField(default='', blank=True)
@@ -12,12 +14,14 @@ class Profile(models.Model):
     def __str__(self):
         return f'{self.user.username}'
 
-    def get_friends(self, status='a'):
+    def get_friends(self, status='a', id = None):
         """
         Returns a list of friends where the request has status specified by the status parameter
         a = accepted
         p = pending
         """
+
+
         friend_requests_sent = FriendRequest.objects.filter(from_profile=self, status=status).values_list(
             'to_profile_id', flat=True)
         friend_requests_received = FriendRequest.objects.filter(to_profile=self, status=status).values_list(
@@ -26,6 +30,7 @@ class Profile(models.Model):
         friends = Profile.objects.filter(id__in=friend_ids)
 
         return friends
+    
 
     @property
     def name(self):

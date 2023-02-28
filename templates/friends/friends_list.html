@@ -8,7 +8,7 @@
         <ul>
             {% for friend in friends %}
                 <li>
-                    {{ friend.user.username }}
+                    <a href="{% url 'friends:profile' friend.id %}">{{ friend }}</a>
                     <a href="{% url 'friends:remove' friend.user.username %}">
                         <button class="btn btn-danger">Remove</button>
                     </a>
@@ -33,6 +33,8 @@
             </select>
             <button type="submit">Add</button>
         </form>
+    {% elif incoming_requests or outgoing_requests%}
+        <p>You will be friends with everyone!</p>
     {% else %}
         <p>You are friends with everyone!</p>
     {% endif %}
@@ -43,7 +45,7 @@
     {% if incoming_requests %}
         <ul>
             {% for request in incoming_requests %}
-                <li>{{ request.from_profile.user.username }}
+                <li><a href="{% url 'friends:profile' request.to_profile.user.id %}">{{ request.from_profile.user }}</a>
                     <form method="post" action="{% url 'friends:accept_request' request.id %}">
                         {% csrf_token %}
                         <button type="submit">Accept</button>
@@ -65,7 +67,7 @@
     {% if outgoing_requests %}
         <ul>
             {% for request in outgoing_requests %}
-                <li>Friend request sent to {{ request.to_profile.user.username }} </li>
+                <li>Friend request sent to <a href="{% url 'friends:profile' request.to_profile.user.id %}">{{ request.to_profile.user }}</a></li>
                 <form method="post" action="{% url 'friends:cancel_request' request.id %}">
                     {% csrf_token %}
                     <button type="submit">Cancel</button>

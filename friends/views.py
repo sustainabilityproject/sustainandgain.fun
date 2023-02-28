@@ -11,6 +11,8 @@ from django.views.generic import DetailView, ListView, DeleteView, UpdateView
 from accounts.models import User
 from friends.forms import UpdateProfileForm
 from friends.models import FriendRequest, Profile
+from tasks.models import TaskInstance
+
 
 
 class ProfileView(LoginRequiredMixin, DetailView):
@@ -21,16 +23,58 @@ class ProfileView(LoginRequiredMixin, DetailView):
     template_name = 'friends/profile.html'
     context_object_name = 'profile'
 
+    """
     def get_object(self, queryset=None):
-        """
-        Returns the current user
-        """
+    """
+        # Returns the current user
+    """
         if queryset is None:
             queryset = self.get_queryset()
 
         # Get the profile of the current user or create one if it doesn't exist
-        obj, created = Profile.objects.get_or_create(user=self.request.user)
+        obj= Profile.objects.get(user=self.request.user)
         return obj
+    
+    def get_queryset(self):
+        """
+        #Returns the current user's friends
+    """
+        # List of user's friends where the request is accepted
+        friends = self.request.user.profile.get_friends()
+
+        return friends
+    """
+    def get_context_data(self, **kwargs):
+        
+        context = super().get_context_data(**kwargs)
+        # defines profile depending on the existance of user_id and its value relative to the current logged in user
+        try:
+            user_id = self.kwargs['pk']
+
+            if user_id != self.request.user.id:
+                profile = Profile.objects.filter(id=user_id).first()
+                if profile is None:
+                    profile = self.request.user.profile
+                else:
+                    context['other_user'] = True
+            else:
+                profile = self.request.user.profile
+
+        except KeyError:
+            profile = self.request.user.profile
+        
+        # Gets friends of profile
+        friends = profile.get_friends()
+
+        context['profile'] = profile
+        context['friends'] = friends
+
+        # calcs the number of point a player has
+        tasks = TaskInstance.objects.filter(profile=profile)
+        context['points'] = sum([task.task.points for task in tasks if task.status == TaskInstance.COMPLETED])
+
+        return context
+
 
 
 class FriendsListView(LoginRequiredMixin, ListView):
@@ -206,6 +250,7 @@ class DeclineFriendRequestView(LoginRequiredMixin, DeleteView):
         return super().form_valid(form)
 
 
+
 class UpdateProfileView(LoginRequiredMixin, UpdateView):
     """
     View to update a user's profile
@@ -224,3 +269,5 @@ class UpdateProfileView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Profile updated!')
         return super().form_valid(form)
+
+
