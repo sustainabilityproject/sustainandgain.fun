@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+{% load django_bootstrap5 %}
+{% block title %}{{ title }} | Sustain and Gain{% endblock %}
+
+{% block header %}
+    {# Use global navbar. Create Shadow DOM element so that styles do not conflict #}
+    <script>
+        class Navbar extends HTMLElement {
+            constructor() {
+                super();
+                const shadow = this.attachShadow({mode: 'open'});
+                const navbar = document.createElement('header');
+                navbar.setAttribute('class', 'site-header');
+                navbar.innerHTML = `{% bootstrap_css %}{% include '_navbar.html' %}`;
+                shadow.appendChild(navbar);
+            }
+        }
+        customElements.define('sustain-navbar', Navbar);
+    </script>
+
+    <sustain-navbar></sustain-navbar>
+{% endblock %}
+
+{% block extrastyle %}
+    <style>
+        :root {
+            --primary: #9774d5;
+            --secondary: #785cab;
+            --link-selected-fg: blue;
+        }
+    </style>
+{% endblock %}
