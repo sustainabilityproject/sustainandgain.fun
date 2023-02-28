@@ -41,7 +41,7 @@
                             <td>Complete</td>
                             <td>
                                 {% if friends %}
-                                    <form method="post">
+                                    <form method="post" action="{% url 'tasks:tag' task.task.id %}">
                                         {% csrf_token %}
                                         <select name="username">
                                             {% for friend in friends %}
