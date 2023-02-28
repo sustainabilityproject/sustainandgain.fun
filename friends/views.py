@@ -2,17 +2,15 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import DetailView, ListView, DeleteView, FormView
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.views.generic import DetailView, ListView, DeleteView, UpdateView
 
 from accounts.models import User
+from friends.forms import UpdateProfileForm
 from friends.models import FriendRequest, Profile
-from friends.forms import UpdateProfileImage, UpdateProfileBio
 
 
 class ProfileView(LoginRequiredMixin, DetailView):
@@ -208,53 +206,21 @@ class DeclineFriendRequestView(LoginRequiredMixin, DeleteView):
         return super().form_valid(form)
 
 
-class UpdateProfileImageView(LoginRequiredMixin, FormView):
-
+class UpdateProfileView(LoginRequiredMixin, UpdateView):
+    """
+    View to update a user's profile
+    """
     model = Profile
+    form_class = UpdateProfileForm
+    success_url = reverse_lazy('friends:profile')
+    template_name = 'friends/update_profile.html'
 
-    form_class = UpdateProfileImage
-    success_url = reverse_lazy("friends:profile")
-    template_name = 'friends/profile_update.html'
-    
+    def get_object(self, queryset=None):
+        """
+        Returns the profile of the current user
+        """
+        return self.request.user.profile
+
     def form_valid(self, form):
-        messages.success(self.request, 'Profile pic changed')
+        messages.success(self.request, 'Profile updated!')
         return super().form_valid(form)
-
-    def post(self, request, *args, **kwargs):
-        form = UpdateProfileImage(request.POST,
-                                   request.FILES,
-                                   instance=request.user.profile)
-        
-        if form.is_valid():
-            form.save()
-            return redirect('friends:profile')
-        
-class UpdateProfileBioView(LoginRequiredMixin, FormView):
-
-    model = Profile
-
-    form_class = UpdateProfileBio
-    success_url = reverse_lazy("friends:profile")
-    template_name = 'friends/profile_update.html'
-    
-    def form_valid(self, form):
-        messages.success(self.request, 'Bio has been updated')
-        return super().form_valid(form)
-
-    def post(self, request, *args, **kwargs):
-        form = UpdateProfileBio(request.POST,
-                                   request.FILES,
-                                   instance=request.user.profile)
-        
-        
-        if form.is_valid():
-            request.user.profile.image
-            form.save()
-            messages.success(self.request, 'Bio updated.')
-            return redirect('friends:profile')
-        else:
-            request.user.profile.bio = ''
-            messages.error(self.request, 'Bio failed to update.')
-            return redirect('friends:profile')
-
-        

@@ -7,7 +7,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
     friends = models.ManyToManyField('self', blank=True, symmetrical=True, through='FriendRequest')
-    bio = models.TextField(default='')
+    bio = models.TextField(default='', blank=True)
 
     def __str__(self):
         return f'{self.user.username}'
@@ -26,6 +26,10 @@ class Profile(models.Model):
         friends = Profile.objects.filter(id__in=friend_ids)
 
         return friends
+
+    @property
+    def name(self):
+        return self.user.first_name + ' ' + self.user.last_name if self.user.first_name and self.user.last_name else self.user.username
 
 
 class FriendRequest(models.Model):
