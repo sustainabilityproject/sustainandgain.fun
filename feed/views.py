@@ -21,6 +21,10 @@ class FeedView(ListView):
             if task.status == TaskInstance.PENDING_APPROVAL and datetime.datetime.now() > task.time_completed.replace(tzinfo=None) + datetime.timedelta(days=7):
                 task.status = TaskInstance.COMPLETED
                 task.save()
+        
+        # Sort tasks by time completed, most recent first
+        tasks.sort(key=lambda x: x.time_completed, reverse=True)
+
         return tasks
     
 class ReportedView(ListView):
