@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save
 
-import friends.models
+import friends.models 
 import factory
 from django.contrib.auth import get_user_model
 
@@ -27,3 +27,14 @@ class ProfileFactory(factory.django.DjangoModelFactory):
         model = friends.models.Profile
 
     user = factory.SubFactory(UserFactory)
+
+
+class FriendRequestFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = friends.models.FriendRequest
+
+    from_profile = factory.SubFactory(ProfileFactory)
+    to_profile = factory.SubFactory(ProfileFactory)
+    status = 'p'
+
+    
