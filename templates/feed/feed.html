@@ -3,20 +3,14 @@
 {% block title %}Task Feed{% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        <div>
-            <h1>Feed of Completed Tasks</h1>
-            <div class="row">
-                {% for task in friend_tasks %}
-                    {% include 'feed/_feed_task.html' with task=task %}
-                {% endfor %}
-            </div>
+    <div>
+        <h1>Feed of Completed Tasks</h1>
+        <div class="row">
+            {% for task in friend_tasks %}
+                {% include 'feed/_feed_task.html' with task=task %}
+            {% endfor %}
         </div>
-        <br/>
-        <p><a href="{% url 'logout' %}">Log Out</a></p>
-    {% else %}
-        <p>You are not logged in</p>
-        <a href="{% url 'login' %}">Log In</a>
-        <a href="{% url 'accounts:register' %}">Register</a>
-    {% endif %}
+    </div>
+    <br/>
+    <p><a href="{% url 'logout' %}">Log Out</a></p>
 {% endblock %}
