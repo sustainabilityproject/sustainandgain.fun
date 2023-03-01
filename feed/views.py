@@ -14,8 +14,8 @@ class FeedView(ListView):
 
     def get_queryset(self):
         tasks = TaskInstance.objects.exclude(status=TaskInstance.ACTIVE)
-        # Only show tasks of the user or their friends
-        tasks = [task for task in tasks if task.profile == self.request.user.profile or task.profile in self.request.user.profile.friends.all()]
+        # Only show tasks of the user or their friends.
+        tasks = [task for task in tasks if task.profile == self.request.user.profile or task.profile in self.request.user.profile.get_friends()]
         # If a task was completed more than a week ago, its status is set to COMPLETED
         for task in tasks:
             if task.status == TaskInstance.PENDING_APPROVAL and datetime.datetime.now() > task.time_completed.replace(tzinfo=None) + datetime.timedelta(days=7):
