@@ -1,4 +1,3 @@
-# TODO proper code comments and documentation
 import datetime
 
 from django.core.exceptions import ValidationError
@@ -121,7 +120,8 @@ class TaskInstance(models.Model):
 
     def __str__(self):
         return f"Task:{self.task.title}; User:{self.profile.user.username}"
-    
+
+    # Returns the colour of the status badge of the task
     @property
     def status_colour(self):
         if self.status == TaskInstance.ACTIVE:
