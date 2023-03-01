@@ -100,6 +100,9 @@ class TaskInstance(models.Model):
     # The location of where the task was completed
     location = models.CharField(max_length=500, null=True, blank=True)
 
+    # Shows in the MyTasks view, lets you know who tagged you
+    origin_message = models.CharField(max_length=50, default='This task is available')
+
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
     PENDING_APPROVAL = 'PENDING'
