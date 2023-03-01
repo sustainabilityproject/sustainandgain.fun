@@ -10,7 +10,7 @@
                 <div class="row">
                     {% for task in active_tasks %}
                         {% url 'tasks:complete' task.id as action_url %}
-                        {% include 'tasks/_task_card.html' with title=task.task.title description=task.task.description points=task.task.points action_text="Complete" %}
+                        {% include 'tasks/_task_card.html' with title=task.task.title description=task.task.description points=task.task.points action_text="Complete" origin_message=task.origin_message %}
                     {% endfor %}
                 </div>
             {% else %}

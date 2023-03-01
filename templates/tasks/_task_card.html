@@ -4,6 +4,9 @@
             <h3>{{ title }} <span
                     class="badge text-bg-success fs-6">+{{ points }}</span></h3>
             <p>{{ description }}</p>
+            {% if origin_message %}
+            <p>{{ origin_message }}</p>
+            {% endif %}
             <div class="my-auto">
                 <form method="get" action="{{ action_url }}">
                     <input type="submit" value="{{ action_text }}" class="btn btn-success">

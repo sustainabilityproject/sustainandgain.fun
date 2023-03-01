@@ -1,4 +1,3 @@
-# TODO proper code comments and documentation
 import datetime
 
 from django.core.exceptions import ValidationError
@@ -100,6 +99,9 @@ class TaskInstance(models.Model):
     # The location of where the task was completed
     location = models.CharField(max_length=500, null=True, blank=True)
 
+    # Shows in the MyTasks view, lets you know who tagged you
+    origin_message = models.CharField(max_length=50, default='This task is available')
+
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
     PENDING_APPROVAL = 'PENDING'
@@ -118,7 +120,8 @@ class TaskInstance(models.Model):
 
     def __str__(self):
         return f"Task:{self.task.title}; User:{self.profile.user.username}"
-    
+
+    # Returns the colour of the status badge of the task
     @property
     def status_colour(self):
         if self.status == TaskInstance.ACTIVE:
