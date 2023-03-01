@@ -9,4 +9,3 @@ media/*.png
 media/task_photos/
 media/profile_pics/
 autoencoder/target/
-staticfiles/
