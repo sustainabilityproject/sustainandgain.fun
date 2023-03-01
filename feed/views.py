@@ -149,6 +149,7 @@ class RestoreTaskView(LoginRequiredMixin, UpdateView):
     def post(self, request, pk):
         task = get_object_or_404(TaskInstance, pk=pk)
         task.reports.clear()
+        task.status = TaskInstance.COMPLETED
         task.save()
         messages.success(request, 'You restored a task.')
         return redirect('feed:reported')
