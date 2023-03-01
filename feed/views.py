@@ -105,6 +105,7 @@ class RestoreView(TemplateView):
     def post(self, request, pk):
         task = get_object_or_404(TaskInstance, pk=pk)
         task.reports.clear()
+        task.status = TaskInstance.COMPLETED
         task.save()
         messages.success(request, 'You restored this post.')
         return redirect('feed:reported')
