@@ -1,10 +1,11 @@
 # TODO class rather than function views
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, ListView, UpdateView
+from django.contrib import messages
 
 from .forms import CompleteTaskForm
 from .models import *
@@ -26,6 +27,7 @@ class MyTasksView(LoginRequiredMixin, ListView):
         context['active_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.ACTIVE]
         context['completed_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.COMPLETED]
         context['pending_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.PENDING_APPROVAL]
+        context['friends'] = self.request.user.profile.get_friends()
         return context
 
 
@@ -83,3 +85,38 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return TaskInstance.objects.get(pk=self.kwargs['pk'])
+
+
+class SendTagView(LoginRequiredMixin, View):
+    """
+    Gives your chosen friend the task
+    This is very early lol, I'll keep making it
+    TODO tag requests rather than forcing tasks
+    TODO you can only tag once per task completion
+    """
+    def post(self, request, *args, **kwargs):
+        """
+        Puts the task on your friend's profile if it's available to them
+        """
+        # get the friend's profile
+        profile = get_object_or_404(Profile, user__username=request.POST['username'])
+
+        # get the task
+        task_sent = Task.objects.get(pk=self.kwargs['pk'])
+
+        # if they don't already have the task, give it to them (not final version)
+        if task_sent.is_available(profile.user.profile):
+            message = 'Tagged ' + profile.user.username + ' in ' + task_sent.title
+            messages.success(request, message)
+            t = TaskInstance(
+                task=task_sent,
+                profile=profile.user.profile,
+                status=TaskInstance.ACTIVE
+            )
+            t.save()
+        else:
+            message = profile.user.username + ' is already doing that task'
+            messages.info(request, message)
+
+        return redirect('tasks:list')
+    
