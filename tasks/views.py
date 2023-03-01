@@ -58,7 +58,8 @@ class AcceptTaskView(LoginRequiredMixin, View):
             t = TaskInstance(
                 task=task_accepted,
                 profile=request.user.profile,
-                status=TaskInstance.ACTIVE
+                status=TaskInstance.ACTIVE,
+                origin_message='You accepted this task'
             )
             t.save()
         return redirect('tasks:list')
@@ -111,7 +112,8 @@ class SendTagView(LoginRequiredMixin, View):
             t = TaskInstance(
                 task=task_sent,
                 profile=profile.user.profile,
-                status=TaskInstance.ACTIVE
+                status=TaskInstance.ACTIVE,
+                origin_message=self.request.user.username + ' tagged you!'
             )
             t.save()
         else:
@@ -119,4 +121,3 @@ class SendTagView(LoginRequiredMixin, View):
             messages.info(request, message)
 
         return redirect('tasks:list')
-    

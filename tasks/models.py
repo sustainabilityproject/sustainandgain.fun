@@ -91,6 +91,9 @@ class TaskInstance(models.Model):
     # The profile of the user who has accepted the task
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, default=None)
 
+    # Shows in the MyTasks view, lets you know who tagged you
+    origin_message = models.CharField(max_length=50, default='This task is available')
+
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
     PENDING_APPROVAL = 'PENDING'
