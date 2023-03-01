@@ -1,13 +1,13 @@
-<div class="col-6 mt-3">
-    <div class="d-flex justify-content-between px-2 py-1 border rounded">
-        <div class="d-flex flex-column">
-            <h3>{{ title }} <span
-                    class="badge text-bg-success fs-6">+{{ points }}</span></h3>
-            <p>{{ description }}</p>
-            {% if origin_message %}
-            <p>{{ origin_message }}</p>
-            {% endif %}
-            <div class="my-auto">
+<div class="col-12 mt-3">
+    <div class="card h-100">
+        <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ title }}</h5>
+            <span class="badge text-bg-success fs-6" style="max-width: 4rem;">+{{ points }}</span>
+            <p class="card-text overflow-scroll">{{ description }}</p>
+            <div class="mt-auto">
+                {% if origin_message %}
+                    <p class="card-text">{{ origin_message }}</p>
+                {% endif %}
                 <form method="get" action="{{ action_url }}">
                     <input type="submit" value="{{ action_text }}" class="btn btn-success">
                 </form>
