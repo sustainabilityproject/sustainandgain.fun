@@ -39,7 +39,6 @@
                             <td>{{ task.task.title }}</td>
                             <td>+{{ task.task.points }}</td>
                             <td>Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}</td>
-                            <td>Complete</td>
                             <td>
                                 {% if friends %}
                                     <form method="post" action="{% url 'tasks:tag' task.task.id %}">
