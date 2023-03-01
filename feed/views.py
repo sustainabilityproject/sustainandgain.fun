@@ -79,13 +79,18 @@ class LikeTaskView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, pk):
         task = get_object_or_404(TaskInstance, pk=pk)
-        task.likes.add(request.user.profile)
-        task.save()
-        if task.likes.count() >= 3:
-            task.status = TaskInstance.PENDING_APPROVAL
+        if request.user.profile == task.profile:
+            messages.info(request, "You can't like your own task.")
+            return redirect('feed:feed')
+
+        else:
+            task.likes.add(request.user.profile)
             task.save()
-        messages.success(request, 'You liked a task.')
-        return redirect('feed:feed')
+            if task.likes.count() >= 3:
+                task.status = TaskInstance.PENDING_APPROVAL
+                task.save()
+            messages.success(request, 'You liked a task.')
+            return redirect('feed:feed')
 
 
 # Staff views
