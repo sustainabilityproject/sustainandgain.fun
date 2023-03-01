@@ -46,7 +46,7 @@ class CompleteTaskForm(forms.ModelForm):
         if longitude is not None and latitude is not None:
             location = geolocator.reverse(f"{latitude}, {longitude}")
             if location.address is not None:
-                task_instance.location = location.address
+                task_instance.location = ",".join(location.address.split(",")[:3])
 
         if commit:
             task_instance.save()
