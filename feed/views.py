@@ -87,7 +87,7 @@ class LikeTaskView(LoginRequiredMixin, UpdateView):
             task.likes.add(request.user.profile)
             task.save()
             if task.likes.count() >= 3:
-                task.status = TaskInstance.COMPLETE
+                task.status = TaskInstance.COMPLETED
                 task.save()
             messages.success(request, 'You liked a task.')
             return redirect('feed:feed')
