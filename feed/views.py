@@ -60,11 +60,11 @@ class ReportTaskView(LoginRequiredMixin, UpdateView):
         task = get_object_or_404(TaskInstance, pk=pk)
         if request.user.is_staff:
             task.delete()
-            messages.success(request, 'You deleted this post.')
+            messages.success(request, 'You deleted a task.')
         else:
             task.reports.add(request.user.profile)
             task.save()
-            messages.success(request, 'You reported this post.')
+            messages.success(request, 'You reported a task.')
 
         return redirect('feed:feed')
 
@@ -73,6 +73,7 @@ class LikeTaskView(LoginRequiredMixin, UpdateView):
     """
     View for liking a task. If the task gets 3 likes, it is approved.
     """
+
     def get(self, request, pk):
         return redirect('feed:feed')
 
@@ -83,6 +84,7 @@ class LikeTaskView(LoginRequiredMixin, UpdateView):
         if task.likes.count() >= 3:
             task.status = TaskInstance.PENDING_APPROVAL
             task.save()
+        messages.success(request, 'You liked a task.')
         return redirect('feed:feed')
 
 
@@ -126,7 +128,7 @@ class DeleteTaskView(LoginRequiredMixin, UpdateView):
     def post(self, request, pk):
         task = get_object_or_404(TaskInstance, pk=pk)
         task.delete()
-        messages.success(request, 'You deleted this post.')
+        messages.success(request, 'You deleted a task.')
         return redirect('feed:reported')
 
 
@@ -148,5 +150,5 @@ class RestoreTaskView(LoginRequiredMixin, UpdateView):
         task = get_object_or_404(TaskInstance, pk=pk)
         task.reports.clear()
         task.save()
-        messages.success(request, 'You restored this post.')
+        messages.success(request, 'You restored a task.')
         return redirect('feed:reported')

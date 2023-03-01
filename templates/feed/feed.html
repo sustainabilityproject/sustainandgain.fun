@@ -3,14 +3,19 @@
 {% block title %}Task Feed{% endblock %}
 
 {% block content %}
-    <div>
+    <div class="container">
         <h1>Feed of Completed Tasks</h1>
-        <div class="row">
-            {% for task in friend_tasks %}
-                {% include 'feed/_feed_task.html' with task=task %}
-            {% endfor %}
-        </div>
-    </div>
-    <br/>
-    <p><a href="{% url 'logout' %}">Log Out</a></p>
+        {% if friend_tasks %}
+            <div class="row">
+
+                {% for task in friend_tasks %}
+                    {% include 'feed/_feed_task.html' with task=task %}
+                {% endfor %}
+            </div>
+            </div>
+        {% else %}
+            <p>Be the first to complete a task!</p>
+            <a class="btn btn-success" href="{% url 'tasks:list' %}">My Tasks</a>
+        {% endif %}
+
 {% endblock %}
