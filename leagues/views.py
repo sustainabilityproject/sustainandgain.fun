@@ -189,9 +189,12 @@ class InviteMemberView(LoginRequiredMixin, UpdateView):
         profile = Profile.objects.get(user__username=form.cleaned_data['username'])
         # If the user had requested to join the league, add them to the league
         league = self.get_object()
-        message = league.invite(self.request, profile)
-        if message == 'joined':
-            return redirect('leagues:pending', pk=league.pk)
+        try:
+            message = league.invite(self.request, profile)
+            if message == 'joined':
+                return redirect('leagues:pending', pk=league.pk)
+        except Exception as e:
+            messages.error(self.request, e)
         return redirect('leagues:invite', pk=league.pk)
 
 
@@ -213,8 +216,12 @@ class RemoveMemberView(LoginRequiredMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         league = self.get_object()
         profile = Profile.objects.get(user__username=kwargs['username'])
-        league.kick(request, profile)
-        return redirect('leagues:detail', pk=league.pk)
+        try:
+            league.kick(request, profile)
+            return redirect('leagues:detail', pk=league.pk)
+        except Exception as e:
+            messages.error(request, e)
+            return redirect('leagues:detail', pk=league.pk)
 
 
 class PendingMembersView(LoginRequiredMixin, DetailView):
@@ -257,7 +264,10 @@ class PromoteMemberView(LoginRequiredMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         league = self.get_object()
         profile = Profile.objects.get(user__username=kwargs['username'])
-        league.demote(self.request, profile)
+        try:
+            league.promote(self.request, profile)
+        except Exception as e:
+            messages.error(request, e)
         return redirect('leagues:detail', pk=league.pk)
 
 
@@ -279,5 +289,8 @@ class DemoteMemberView(LoginRequiredMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         league = self.get_object()
         profile = Profile.objects.get(user__username=kwargs['username'])
-        league.demote(self.request, profile)
+        try:
+            league.demote(self.request, profile)
+        except Exception as e:
+            messages.error(request, e)
         return redirect('leagues:detail', pk=league.pk)
