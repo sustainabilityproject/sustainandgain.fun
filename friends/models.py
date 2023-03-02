@@ -1,22 +1,25 @@
-from django.db import models
+from django.db import models, IntegrityError
 
 from accounts.models import User
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
+    # single profile image
+    image = models.ImageField(default='default/default.jpg', upload_to='profile_pics')
     friends = models.ManyToManyField('self', blank=True, symmetrical=True, through='FriendRequest')
+    bio = models.TextField(default='', blank=True)
 
     def __str__(self):
         return f'{self.user.username}'
 
-    def get_friends(self, status='a'):
+    def get_friends(self, status='a', id=None):
         """
         Returns a list of friends where the request has status specified by the status parameter
         a = accepted
         p = pending
         """
+
         friend_requests_sent = FriendRequest.objects.filter(from_profile=self, status=status).values_list(
             'to_profile_id', flat=True)
         friend_requests_received = FriendRequest.objects.filter(to_profile=self, status=status).values_list(
@@ -25,6 +28,10 @@ class Profile(models.Model):
         friends = Profile.objects.filter(id__in=friend_ids)
 
         return friends
+
+    @property
+    def name(self):
+        return self.user.first_name + ' ' + self.user.last_name if self.user.first_name and self.user.last_name else self.user.username
 
 
 class FriendRequest(models.Model):
@@ -54,3 +61,20 @@ class FriendRequest(models.Model):
 
     def cancel(self):
         self.delete()
+
+    def clean(self):
+        from_profile = self.from_profile
+        to_profile = self.to_profile
+        # raises error if trying to friend self
+        if from_profile == to_profile:
+            raise IntegrityError("Profile is trying to friend self")
+        reverse_request = FriendRequest.objects.filter(to_profile = from_profile, 
+                                        from_profile = to_profile
+                                        ).first()
+        # raises error if request exists going to the other way
+        if reverse_request is not None:
+            raise IntegrityError("Friend request has been sent the other way")
+        
+    def save(self,*args,**kwargs):
+        self.full_clean()
+        super().save(*args,**kwargs)
