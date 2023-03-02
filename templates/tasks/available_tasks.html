@@ -9,7 +9,7 @@
                 <div class="row">
                     {% for task in tasks_list %}
                         {% url 'tasks:accept' task.id as action_url %}
-                        {% include 'tasks/_task_card.html' with title=task.title description=task.description points=task.points action_text="Accept" origin_message="This task is available" %}
+                        {% include 'tasks/_task_card.html' with title=task.title description=task.description points=task.points action_text="Accept" %}
                     {% endfor %}
                 </div>
             {% else %}
