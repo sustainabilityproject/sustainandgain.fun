@@ -11,6 +11,7 @@ from django.views.generic import DetailView, ListView, DeleteView, UpdateView
 from accounts.models import User
 from friends.forms import UpdateProfileForm
 from friends.models import FriendRequest, Profile
+from leagues.models import League, LeagueMember
 from tasks.models import TaskInstance
 
 
@@ -46,6 +47,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
         context['profile'] = profile
         context['friends'] = friends
+        context['leagues'] = League.objects.filter(leaguemember__profile=profile, leaguemember__status='joined')
 
         # calcs the number of point a player has
         tasks = TaskInstance.objects.filter(profile=profile)

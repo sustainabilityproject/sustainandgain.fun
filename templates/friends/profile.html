@@ -1,48 +1,116 @@
 {% extends 'base.html' %}
 
-{% block title %}Profiles{% endblock %}
+{% block title %}{{ profile.name }}{% endblock %}
 
 {% block content %}
-    <div>
-        <div>
-            <img class="rounded-circle account-img" src="{{ profile.image.url }}"style="max-width:5%;max-height: 5%;">
-            {% if not other_user %}
-            <a href="{% url 'friends:update_profile' %}">change</a>
-            {% endif %}
-            <div>
-                <h2>{{ profile }}</h2>
+    <div class="container">
+        <div class="card border-0 mb-3">
+            <div class="row g-0 d-flex">
+                <div class="col-2 d-flex justify-content-center align-items-center">
+                    <img height="100" width="100" src="{{ profile.image.url }}" class="rounded-circle" alt="">
+                </div>
+                <div class="col-6 my-auto mx-1 flex-fill">
+                    <div class="card-body">
+                        {% if profile.name != profile.user.username %}
+                            <h4 class="card-title fw-bold mb-0">{{ profile.name }}</h4>
+                            <h5 class="card-text text-muted">@{{ profile.user.username }}</h5>
+                        {% else %}
+                            <h2 class="card-title">@{{ profile.user.username }}</h2>
+                        {% endif %}
+                        {% if not other_user %}
+                            <a class="btn btn-primary" href="{% url 'friends:update_profile' %}">Edit Profile</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-2 d-flex align-items-center justify-content-end">
+                    <a class="text-decoration-none" href="{% url 'tasks:list' %}">
+                        <div class="card-body rounded-2 bg-success text-white d-flex flex-column align-items-center">
+                            <h2 class="fw-bold">{{ points }}</h2>
+                            <div>Points</div>
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
-        <hr>
-        <h2>About</h2>
-        <p>{{ profile.bio }}</p>
-        {% if not other_user %}
-            {% if profile.bio != '' %}
-                <a href="{% url 'friends:update_profile' %}">change</a>
-            {% else %}
-                <a href="{% url 'friends:update_profile' %}">add</a>
-            {% endif %}
-        {% endif %}
 
-        <hr>
-        <h2>Friends</h2>
-        {% if friends %}
-            <ul>
-                {% for friend in friends %}
-                    <li><a href="{% url 'friends:profile' friend.id %}">{{ friend }}</a></li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>You have no friends.</p>
-        {% endif %}
-        {% if not other_user %}
-        <a href="{% url 'friends:list' %}">View Friends Page</a>
-        {% endif %}
-        <hr>
-        <h2>Points</h2>
-        <p>{{ points }}</p>
-        {% if not other_user %}
-        <a href="{% url 'tasks:available' %}">Get more :)</a>
-        {% endif %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <div class="card-title d-flex justify-content-between">
+                    <h2 class="fw-bold my-auto">About</h2>
+                    {% if not other_user %}
+                        <a class="btn btn-primary" href="{% url 'friends:update_profile' %}">
+                            {% if profile.bio != '' %}
+                                Edit Bio
+                            {% else %}
+                                Add a Bio
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                </div>
+                <p>{{ profile.bio }}</p>
+            </div>
+        </div>
+
+        <div class="card mb-2">
+            <div class="card-body">
+                <h2 class="card-title">
+                    Friends
+                    {% if friends %}
+                        <span class="text-muted">{{ friends|length }}</span>
+                    {% endif %}
+                </h2>
+                {% if friends %}
+                    <div>
+                        {% for friend in friends %}
+                            <a class="btn btn-light mb-1" href="{% url 'friends:profile' friend.id %}">
+                                <img src="{{ friend.image.url }}" height="20" width="20" alt="">
+                                {% if friend.name != friend.user.username %}
+                                    {{ friend.name }} <span class="text-muted">@{{ friend.user.username }}</span>
+                                {% else %}
+                                    @{{ friend.user.username }}
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {% if not other_user %}
+                        <p>You have no friends yet.</p>
+                    {% else %}
+                        <p>@{{ profile }} has no friends yet.</p>
+                    {% endif %}
+                {% endif %}
+                {% if not other_user %}
+                    <a href="{% url 'friends:list' %}">View Friends Page</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2>
+                    Leagues
+                    <span class="text-muted">{{ leagues|length }}</span>
+                </h2>
+                {% if leagues %}
+                    <div>
+                        {% for league in leagues %}
+                            <a class="btn btn-light" href="{% url 'leagues:detail' league.id %}">
+                                {{ league.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {% if not other_user %}
+                        <p>You are not in any leagues yet.</p>
+                    {% else %}
+                        <p>@{{ profile }} is not in any leagues yet.</p>
+                    {% endif %}
+                {% endif %}
+                {% if not other_user %}
+                    <a href="{% url 'leagues:list' %}">View Leagues Page</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 {% endblock content %}
