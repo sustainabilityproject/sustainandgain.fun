@@ -1,8 +1,9 @@
-from django.db.models.signals import post_save
-
-import friends.models 
 import factory
 from django.contrib.auth import get_user_model
+from django.db.models.signals import post_save
+
+import friends.models
+
 
 @factory.django.mute_signals(post_save)
 class UserFactory(factory.django.DjangoModelFactory):
@@ -10,6 +11,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     Generate a user with random first and second names, email {first_name}.{second_name}@example.com,
     username {first_name}n where n increments for each user.
     """
+
     class Meta:
         model = get_user_model()
 
@@ -20,6 +22,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     @factory.lazy_attribute_sequence
     def username(self, n):
         return "{}{}".format(self.first_name, n)
+
 
 @factory.django.mute_signals(post_save)
 class ProfileFactory(factory.django.DjangoModelFactory):
@@ -36,5 +39,3 @@ class FriendRequestFactory(factory.django.DjangoModelFactory):
     from_profile = factory.SubFactory(ProfileFactory)
     to_profile = factory.SubFactory(ProfileFactory)
     status = 'p'
-
-    
