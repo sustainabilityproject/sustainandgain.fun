@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, IntegrityError
 
 from accounts.models import User
 
@@ -61,3 +61,20 @@ class FriendRequest(models.Model):
 
     def cancel(self):
         self.delete()
+
+    def clean(self):
+        from_profile = self.from_profile
+        to_profile = self.to_profile
+        # raises error if trying to friend self
+        if from_profile == to_profile:
+            raise IntegrityError("Profile is trying to friend self")
+        reverse_request = FriendRequest.objects.filter(to_profile = from_profile, 
+                                        from_profile = to_profile
+                                        ).first()
+        # raises error if request exists going to the other way
+        if reverse_request is not None:
+            raise IntegrityError("Friend request has been sent the other way")
+        
+    def save(self,*args,**kwargs):
+        self.full_clean()
+        super().save(*args,**kwargs)
