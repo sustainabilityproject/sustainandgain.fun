@@ -22,6 +22,7 @@ class CompleteTaskForm(forms.ModelForm):
 
     photo = forms.ImageField(required=True, help_text="Required.", label="Photo of completed task")
     note = forms.CharField(required=False, help_text="Optional.", label="Extra notes")
+    share_location = forms.BooleanField(required=False, label="Share my location")
     latitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
     longitude = forms.FloatField(widget=forms.HiddenInput(), required=False)
 
@@ -40,13 +41,14 @@ class CompleteTaskForm(forms.ModelForm):
         task_instance.report_task_complete()
 
         # Get the address from the latitude and longitude
-        longitude = self.cleaned_data.get('longitude')
-        latitude = self.cleaned_data.get('latitude')
-        geolocator = Nominatim(user_agent="admin@sustainandgain.fun")
-        if longitude is not None and latitude is not None:
-            location = geolocator.reverse(f"{latitude}, {longitude}")
-            if location.address is not None:
-                task_instance.location = ",".join(location.address.split(",")[:3])
+        if self.cleaned_data.get('share_location'):
+            longitude = self.cleaned_data.get('longitude')
+            latitude = self.cleaned_data.get('latitude')
+            geolocator = Nominatim(user_agent="admin@sustainandgain.fun")
+            if longitude is not None and latitude is not None:
+                location = geolocator.reverse(f"{latitude}, {longitude}")
+                if location.address is not None:
+                    task_instance.location = ",".join(location.address.split(",")[:3])
 
         if commit:
             task_instance.save()
