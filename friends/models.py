@@ -31,7 +31,7 @@ class Profile(models.Model):
 
     @property
     def name(self):
-        return self.user.first_name + ' ' + self.user.last_name if self.user.first_name and self.user.last_name else self.user.username
+        return self.user.first_name + ' ' + self.user.last_name if self.user.first_name else self.user.username
 
 
 class FriendRequest(models.Model):
