@@ -13,12 +13,12 @@ class MyTasksView(LoginRequiredMixin, ListView):
     """
     View all the tasks assigned to the current user, login required.
 
-    attributes:
+    Attributes:
         model
         template_name (str): The html template this view uses.
         context_object_name (str): What this is called in the template.
 
-    methods:
+    Methods:
         get_queryset(self): Return all task instances belonging to current user.
         get_context_data(self, **kwargs): Return user's active, completed, and pending tasks and their friends.
     """
@@ -30,10 +30,10 @@ class MyTasksView(LoginRequiredMixin, ListView):
         """
         Return all task instances belonging to current user.
 
-        args:
+        Args:
             none.
 
-        returns:
+        Returns:
             QuerySet[TaskInstance]: the task instances which belong to the user.
         """
         return TaskInstance.objects.filter(profile=self.request.user.profile)
@@ -42,10 +42,10 @@ class MyTasksView(LoginRequiredMixin, ListView):
         """
         Return user's active, completed, and pending tasks and their friends.
 
-        args:
+        Args:
             none.
 
-        returns:
+        Returns:
             context (dict[str, Any]): active_tasks, completed_tasks, pending_tasks, friends.
         """
         context = super().get_context_data(**kwargs)
@@ -60,10 +60,10 @@ class IndexView(LoginRequiredMixin, TemplateView):
     """
     View of all tasks that are available for the current user, login required.
 
-    attributes:
+    Attributes:
         template_name (str): The html template this view uses.
 
-    methods:
+    Methods:
         get_context_data(self, **kwargs): Return tasks which are available for the current user.
     """
     template_name = "tasks/available_tasks.html"
@@ -72,10 +72,10 @@ class IndexView(LoginRequiredMixin, TemplateView):
         """
         Return tasks which are available for the current user.
 
-        args:
+        Args:
             none.
 
-        returns:
+        Returns:
             context (dict[str: Any]): tasks_list.
         """
         context = super().get_context_data(**kwargs)
@@ -91,10 +91,10 @@ class AcceptTaskView(LoginRequiredMixin, View):
     """
     Create new TaskInstance referencing this user and the task they accepted.
 
-    attributes:
+    Attributes:
         none.
 
-    methods:
+    Methods:
         get(self, request, *args, **kwargs): Create task instance for user's 'my tasks' page.
     """
 
@@ -102,10 +102,10 @@ class AcceptTaskView(LoginRequiredMixin, View):
         """
         Create task instance for user's 'my tasks' page.
 
-        args:
+        Args:
             none.
 
-        returns:
+        Returns:
             redirect: sends you back to tasks:list.
         """
         task_accepted = Task.objects.get(pk=self.kwargs['pk'])
@@ -127,13 +127,13 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
     Set task to pending approval when the user has completed it.
     The user can upload a photo and optionally add a note and their location.
 
-    attributes:
+    Attributes:
         template_name (str): The html template this view uses.
         form_class (CompleteTaskForm): Form for a user to complete a task.
         success_url (str): Where the form redirects.
         context_object_name (str): What this is called in the template.
 
-    methods:
+    Methods:
         dispatch(self, request, *args, **kwargs): Responsible for request and response.
         get_object(self, queryset=None): Return the object the view is displaying.
     """
@@ -161,10 +161,10 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
         """
         Return the object the view is displaying.
 
-        args:
+        Args:
             none.
 
-        returns:
+        Returns:
             TaskInstance.
         """
         return TaskInstance.objects.get(pk=self.kwargs['pk'])
@@ -174,22 +174,25 @@ class SendTagView(LoginRequiredMixin, View):
     """
     Put selected task on chosen friend's 'my tasks' page, login required.
 
-    attributes:
+    Attributes:
         none.
 
-    methods:
+    Methods:
         post(self, request, *args, **kwargs): Put completed task on tagged friend's 'my tasks' page.
     """
     def post(self, request, *args, **kwargs):
         """
         Put completed task on tagged friend's 'my tasks' page.
 
-        attributes:
+        Args:
+            none.
+
+        Attributes:
             profile (Profile): The profile of the friend who will receive the task.
             task_instance_sent (TaskInstance): The task instance from which the tag is sent.
             task_sent (Task): The task the friend is being tagged in.
 
-        returns:
+        Returns:
             redirect: sends you back to tasks:list.
         """
         # get the friend's profile

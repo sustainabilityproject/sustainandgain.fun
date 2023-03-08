@@ -8,20 +8,45 @@ from friends.models import Profile
 
 
 class TaskCategory(models.Model):
-    """Categories are created and maintained by Gamekeepers."""
+    """
+    Tasks are sorted into categories e.g. 'transport', 'food', etc.
+    Categories are created and maintained by Gamekeepers.
+
+    Attributes:
+        category_name (CharField): The name of the category.
+
+    Methods:
+        __str__(self): Return str(self).
+    """
     category_name = models.CharField(max_length=30)
 
     def __str__(self):
         return self.category_name
 
-    # Ensures the plural of category is correctly 'categories' in the admin page
-    # (otherwise Django thinks it is 'categorys')
     class Meta:
+        """
+        Makes the plural of category 'categories' rather than 'categorys' in the admin page
+        """
         verbose_name_plural = "categories"
 
 
 class Task(models.Model):
-    """Tasks are created and maintained by Gamekeepers."""
+    """
+    Tasks are the foundation of the app.
+    Tasks are created and maintained by Gamekeepers.
+
+    Attributes:
+        title (CharField): The title of the task.
+        description (CharField): The description of the task.
+        points (IntegerField): How many points the task is worth.
+        time_to_repeat (DurationField): How long it takes for the task to become available again after being completed.
+        category (TaskCategory): The category the task belongs to.
+
+    Methods:
+        is_available(self, profile): Check if the task is available for the current user.
+        clean(self): Raise ValidationError if there are inconsistencies in the time_to_repeat or points.
+        __str__(self): Return str(self).
+    """
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
 
@@ -38,9 +63,17 @@ class Task(models.Model):
 
     def is_available(self, profile):
         """
-        Check if this task should be available for a given user.
-        If the user has ACTIVE or PENDING_APPROVAL instances of this task, or the time_to_repeat has not elapsed since
-        the user completed an instance of this task, return false. Otherwise, return true.
+        Check if the task is available for the current user.
+        Return False if:
+            The user has an ACTIVE or PENDING_APPROVAL instance of this task.
+            The time_to_repeat has not elapsed since the task instance became COMPLETED.
+        Otherwise, return True.
+
+        Args:
+            none.
+
+        Returns:
+            Boolean: Whether this task is available for the user.
         """
         this_task_instances = TaskInstance.objects.filter(task=self.pk, profile=profile.pk)
 
@@ -55,6 +88,15 @@ class Task(models.Model):
         return True
 
     def clean(self):
+        """
+        Raise ValidationError if there are inconsistencies in the time_to_repeat or points.
+
+        Args:
+            none.
+
+        Returns:
+            self (Task): After review.
+        """
         time_to_repeat = self.time_to_repeat
         if time_to_repeat < datetime.timedelta(0):
             raise ValidationError('Time to repeat cannot be negative')
@@ -70,8 +112,28 @@ class Task(models.Model):
 
 class TaskInstance(models.Model):
     """
-    TaskInstance represents a specific instance of a task, undertaken by a user.
-    They are generated when a user selects a Task to complete.
+    An instance of a Task belonging to a user.
+    They are generated when a user selects a Task to complete or is tagged in one.
+
+    Attributes:
+        task (Task): The task of which this is an instance.
+        time_accepted (DateTimeField): The time the task was accepted (when this instance was created).
+        time_completed (DateTimeField): The time the task was completed.
+        photo (ImageField): Photo uploaded by user as proof of completion.
+        note (CharField): Comment uploaded by the user when complete.
+        profile (Profile): Profile of the instance's owner.
+        likes (ManyToManyField(Profile, related_name='likes')): Who has liked the task.
+        reports (ManyToManyField(Profile, related_name='likes')): Who has reported the task.
+        location (CharField): Where the task was completed.
+        origin_message (CharField): Tells user why task is on their 'my tasks' page.
+        tagged_someone (BooleanField): Has the user tagged someone else in this task.
+        status (CharField): Whether the task is Available, Active, Pending Approval, or Complete.
+
+    Methods:
+        __str__(self): Return str(self).
+        status_color(self): Return the colour of the task's status badge.
+        clean(self): Raise ValidationError if there are inconsistencies in the time_completed and time_accepted.
+        report_task_complete(self): The user reports themselves as having completed a task.
     """
 
     # This references the task the user has accepted
@@ -126,9 +188,17 @@ class TaskInstance(models.Model):
     def __str__(self):
         return f"Task:{self.task.title}; User:{self.profile.user.username}"
 
-    # Returns the colour of the status badge of the task
     @property
     def status_colour(self):
+        """
+        Return the colour of the task's status badge.
+
+        Args:
+            none.
+
+        Returns:
+            str: The badge's colour.
+        """
         if self.status == TaskInstance.ACTIVE:
             return 'bg-primary'
         elif self.status == TaskInstance.PENDING_APPROVAL:
@@ -137,10 +207,23 @@ class TaskInstance(models.Model):
             return 'text-bg-success'
 
     def clean(self):
+        """
+        Raise ValidationError if there are inconsistencies in the time_completed and time_accepted.
+        Tasks must have been completed after they were accepted AND in the past.
+        Tasks cannot be active if they have a time completed.
+        Tasks must have a time completed if they are not active.
+
+        Args:
+            none.
+
+        Returns:
+            self (TaskInstance): After review.
+        """
         time_completed = self.time_completed
         time_accepted = self.time_accepted
         status = self.status
 
+        # Validate that task was completed in the past and that task was completed after it was accepted
         if time_completed is not None:
             if time_completed < time_accepted:
                 raise ValidationError("Tasks cannot have been completed before they were accepted.")
@@ -155,7 +238,9 @@ class TaskInstance(models.Model):
 
         return self
 
-    # When the user reports themselves as having completed a task
     def report_task_complete(self):
+        """
+        The user reports themselves as having completed a task.
+        """
         self.status = self.PENDING_APPROVAL
         self.time_completed = timezone.now()
