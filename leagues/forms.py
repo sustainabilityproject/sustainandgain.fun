@@ -57,6 +57,7 @@ class EditLeagueForm(forms.ModelForm):
             raise forms.ValidationError('Private leagues must be invite only')
         return cleaned_data
 
+
 class InviteMemberForm(forms.ModelForm):
     """
     Form used by an admin of a league to invite a user to join the league.

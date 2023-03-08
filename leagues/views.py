@@ -88,24 +88,7 @@ class JoinLeagueView(LoginRequiredMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         league = self.get_object()
 
-        if request.user.profile in league.get_members():
-            messages.info(request, 'You are already a member of this league.')
-            return redirect('leagues:detail', pk=league.pk)
-
-        if league.invite_only:
-            # If the user hasn't been invited, change their status to pending
-            if not LeagueMember.objects.filter(league=league, profile=request.user.profile, status='invited').exists():
-                member, created = LeagueMember.objects.get_or_create(league=league, profile=request.user.profile)
-                member.status = 'pending'
-                member.save()
-                messages.success(request, f'You have requested to join {league.name}')
-                return redirect('leagues:detail', pk=league.pk)
-
-        # If the user has been invited or the league is public, add them to the league
-        member, created = LeagueMember.objects.get_or_create(league=league, profile=request.user.profile)
-        member.status = 'joined'
-        member.save()
-        messages.success(request, f'You have joined {league.name}')
+        league.join(request, request.user.profile)
         return redirect('leagues:detail', pk=league.pk)
 
 
@@ -121,32 +104,8 @@ class LeaveLeagueView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         league = self.get_object()
-
-        if request.user.profile not in league.members.all():
-            messages.info(request, 'You are not a member of this league.')
-            return redirect('leagues:detail', pk=league.pk)
-
-        # Can't leave a league if the user is the only admin
-        member = LeagueMember.objects.get(league=league, profile=request.user.profile)
-        if member.role == 'admin' and LeagueMember.objects.filter(Q(league=league) and Q(role='admin')).count() == 1:
-            messages.error(request, 'You are the only admin of this league. You cannot leave.')
-            return redirect('leagues:detail', pk=league.pk)
-
-        # If the user was invited by an admin, decline the invitation
-        if member.status == 'invited':
-            league.members.remove(request.user.profile)
-            messages.success(request, f'You have declined the invitation to {league.name}')
-            return redirect('leagues:detail', pk=league.pk)
-
-        # If the user had requested to join the league, remove their request
-        if member.status == 'pending':
-            league.members.remove(request.user.profile)
-            messages.success(request, f'You have removed your request to join {league.name}')
-            return redirect('leagues:detail', pk=league.pk)
-        else:
-            league.members.remove(request.user.profile)
-            messages.success(request, f'You have left {league.name}')
-            return redirect('leagues:detail', pk=league.pk)
+        league.leave(request, request.user.profile)
+        return redirect('leagues:list')
 
 
 class CreateLeagueView(LoginRequiredMixin, CreateView):
@@ -229,18 +188,14 @@ class InviteMemberView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         profile = Profile.objects.get(user__username=form.cleaned_data['username'])
         # If the user had requested to join the league, add them to the league
-        if LeagueMember.objects.filter(league=self.get_object(), profile=profile, status='pending').exists():
-            member = LeagueMember.objects.get(league=self.get_object(), profile=profile)
-            member.status = 'joined'
-            member.save()
-            messages.success(self.request, f'{profile.user.username} has joined {self.get_object().name}')
-            return redirect('leagues:pending', pk=self.get_object().pk)
-        else:
-            member = LeagueMember.objects.create(league=self.get_object(), profile=profile)
-            member.status = 'invited'
-            member.save()
-            messages.success(self.request, f'{profile.user.username} has been invited to {self.get_object().name}')
-            return super().form_valid(form)
+        league = self.get_object()
+        try:
+            message = league.invite(self.request, profile)
+            if message == 'joined':
+                return redirect('leagues:pending', pk=league.pk)
+        except Exception as e:
+            messages.error(self.request, e)
+        return redirect('leagues:invite', pk=league.pk)
 
 
 class RemoveMemberView(LoginRequiredMixin, UpdateView):
@@ -260,14 +215,13 @@ class RemoveMemberView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         league = self.get_object()
-        member = get_object_or_404(LeagueMember, league=league, profile__user__username=kwargs['username'])
-        # Can't remove yourself
-        if member.profile == request.user.profile:
-            messages.error(request, 'You cannot remove yourself from the league.')
+        profile = Profile.objects.get(user__username=kwargs['username'])
+        try:
+            league.kick(request, profile)
             return redirect('leagues:detail', pk=league.pk)
-        member.delete()
-        messages.success(request, f'{member.profile.user.username} has been removed from {league.name}')
-        return redirect('leagues:detail', pk=league.pk)
+        except Exception as e:
+            messages.error(request, e)
+            return redirect('leagues:detail', pk=league.pk)
 
 
 class PendingMembersView(LoginRequiredMixin, DetailView):
@@ -309,14 +263,11 @@ class PromoteMemberView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         league = self.get_object()
-        member = get_object_or_404(LeagueMember, league=league, profile__user__username=kwargs['username'])
-        # Can't promote yourself
-        if member.profile == request.user.profile:
-            messages.error(request, 'You cannot promote yourself to admin.')
-            return redirect('leagues:detail', pk=league.pk)
-        member.role = 'admin'
-        member.save()
-        messages.success(request, f'{member.profile.user.username} has been promoted to admin in {league.name}')
+        profile = Profile.objects.get(user__username=kwargs['username'])
+        try:
+            league.promote(self.request, profile)
+        except Exception as e:
+            messages.error(request, e)
         return redirect('leagues:detail', pk=league.pk)
 
 
@@ -337,12 +288,9 @@ class DemoteMemberView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         league = self.get_object()
-        member = get_object_or_404(LeagueMember, league=league, profile__user__username=kwargs['username'])
-        # Can't demote yourself
-        if member.profile == request.user.profile:
-            messages.error(request, 'You cannot demote yourself from admin.')
-            return redirect('leagues:detail', pk=league.pk)
-        member.role = 'member'
-        member.save()
-        messages.success(request, f'{member.profile.user.username} has been demoted from admin in {league.name}')
+        profile = Profile.objects.get(user__username=kwargs['username'])
+        try:
+            league.demote(self.request, profile)
+        except Exception as e:
+            messages.error(request, e)
         return redirect('leagues:detail', pk=league.pk)

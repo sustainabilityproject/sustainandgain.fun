@@ -19,6 +19,17 @@
                 {% bootstrap_form form %}
                 {% bootstrap_button button_type="submit" content="Complete" %}
             </form>
+            <script>
+                // Get the user's location using the Geolocation API
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+
+                    // Set the values of the hidden input fields
+                    document.getElementById("id_latitude").value = latitude;
+                    document.getElementById("id_longitude").value = longitude;
+                });
+            </script>
         {% endif %}
     </div>
 {% endblock %}
