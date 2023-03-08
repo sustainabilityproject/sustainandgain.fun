@@ -20,6 +20,7 @@ class Profile(models.Model):
         Returns a list of friends where the request has status specified by the status parameter
         a = accepted
         p = pending
+        all = both a and p requests
         """
         if status != 'all':
             friends = [
