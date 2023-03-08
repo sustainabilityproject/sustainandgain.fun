@@ -13,6 +13,7 @@ from friends.forms import UpdateProfileForm
 from friends.models import FriendRequest, Profile
 from leagues.models import League, LeagueMember
 from tasks.models import TaskInstance
+from notifications.models import Notifications
 
 
 class ProfileView(LoginRequiredMixin, DetailView):
@@ -185,6 +186,12 @@ class AddFriendView(LoginRequiredMixin, View):
         # Create a new friend request
         FriendRequest.objects.create(from_profile=request.user.profile, to_profile=profile)
         messages.success(request, f'Friend request sent to {profile.user.username}!')
+
+        Notifications.objects.create(
+            notification_type='friend_request',
+            notification_message=f'{request.user.profile.user.username} has sent you a friend request.',
+            notification_user=profile.user
+        )
         return redirect('friends:list')
 
 

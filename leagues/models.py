@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from tasks.models import TaskInstance
+from notifications.models import Notifications
 
 
 class League(models.Model):
@@ -100,6 +101,14 @@ class League(models.Model):
             member.save()
             if request is not None:
                 messages.success(request, f'{profile.user.username} has been invited to join {self.name}')
+
+            # Send a notification to the user
+            Notifications.objects.create(
+                notification_type='league_invite',
+                notification_message=f'You have been invited to join {self.name} by {request.user.username}',
+                notification_user=profile.user,
+                notification_url=f'/leagues/{self.id}/',
+            )
             return
 
     def promote(self, request, profile):
