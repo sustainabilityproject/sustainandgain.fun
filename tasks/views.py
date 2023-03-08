@@ -1,5 +1,3 @@
-# TODO class rather than function views
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
@@ -13,16 +11,43 @@ from .models import *
 
 class MyTasksView(LoginRequiredMixin, ListView):
     """
-    View all the task assigned to the current user.
+    View all the tasks assigned to the current user, login required.
+
+    attributes:
+        model
+        template_name (str): The html template this view uses.
+        context_object_name (str): What this is called in the template.
+
+    methods:
+        get_queryset(self): Return all task instances belonging to current user.
+        get_context_data(self, **kwargs): Return user's active, completed, and pending tasks and their friends.
     """
     model = TaskInstance
     template_name = "tasks/my_tasks.html"
     context_object_name = "tasks"
 
     def get_queryset(self):
+        """
+        Return all task instances belonging to current user.
+
+        args:
+            none.
+
+        returns:
+            QuerySet[TaskInstance]: the task instances which belong to the user.
+        """
         return TaskInstance.objects.filter(profile=self.request.user.profile)
 
     def get_context_data(self, **kwargs):
+        """
+        Return user's active, completed, and pending tasks and their friends.
+
+        args:
+            none.
+
+        returns:
+            context (dict[str, Any]): active_tasks, completed_tasks, pending_tasks, friends.
+        """
         context = super().get_context_data(**kwargs)
         context['active_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.ACTIVE]
         context['completed_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.COMPLETED]
@@ -33,11 +58,26 @@ class MyTasksView(LoginRequiredMixin, ListView):
 
 class IndexView(LoginRequiredMixin, TemplateView):
     """
-    List of all tasks that are available for the current user.
+    View of all tasks that are available for the current user, login required.
+
+    attributes:
+        template_name (str): The html template this view uses.
+
+    methods:
+        get_context_data(self, **kwargs): Return tasks which are available for the current user.
     """
     template_name = "tasks/available_tasks.html"
 
     def get_context_data(self, **kwargs):
+        """
+        Return tasks which are available for the current user.
+
+        args:
+            none.
+
+        returns:
+            context (dict[str: Any]): tasks_list.
+        """
         context = super().get_context_data(**kwargs)
 
         # Generate a list of all tasks that are available for this user
@@ -49,12 +89,29 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
 class AcceptTaskView(LoginRequiredMixin, View):
     """
-    When the user accepts a task, create a new active TaskInstance referencing that user and the accepted task
+    Create new TaskInstance referencing this user and the task they accepted.
+
+    attributes:
+        none.
+
+    methods:
+        get(self, request, *args, **kwargs): Create task instance for user's 'my tasks' page.
     """
 
     def get(self, request, *args, **kwargs):
+        """
+        Create task instance for user's 'my tasks' page.
+
+        args:
+            none.
+
+        returns:
+            redirect: sends you back to tasks:list.
+        """
         task_accepted = Task.objects.get(pk=self.kwargs['pk'])
         if task_accepted.is_available(request.user.profile):
+
+            # create new task instance for current profile, set it to active
             t = TaskInstance(
                 task=task_accepted,
                 profile=request.user.profile,
@@ -67,7 +124,18 @@ class AcceptTaskView(LoginRequiredMixin, View):
 
 class CompleteTaskView(LoginRequiredMixin, UpdateView):
     """
-    User can complete a task by uploading a photo of the completed task and has the option to add a note.
+    Set task to pending approval when the user has completed it.
+    The user can upload a photo and optionally add a note and their location.
+
+    attributes:
+        template_name (str): The html template this view uses.
+        form_class (CompleteTaskForm): Form for a user to complete a task.
+        success_url (str): Where the form redirects.
+        context_object_name (str): What this is called in the template.
+
+    methods:
+        dispatch(self, request, *args, **kwargs): Responsible for request and response.
+        get_object(self, queryset=None): Return the object the view is displaying.
     """
     template_name = 'tasks/complete_task.html'
     form_class = CompleteTaskForm
@@ -75,6 +143,11 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
     context_object_name = 'task'
 
     def dispatch(self, request, *args, **kwargs):
+        """
+        Responsible for request and response.
+        Redirects if the user is not the owner of the task or if the task is already completed.
+        # TODO work out how to document this one lol
+        """
         task = TaskInstance.objects.get(pk=self.kwargs['pk'])
         # Redirect if the user is not the owner of the task
         if task.profile != request.user.profile:
@@ -85,19 +158,39 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
+        """
+        Return the object the view is displaying.
+
+        args:
+            none.
+
+        returns:
+            TaskInstance.
+        """
         return TaskInstance.objects.get(pk=self.kwargs['pk'])
 
 
 class SendTagView(LoginRequiredMixin, View):
     """
-    Gives your chosen friend the task
-    This is very early lol, I'll keep making it
-    TODO tag requests rather than forcing tasks
-    TODO you can only tag once per task completion
+    Put selected task on chosen friend's 'my tasks' page, login required.
+
+    attributes:
+        none.
+
+    methods:
+        post(self, request, *args, **kwargs): Put completed task on tagged friend's 'my tasks' page.
     """
     def post(self, request, *args, **kwargs):
         """
-        Puts the task on your friend's profile if it's available to them
+        Put completed task on tagged friend's 'my tasks' page.
+
+        attributes:
+            profile (Profile): The profile of the friend who will receive the task.
+            task_instance_sent (TaskInstance): The task instance from which the tag is sent.
+            task_sent (Task): The task the friend is being tagged in.
+
+        returns:
+            redirect: sends you back to tasks:list.
         """
         # get the friend's profile
         profile = get_object_or_404(Profile, user__username=request.POST['username'])
@@ -108,10 +201,12 @@ class SendTagView(LoginRequiredMixin, View):
         # get the task
         task_sent = task_instance_sent.task
 
-        # if they don't already have the task, give it to them (not final version)
+        # if they don't already have the task, give it to them
         if task_sent.is_available(profile.user.profile):
             message = 'Tagged ' + profile.user.username + ' in ' + task_sent.title
             messages.success(request, message)
+
+            # create the task instance that goes on the friend's page
             t = TaskInstance(
                 task=task_sent,
                 profile=profile.user.profile,
@@ -119,6 +214,8 @@ class SendTagView(LoginRequiredMixin, View):
                 origin_message=self.request.user.username + ' tagged you!'
             )
             t.save()
+
+            # you can't tag anyone else in this task now
             task_instance_sent.tagged_someone = True
             task_instance_sent.save()
         else:

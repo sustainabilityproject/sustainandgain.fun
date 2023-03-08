@@ -104,7 +104,7 @@ class TaskInstance(models.Model):
     # Shows in the MyTasks view, lets you know who tagged you
     origin_message = models.CharField(max_length=50, default='This task is available')
 
-    # TODO record whether you've tagged someone in this task already -- literally just a Boolean
+    # have you tagged someone in this task yet?
     tagged_someone = models.BooleanField(default=False)
 
     # Constants representing possible task states
