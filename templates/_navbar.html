@@ -22,6 +22,9 @@
                     <li class="nav-item">
                         <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-item nav-link" href="{% url 'chat' %}">Chat</a>
+                    </li>
                     {% if user.is_staff %}
                         <li class="nav-item">
                             {% load poll_extras %}
