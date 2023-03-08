@@ -6,7 +6,7 @@ from accounts.models import User
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # single profile image
-    image = models.ImageField(default='default/default.jpg', upload_to='profile_pics')
+    image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
     friends = models.ManyToManyField('self', blank=True, symmetrical=True, through='FriendRequest')
     bio = models.TextField(default='', blank=True)
 

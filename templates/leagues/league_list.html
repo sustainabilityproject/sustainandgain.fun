@@ -16,8 +16,8 @@
                                 <h2 class="card-title">{{ league }}</h2>
                                 <p class="card-text">{{ league.description }}</p>
                                 <ul class="list-inline">
-                                    <li class="list-inline-item">{{ league.members.count }}
-                                        member{{ league.members.count|pluralize }}</li>
+                                    <li class="list-inline-item">{{ league.get_members.count }}
+                                        member{{ league.get_members.count|pluralize }}</li>
                                     <li class="list-inline-item"><a href="{% url 'leagues:detail' league.id %}"
                                                                     class="btn btn-primary">View</a></li>
                                 </ul>
@@ -39,8 +39,8 @@
                             <h2 class="card-title">{{ league }}</h2>
                             <p class="card-text">{{ league.description }}</p>
                             <ul class="list-inline">
-                                <li class="list-inline-item">{{ league.members.count }}
-                                    member{{ league.members.count|pluralize }}</li>
+                                <li class="list-inline-item">{{ league.get_members.count }}
+                                    member{{ league.get_members.count|pluralize }}</li>
                                 <li class="list-inline-item"><a href="{% url 'leagues:detail' league.id %}"
                                                                 class="btn btn-primary">View</a></li>
                             </ul>
@@ -59,8 +59,8 @@
                             <h2 class="card-title">{{ league }}</h2>
                             <p class="card-text">{{ league.description }}</p>
                             <ul class="list-inline">
-                                <li class="list-inline-item">{{ league.members.count }}
-                                    member{{ league.members.count|pluralize }}</li>
+                                <li class="list-inline-item">{{ league.get_members.count }}
+                                    member{{ league.get_members.count|pluralize }}</li>
                                 <li class="list-inline-item"><a href="{% url 'leagues:detail' league.id %}"
                                                                 class="btn btn-primary">View</a></li>
                             </ul>
