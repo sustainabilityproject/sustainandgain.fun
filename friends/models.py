@@ -1,6 +1,8 @@
 from django.db import models, IntegrityError
+from django.db.models import Q
 
 from accounts.models import User
+
 
 
 class Profile(models.Model):
@@ -19,15 +21,18 @@ class Profile(models.Model):
         a = accepted
         p = pending
         """
+        if status != 'all':
+            friends = [
+                request.to_profile if (request.from_profile == self) else request.from_profile 
+                for request in FriendRequest.objects.filter(Q(from_profile=self) | Q(to_profile=self), status='a')
+                ]
+        else:
+            friends = [
+                request.to_profile if (request.from_profile == self) else request.from_profile 
+                for request in FriendRequest.objects.filter(Q(from_profile=self) | Q(to_profile=self))
+                ]
 
-        friend_requests_sent = FriendRequest.objects.filter(from_profile=self, status=status).values_list(
-            'to_profile_id', flat=True)
-        friend_requests_received = FriendRequest.objects.filter(to_profile=self, status=status).values_list(
-            'from_profile_id', flat=True)
-        friend_ids = list(set(friend_requests_sent).union(set(friend_requests_received)))
-        friends = Profile.objects.filter(id__in=friend_ids)
-
-        return friends
+        return list(set(friends))
 
     @property
     def name(self):
