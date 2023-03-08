@@ -39,22 +39,27 @@
                             <td>+{{ task.task.points }}</td>
                             <td>
                                 Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}
+                                <h5>
+                                    Tag Friends
+                                </h5>
                                 {% if friends %}
-                                    <h5>
-                                        Tag Friends
-                                    </h5>
-                                    <form method="post" action="{% url 'tasks:tag' task.task.id %}">
-                                        {% csrf_token %}
-                                        <select name="username">
-                                            {% for friend in friends %}
-                                                <option value="{{ friend.user.username }}">{{ friend.user.username }}</option>
-                                            {% endfor %}
-                                        </select>
-                                        <button type="submit" class="btn btn-success mt-1">Tag</button>
-                                    </form>
+                                    {% if task.tagged_someone %}
+                                        <p>You've already tagged someone in this task, try completing some more!</p>
+                                    {% else %}
+                                        <form method="post" action="{% url 'tasks:tag' task.id %}">
+                                            {% csrf_token %}
+                                            <select name="username">
+                                                {% for friend in friends %}
+                                                    <option value="{{ friend.user.username }}">{{ friend.user.username }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="submit" class="btn btn-success mt-1">Tag</button>
+                                        </form>
+                                    {% endif %}
                                 {% else %}
                                     <p>You have no friends yet, try making a request from your profile</p>
                                 {% endif %}
+
                             </td>
                         </tr>
                     {% endfor %}
