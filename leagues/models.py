@@ -103,12 +103,13 @@ class League(models.Model):
                 messages.success(request, f'{profile.user.username} has been invited to join {self.name}')
 
             # Send a notification to the user
-            Notifications.objects.create(
-                notification_type='league_invite',
-                notification_message=f'You have been invited to join {self.name} by {request.user.username}',
-                notification_user=profile.user,
-                notification_url=f'/leagues/{self.id}/',
-            )
+            if request is not None:
+                Notifications.objects.create(
+                    notification_type='league_invite',
+                    notification_message=f'You have been invited to join {self.name} by {request.user.username}',
+                    notification_user=profile.user,
+                    notification_url=f'/leagues/{self.id}/',
+                )
             return
 
     def promote(self, request, profile):
