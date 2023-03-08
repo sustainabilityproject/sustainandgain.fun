@@ -43,7 +43,7 @@
                                     <h5>
                                         Tag Friends
                                     </h5>
-                                    <form method="post" action="{% url 'tasks:tag' task.task.id %}">
+                                    <form method="post" action="{% url 'tasks:tag' task.id %}">
                                         {% csrf_token %}
                                         <select name="username">
                                             {% for friend in friends %}
@@ -54,6 +54,11 @@
                                     </form>
                                 {% else %}
                                     <p>You have no friends yet, try making a request from your profile</p>
+                                {% endif %}
+                                {% if task.tagged_someone %}
+                                <p>you've tagged someone in this task</p>
+                                {% else %}
+                                <p>you haven't tagged anyone in this task</p>
                                 {% endif %}
                             </td>
                         </tr>

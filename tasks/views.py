@@ -102,8 +102,11 @@ class SendTagView(LoginRequiredMixin, View):
         # get the friend's profile
         profile = get_object_or_404(Profile, user__username=request.POST['username'])
 
+        # get the task instance
+        task_instance_sent = TaskInstance.objects.get(pk=self.kwargs['pk'])
+
         # get the task
-        task_sent = Task.objects.get(pk=self.kwargs['pk'])
+        task_sent = task_instance_sent.task
 
         # if they don't already have the task, give it to them (not final version)
         if task_sent.is_available(profile.user.profile):
@@ -116,6 +119,8 @@ class SendTagView(LoginRequiredMixin, View):
                 origin_message=self.request.user.username + ' tagged you!'
             )
             t.save()
+            task_instance_sent.tagged_someone = True
+            task_instance_sent.save()
         else:
             message = profile.user.username + ' is already doing that task'
             messages.info(request, message)

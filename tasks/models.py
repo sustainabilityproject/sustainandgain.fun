@@ -34,6 +34,8 @@ class Task(models.Model):
     # PROTECT means that a category cannot be deleted while tasks exist under that category
     category = models.ForeignKey(TaskCategory, on_delete=models.PROTECT)
 
+    # TODO rarity as an attribute of Task? possibly limit task instances to a percentage of users
+
     def is_available(self, profile):
         """
         Check if this task should be available for a given user.
@@ -101,6 +103,9 @@ class TaskInstance(models.Model):
 
     # Shows in the MyTasks view, lets you know who tagged you
     origin_message = models.CharField(max_length=50, default='This task is available')
+
+    # TODO record whether you've tagged someone in this task already -- literally just a Boolean
+    tagged_someone = models.BooleanField(default=False)
 
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
