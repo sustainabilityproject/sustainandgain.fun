@@ -35,6 +35,26 @@ class Task(models.Model):
     category = models.ForeignKey(TaskCategory, on_delete=models.PROTECT)
 
     # TODO rarity as an attribute of Task? possibly limit task instances to a percentage of users
+    GOLD = 3
+    SILVER = 2
+    NORMAL = 1
+    TASK_RARITY_CHOICES = (
+        (1, "Normal"),
+        (2, "Silver"),
+        (3, "Gold")
+    )
+
+    @property
+    def rarity_colour(self):
+        if self.rarity == self.GOLD:
+            return "badge-gold"
+
+        elif self.rarity == self.SILVER:
+            return "badge-silver"
+
+    rarity = models.IntegerField(choices=TASK_RARITY_CHOICES, default=1)
+
+
 
     def is_available(self, profile):
         """
@@ -135,6 +155,7 @@ class TaskInstance(models.Model):
             return 'bg-warning text-dark'
         elif self.status == TaskInstance.COMPLETED:
             return 'text-bg-success'
+
 
     def clean(self):
         time_completed = self.time_completed
