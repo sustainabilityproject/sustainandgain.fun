@@ -41,8 +41,10 @@ class Task(models.Model):
         points (IntegerField): How many points the task is worth.
         time_to_repeat (DurationField): How long it takes for the task to become available again after being completed.
         category (TaskCategory): The category the task belongs to.
+        rarity (IntegerField): Rarity of the task. Normal, Silver, Gold.
 
     Methods:
+        rarity_colour(self): Return badge colour corresponding to rarity.
         is_available(self, profile): Check if the task is available for the current user.
         clean(self): Raise ValidationError if there are inconsistencies in the time_to_repeat or points.
         __str__(self): Return str(self).
@@ -59,7 +61,7 @@ class Task(models.Model):
     # PROTECT means that a category cannot be deleted while tasks exist under that category
     category = models.ForeignKey(TaskCategory, on_delete=models.PROTECT)
 
-    # TODO rarity as an attribute of Task? possibly limit task instances to a percentage of users
+    # Rarity categories
     GOLD = 3
     SILVER = 2
     NORMAL = 1
@@ -71,6 +73,12 @@ class Task(models.Model):
 
     @property
     def rarity_colour(self):
+        """
+        Return badge colour corresponding to rarity.
+
+        Returns:
+            str: Badge colour.
+        """
         if self.rarity == self.GOLD:
             return "badge-gold"
 
@@ -79,8 +87,6 @@ class Task(models.Model):
 
     rarity = models.IntegerField(choices=TASK_RARITY_CHOICES, default=1)
 
-
-
     def is_available(self, profile):
         """
         Check if the task is available for the current user.
@@ -88,9 +94,6 @@ class Task(models.Model):
             The user has an ACTIVE or PENDING_APPROVAL instance of this task.
             The time_to_repeat has not elapsed since the task instance became COMPLETED.
         Otherwise, return True.
-
-        Args:
-            none.
 
         Returns:
             Boolean: Whether this task is available for the user.
@@ -110,9 +113,6 @@ class Task(models.Model):
     def clean(self):
         """
         Raise ValidationError if there are inconsistencies in the time_to_repeat or points.
-
-        Args:
-            none.
 
         Returns:
             self (Task): After review.
@@ -213,9 +213,6 @@ class TaskInstance(models.Model):
         """
         Return the colour of the task's status badge.
 
-        Args:
-            none.
-
         Returns:
             str: The badge's colour.
         """
@@ -233,9 +230,6 @@ class TaskInstance(models.Model):
         Tasks must have been completed after they were accepted AND in the past.
         Tasks cannot be active if they have a time completed.
         Tasks must have a time completed if they are not active.
-
-        Args:
-            none.
 
         Returns:
             self (TaskInstance): After review.

@@ -14,7 +14,7 @@ class MyTasksView(LoginRequiredMixin, ListView):
     View all the tasks assigned to the current user, login required.
 
     Attributes:
-        model
+        model (TaskInstance): The thing being displayed.
         template_name (str): The html template this view uses.
         context_object_name (str): What this is called in the template.
 
@@ -30,9 +30,6 @@ class MyTasksView(LoginRequiredMixin, ListView):
         """
         Return all task instances belonging to current user.
 
-        Args:
-            none.
-
         Returns:
             QuerySet[TaskInstance]: the task instances which belong to the user.
         """
@@ -41,9 +38,6 @@ class MyTasksView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         """
         Return user's active, completed, and pending tasks and their friends.
-
-        Args:
-            none.
 
         Returns:
             context (dict[str, Any]): active_tasks, completed_tasks, pending_tasks, friends.
@@ -72,9 +66,6 @@ class IndexView(LoginRequiredMixin, TemplateView):
         """
         Return tasks which are available for the current user.
 
-        Args:
-            none.
-
         Returns:
             context (dict[str: Any]): tasks_list.
         """
@@ -91,9 +82,6 @@ class AcceptTaskView(LoginRequiredMixin, View):
     """
     Create new TaskInstance referencing this user and the task they accepted.
 
-    Attributes:
-        none.
-
     Methods:
         get(self, request, *args, **kwargs): Create task instance for user's 'my tasks' page.
     """
@@ -101,9 +89,6 @@ class AcceptTaskView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         """
         Create task instance for user's 'my tasks' page.
-
-        Args:
-            none.
 
         Returns:
             redirect: sends you back to tasks:list.
@@ -146,7 +131,6 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
         """
         Responsible for request and response.
         Redirects if the user is not the owner of the task or if the task is already completed.
-        # TODO work out how to document this one lol
         """
         task = TaskInstance.objects.get(pk=self.kwargs['pk'])
         # Redirect if the user is not the owner of the task
@@ -161,9 +145,6 @@ class CompleteTaskView(LoginRequiredMixin, UpdateView):
         """
         Return the object the view is displaying.
 
-        Args:
-            none.
-
         Returns:
             TaskInstance.
         """
@@ -174,18 +155,12 @@ class SendTagView(LoginRequiredMixin, View):
     """
     Put selected task on chosen friend's 'my tasks' page, login required.
 
-    Attributes:
-        none.
-
     Methods:
         post(self, request, *args, **kwargs): Put completed task on tagged friend's 'my tasks' page.
     """
     def post(self, request, *args, **kwargs):
         """
         Put completed task on tagged friend's 'my tasks' page.
-
-        Args:
-            none.
 
         Attributes:
             profile (Profile): The profile of the friend who will receive the task.
