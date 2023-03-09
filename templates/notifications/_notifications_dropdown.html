@@ -1,0 +1,34 @@
+<li class="dropdown nav-item" x-data="{
+    notifications: [{
+        actor: 'Loading...',
+        verb: 'Loading...',
+        data: {
+            url: '#'
+        }
+    }],
+    getNotifications(){
+        fetch('/notifications/api/unread_list/?max=5')
+            .then(response => response.json())
+            .then(data => {
+                this.notifications = data.unread_list;
+                this.loaded = true;
+            })
+    }
+}" x-init="getNotifications()" x-on:click="getNotifications()">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+       data-bs-toggle="dropdown" aria-expanded="false">
+        Notifications
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+         <template x-for="(item, index) in notifications">
+            <li>
+                <a class="dropdown-item" :href="item.data.url" x-text="`${item.actor} ${item.verb}`"></a>
+            </li>
+        </template>
+        <template x-if="notifications.length === 0">
+            <li>
+                <a class="dropdown-item" href="#">No notifications</a>
+            </li>
+        </template>
+    </ul>
+</li>

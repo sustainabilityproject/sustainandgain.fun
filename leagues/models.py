@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from tasks.models import TaskInstance
-from notifications.models import Notifications
 
 
 class League(models.Model):

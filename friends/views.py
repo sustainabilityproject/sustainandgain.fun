@@ -7,13 +7,13 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import DetailView, ListView, DeleteView, UpdateView
+from notifications.signals import notify
 
 from accounts.models import User
 from friends.forms import UpdateProfileForm
 from friends.models import FriendRequest, Profile
-from leagues.models import League, LeagueMember
+from leagues.models import League
 from tasks.models import TaskInstance
-from notifications.models import Notifications
 
 
 class ProfileView(LoginRequiredMixin, DetailView):

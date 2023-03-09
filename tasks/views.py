@@ -7,7 +7,6 @@ from django.contrib import messages
 
 from .forms import CompleteTaskForm
 from .models import *
-from notifications.models import Notifications
 
 
 class MyTasksView(LoginRequiredMixin, ListView):
