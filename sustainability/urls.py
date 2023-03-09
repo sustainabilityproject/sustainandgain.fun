@@ -32,10 +32,6 @@ urlpatterns = [
 
     # Gamekeeper routes
     path('gamekeeper/', admin.site.urls),
-
-    # Notifications routes
-    path('notifications/', include('notifications.urls', namespace='notifications')),
-
 ]
 
 if settings.DEBUG:

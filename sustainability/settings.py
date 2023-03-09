@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'tasks.apps.TasksConfig',
     'friends.apps.FriendsConfig',
     'leagues.apps.LeaguesConfig',
-    'notifications.apps.NotificationsConfig',
 ]
 
 MIDDLEWARE = [

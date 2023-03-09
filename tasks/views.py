@@ -198,12 +198,6 @@ class SendTagView(LoginRequiredMixin, View):
             task_instance_sent.tagged_someone = True
             task_instance_sent.save()
 
-            # Create a notification for the tagged user
-            Notifications.objects.create(
-                notification_type='task_tag',
-                notification_message=f'{self.request.user.username} tagged you in {task_sent.title}',
-                notification_user=profile.user,
-            )
         else:
             message = profile.user.username + ' is already doing that task'
             messages.info(request, message)
