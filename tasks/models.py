@@ -71,6 +71,15 @@ class Task(models.Model):
         (3, "Gold")
     )
 
+    # Determines whether the task is a bomb task
+    # Bomb tasks grant no points on completion, but 'explode' and subtract points from a user if they fail to complete
+    # the task within a time limit
+    is_bomb = models.BooleanField(default=False)
+
+    bomb_time_limit = models.DurationField(null=True, blank=True)
+
+
+
     @property
     def rarity_colour(self):
         """
@@ -123,6 +132,12 @@ class Task(models.Model):
 
         if self.points <= 0:
             raise ValidationError('Tasks must grant a positive number of points')
+
+        if self.is_bomb and (self.bomb_time_limit is None):
+            raise ValidationError('Bomb tasks must have a time to complete set.')
+
+        elif (not self.is_bomb) and (self.bomb_time_limit is not None):
+            raise ValidationError('You can only set a bomb time limit if the task is a bomb task.')
 
         return self
 
@@ -188,6 +203,15 @@ class TaskInstance(models.Model):
 
     # have you tagged someone in this task yet?
     tagged_someone = models.BooleanField(default=False)
+
+    # dynamically calculate the bomb deadline of this task by adding the time to complete to the time this task was
+    # accepted by a user
+    @property
+    def bomb_instance_deadline(self):
+        if self.task.is_bomb:
+            return self.time_accepted + self.task.bomb_time_limit
+        else:
+            return None
 
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'

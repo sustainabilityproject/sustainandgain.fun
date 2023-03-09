@@ -1,0 +1,24 @@
+<style>
+    .badge-gold {
+        color: white;
+        background:linear-gradient(to right, #f7e98e, #BF953F, #AA771C);
+    }
+
+    .badge-silver{
+        color: white;
+        background: linear-gradient(to right, #D3D3D3, #C0C0C0, #A9A9A9);    }
+</style>
+
+{% if task.is_bomb %}
+<span class="badge badge-pill bg-danger">
+    💣&#xFE0E
+    {{bomb_countdown}}
+</span>
+{% endif %}
+
+{% if task.rarity != 1 %}
+<span class="border border-light badge badge-pill {{task.rarity_colour}} fs-12">♻&#xFE0E
+</span>
+{% endif %}
+
+
