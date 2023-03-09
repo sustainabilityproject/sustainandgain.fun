@@ -6,18 +6,19 @@
             url: '#'
         }
     }],
+    notificationCount: 0,
     getNotifications(){
         fetch('/notifications/api/unread_list/?max=5')
             .then(response => response.json())
             .then(data => {
                 this.notifications = data.unread_list;
-                this.loaded = true;
+                this.notificationCount = data.unread_count;
             })
     }
 }" x-init="getNotifications()" x-on:click="getNotifications()">
     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
        data-bs-toggle="dropdown" aria-expanded="false">
-        Notifications
+        Notifications <span class="badge bg-success" x-if="notificationCount > 0" x-text="notificationCount"></span>
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
          <template x-for="(item, index) in notifications">
