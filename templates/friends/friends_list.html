@@ -5,10 +5,17 @@
 
     {% if friends %}
         <h2>My Friends</h2>
-        <ul>
+        <ul class="list-inline">
             {% for friend in friends %}
                 <li>
-                    <a href="{% url 'friends:profile' friend.id %}">{{ friend }}</a>
+                    <a class="btn btn-light mb-1" href="{% url 'friends:profile' friend.user.id %}">
+                        <img src="{{ friend.image.url }}" height="40" width="40" alt="">
+                        {% if friend.name != friend.user.username %}
+                            {{ friend.name }} <span class="text-muted">@{{ friend.user.username }}</span>
+                        {% else %}
+                            @{{ friend.user.username }}
+                        {% endif %}                            
+                    </a>
                     <a href="{% url 'friends:remove' friend.user.username %}">
                         <button class="btn btn-danger">Remove</button>
                     </a>
@@ -29,23 +36,25 @@
                 {% for user in users %}
                     <option value="{{ user.username }}">{{ user.username }}</option>
                 {% endfor %}
-
             </select>
             <button type="submit">Add</button>
+        </form>
+        <form action="{% url 'friends:profile_search' %}" method="get">
+            <input name="q" type="text" placeholder="Search for Friend">
+            <input name="f" type="hidden" value = 'True'> 
         </form>
     {% elif incoming_requests or outgoing_requests%}
         <p>You will be friends with everyone!</p>
     {% else %}
         <p>You are friends with everyone!</p>
     {% endif %}
-
     <hr>
 
     <h2>Incoming Friend Requests</h2>
     {% if incoming_requests %}
         <ul>
             {% for request in incoming_requests %}
-                <li><a href="{% url 'friends:profile' request.to_profile.user.id %}">{{ request.from_profile.user }}</a>
+                <li><a href="{% url 'friends:profile' request.from_profile.user.id %}">{{ request.from_profile.user }}</a>
                     <form method="post" action="{% url 'friends:accept_request' request.id %}">
                         {% csrf_token %}
                         <button type="submit">Accept</button>

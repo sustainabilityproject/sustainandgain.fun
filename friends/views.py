@@ -7,7 +7,6 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import DetailView, ListView, DeleteView, UpdateView
-from notifications.signals import notify
 
 from accounts.models import User
 from friends.forms import UpdateProfileForm
@@ -181,13 +180,14 @@ class AddFriendView(LoginRequiredMixin, View):
             # Accept the friend request
             friend_request.accept()
             messages.success(request, f'You are now friends with {profile.user.username}!')
-            return redirect('friends:list')
+            return redirect(request.META['HTTP_REFERER'])
 
         # Create a new friend request
         FriendRequest.objects.create(from_profile=request.user.profile, to_profile=profile)
         messages.success(request, f'Friend request sent to {profile.user.username}!')
 
-        return redirect('friends:list')
+
+        return redirect(request.META['HTTP_REFERER'])
 
 
 class AcceptFriendRequestView(LoginRequiredMixin, View):
@@ -251,3 +251,42 @@ class UpdateProfileView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Profile updated!')
         return super().form_valid(form)
+
+
+class ProfileSearchView(ListView):
+    """
+    View to provide a basic search for users
+    """
+    model = User
+    template_name = 'friends/profile_search.html'
+
+    def get_queryset(self):
+        query = self.request.GET.get("q")
+        # f only exists if the search is made from the friends page
+        f = self.request.GET.get("f")
+
+        object_list = User.objects.filter(
+            Q(username__contains=query) |
+            Q(first_name__contains=query) |
+            Q(last_name__contains=query)
+        ).exclude(id=self.request.user.id)
+
+        if f:
+            # removes current friends from object list
+            friend_ids = [
+                friend.id for friend in self.request.user.profile.get_friends(status='all')
+                ]
+            object_list = object_list.exclude(id__in = friend_ids)
+
+        if not object_list:
+            object_list = None
+
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        f = self.request.GET.get("f")
+        if f is not None:
+            context['searching_for_friend'] = True
+        return context
+

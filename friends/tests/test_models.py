@@ -56,8 +56,8 @@ class FriendRequestFunctions(TestCase):
         )
         request.accept()
         self.assertEqual(request.status, 'a')
-        self.assertEqual(profile_instance1.get_friends().first(), profile_instance2)
-        self.assertEqual(profile_instance2.get_friends().first(), profile_instance1)
+        self.assertEqual(profile_instance1.get_friends()[0], profile_instance2)
+        self.assertEqual(profile_instance2.get_friends()[0], profile_instance1)
 
     def test_decline(self):
         profile_instance1 = ProfileFactory()
