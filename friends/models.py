@@ -1,12 +1,14 @@
 from django.db import models, IntegrityError
+from django.db.models import Q
 
 from accounts.models import User
+
 
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # single profile image
-    image = models.ImageField(default='default/default.jpg', upload_to='profile_pics')
+    image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
     friends = models.ManyToManyField('self', blank=True, symmetrical=True, through='FriendRequest')
     bio = models.TextField(default='', blank=True)
 
@@ -18,16 +20,20 @@ class Profile(models.Model):
         Returns a list of friends where the request has status specified by the status parameter
         a = accepted
         p = pending
+        all = both a and p requests
         """
+        if status != 'all':
+            friends = [
+                request.to_profile if (request.from_profile == self) else request.from_profile 
+                for request in FriendRequest.objects.filter(Q(from_profile=self) | Q(to_profile=self), status='a')
+                ]
+        else:
+            friends = [
+                request.to_profile if (request.from_profile == self) else request.from_profile 
+                for request in FriendRequest.objects.filter(Q(from_profile=self) | Q(to_profile=self))
+                ]
 
-        friend_requests_sent = FriendRequest.objects.filter(from_profile=self, status=status).values_list(
-            'to_profile_id', flat=True)
-        friend_requests_received = FriendRequest.objects.filter(to_profile=self, status=status).values_list(
-            'from_profile_id', flat=True)
-        friend_ids = list(set(friend_requests_sent).union(set(friend_requests_received)))
-        friends = Profile.objects.filter(id__in=friend_ids)
-
-        return friends
+        return list(set(friends))
 
     @property
     def name(self):

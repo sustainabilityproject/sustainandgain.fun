@@ -20,7 +20,13 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends</a>
+                        {% load incoming_requests %}
+                        {% get_friend_requests user.profile as friend_requests %}
+                        {% if friend_requests %}
+                            <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends ({{ friend_requests }})</a>
+                        {% else %}
+                            <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends</a>
+                        {% endif %}
                     </li>
                     <li class="nav-item">
                         <a class="nav-item nav-link" href="{% url 'chat' %}">Chat</a>
@@ -38,6 +44,11 @@
                 </li>
             </ul>
             <ul class="navbar-nav me-right mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <form class="nav-link" action="{% url 'friends:profile_search' %}" method="get">
+                        <input name="q" type="text" placeholder="Search Users...">
+                    </form>
+                </li>
                 {% if user.is_authenticated %}
                     {% if user.is_superuser %}
                         <li class="nav-item">
