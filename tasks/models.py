@@ -78,6 +78,12 @@ class Task(models.Model):
 
     bomb_time_limit = models.DurationField(null=True, blank=True)
 
+    @property
+    def formatted_bomb_time_limit(self):
+        if self.is_bomb:
+            return str(self.bomb_time_limit)
+        else:
+            return None
 
 
     @property
@@ -209,7 +215,8 @@ class TaskInstance(models.Model):
     @property
     def bomb_instance_deadline(self):
         if self.task.is_bomb:
-            return self.time_accepted + self.task.bomb_time_limit
+            deadline = self.time_accepted + self.task.bomb_time_limit
+            return deadline.strftime("%d/%m %H:%M")
         else:
             return None
 
