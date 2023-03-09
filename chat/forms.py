@@ -3,9 +3,10 @@ from django import forms
 from .models import ChatMessage
 from pathlib import Path
 
-CURSE_WORDS = ["fuck", "shit", "bitch"]
-
 def sanitize_input(input_str):
+    swear_words = []
+    pattern = re.compile(r"[^A-Za-z0-9\s\.\,\?\!\-\(\)\[\]\{\}\:\;\"\'\`]", re.IGNORECASE)
+    input_str = pattern.sub("", input_str)
     path = Path(__file__).resolve().parent.parent / 'static' / 'en.txt'
     with open(path, 'r') as f:
         swear_words = [line.strip() for line in f]
@@ -29,4 +30,3 @@ class ChatMessageForm(forms.ModelForm):
     class Meta:
         model = ChatMessage
         fields = ['content']
-

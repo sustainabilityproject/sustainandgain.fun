@@ -12,7 +12,7 @@ class ChatView(LoginRequiredMixin, ListView, FormView):
     success_url = reverse_lazy('chat')
 
     def get_queryset(self):
-        return ChatMessage.objects.order_by('-timestamp')[:50]
+        return ChatMessage.objects.order_by('timestamp')[:50]
 
     def form_valid(self, form):
         form.instance.author = self.request.user
