@@ -1,31 +1,16 @@
-<li class="dropdown nav-item" x-data="{
-    notifications: [{
-        actor: 'Loading...',
-        verb: 'Loading...',
-        data: {
-            url: '#'
-        }
-    }],
-    notificationCount: 0,
-    getNotifications(){
-        fetch('/notifications/api/unread_list/?max=5')
-            .then(response => response.json())
-            .then(data => {
-                this.notifications = data.unread_list;
-                this.notificationCount = data.unread_count;
-            })
-    }
-}" x-init="getNotifications()" x-on:click="getNotifications()">
+<li class="dropdown nav-item" x-data="getNotifications" x-on:click="getNotifications()">
     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
        data-bs-toggle="dropdown" aria-expanded="false">
-        Notifications <span class="badge bg-success" x-show="notificationCount > 0" x-text="notificationCount">
+        Notifications <span id="notificationCount" class="badge bg-success" x-show="notificationCount > 0"
+                            x-text="notificationCount">
     </span>
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
         <li x-show="notifications.length !== 0">
-            <a class="dropdown-item" x-on:click="fetch('/notifications/mark-all-as-read/')" href="#">Clear notifications</a>
+            <a class="dropdown-item" x-on:click="fetch('/notifications/mark-all-as-read/')" href="#">Clear
+                notifications</a>
         </li>
-         <template x-for="(item, index) in notifications">
+        <template x-for="(item, index) in notifications">
             <li>
                 <a class="dropdown-item" :href="item.data.url" x-text="`${item.actor} ${item.verb}`"></a>
             </li>
@@ -37,3 +22,35 @@
         </template>
     </ul>
 </li>
+
+<script>
+    window.addEventListener('alpine:init', () => {
+        Alpine.data('getNotifications', () => ({
+            notifications: [{
+                actor: 'Loading...',
+                verb: 'Loading...',
+                data: {
+                    url: '#'
+                }
+            }],
+            notificationCount: 0,
+            getNotifications() {
+                fetch('/notifications/api/unread_list/?max=5')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.notifications = data.unread_list;
+                        this.notificationCount = data.unread_count;
+                    })
+            },
+            init() {
+                // Call getNotifications() initially
+                this.getNotifications();
+
+                // Call getNotifications() every 10 seconds
+                setInterval(() => {
+                    this.getNotifications();
+                }, 10000); // 10000 milliseconds = 10 seconds
+            },
+        }))
+    })
+</script>
