@@ -42,6 +42,8 @@ class Task(models.Model):
         time_to_repeat (DurationField): How long it takes for the task to become available again after being completed.
         category (TaskCategory): The category the task belongs to.
         rarity (IntegerField): Rarity of the task. Normal, Silver, Gold.
+        is_bomb (BooleanField): Does this task have a time limit.
+        bomb_time_limit (DurationField): How long you have to complete the task if it's a bomb taskgi.
 
     Methods:
         rarity_colour(self): Return badge colour corresponding to rarity.
@@ -148,6 +150,8 @@ class TaskInstance(models.Model):
         origin_message (CharField): Tells user why task is on their 'my tasks' page.
         tagged_someone (BooleanField): Has the user tagged someone else in this task.
         status (CharField): Whether the task is Available, Active, Pending Approval, or Complete.
+        bomb_instance_deadline (timedelta): For bomb tasks only, calculate when this instance of the task is due based
+                                            on date_accepted and the task's bomb_time_to_complete
 
     Methods:
         __str__(self): Return str(self).
