@@ -1,6 +1,7 @@
 from django.views.generic import ListView, FormView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import QuerySet
 from .models import ChatMessage
 from .forms import ChatMessageForm
 
@@ -21,5 +22,9 @@ class ChatView(LoginRequiredMixin, ListView, FormView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['submitted_messages'] = ChatMessage.objects.order_by('-timestamp')[:50]
+        queryset = ChatMessage.objects.order_by('-timestamp')[:50]
+        if isinstance(queryset, QuerySet):
+            context['submitted_messages'] = list(queryset)
+        else:
+            context['submitted_messages'] = []
         return context
