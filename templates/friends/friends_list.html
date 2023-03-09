@@ -54,7 +54,7 @@
     {% if incoming_requests %}
         <ul>
             {% for request in incoming_requests %}
-                <li><a href="{% url 'friends:profile' request.to_profile.user.id %}">{{ request.from_profile.user }}</a>
+                <li><a href="{% url 'friends:profile' request.from_profile.user.id %}">{{ request.from_profile.user }}</a>
                     <form method="post" action="{% url 'friends:accept_request' request.id %}">
                         {% csrf_token %}
                         <button type="submit">Accept</button>
