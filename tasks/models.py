@@ -42,6 +42,8 @@ class Task(models.Model):
         time_to_repeat (DurationField): How long it takes for the task to become available again after being completed.
         category (TaskCategory): The category the task belongs to.
         rarity (IntegerField): Rarity of the task. Normal, Silver, Gold.
+        is_bomb (BooleanField): Does this task have a time limit.
+        bomb_time_limit (DurationField): How long you have to complete the task.
 
     Methods:
         rarity_colour(self): Return badge colour corresponding to rarity.
@@ -77,14 +79,6 @@ class Task(models.Model):
     is_bomb = models.BooleanField(default=False)
 
     bomb_time_limit = models.DurationField(null=True, blank=True)
-
-    @property
-    def formatted_bomb_time_limit(self):
-        if self.is_bomb:
-            return str(self.bomb_time_limit)
-        else:
-            return None
-
 
     @property
     def rarity_colour(self):
@@ -127,7 +121,7 @@ class Task(models.Model):
 
     def clean(self):
         """
-        Raise ValidationError if there are inconsistencies in the time_to_repeat or points.
+        Raise ValidationError if there are inconsistencies in the time_to_repeat, points, and bomb time limits.
 
         Returns:
             self (Task): After review.
@@ -210,13 +204,14 @@ class TaskInstance(models.Model):
     # have you tagged someone in this task yet?
     tagged_someone = models.BooleanField(default=False)
 
-    # dynamically calculate the bomb deadline of this task by adding the time to complete to the time this task was
-    # accepted by a user
     @property
     def bomb_instance_deadline(self):
+        """
+        Calculate the task deadline.
+        Adds the time limits to the time the task was accepted.
+        """
         if self.task.is_bomb:
-            deadline = self.time_accepted + self.task.bomb_time_limit
-            return deadline.strftime("%d/%m %H:%M")
+            return self.time_accepted + self.task.bomb_time_limit
         else:
             return None
 
@@ -253,7 +248,6 @@ class TaskInstance(models.Model):
             return 'bg-warning text-dark'
         elif self.status == TaskInstance.COMPLETED:
             return 'text-bg-success'
-
 
     def clean(self):
         """
