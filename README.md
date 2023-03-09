@@ -44,3 +44,25 @@ python manage.py runserver 8000
 ```bash
 python manage.py test
 ```
+
+## Structure
+The project is set up as a typical Django project.
+Functionality is divided across apps which have their own views, URLs and models.
+* *sustainability* is the base app, containing the settings and delegating URLs to the correct apps.
+* *accounts* manages user creation and authentication, based on the inbuilt Django user system.
+* *autoencoder* contains the from-scratch machine learning system we have implemented for automatic task validation
+* *chat* contains the global site chat system
+* *feed* contains the feed of completed tasks that users see by default when they are logged in
+* *friends* manages friend requests and the profile system
+* *leagues* contains the league system which allows users to join leagues and compete with each other
+* *tasks* contains models and views for the tasks which users accept and complete
+
+There are also some folders which are not Django apps:
+* *media* contains the uploaded task photos
+* *promotional things* contains client-focused branding material and imagery
+* *static* contains static, unchanging resources which need to be loaded elsewhere such as the favicon
+* *templates* contains the Django HTML templates which are displayed to users via views
+
+## Additional resources
+We have a [Kanban board](https://trello.com/b/DwykNGu4/kanban-board) on Trello, and a [documentation website](https://docs.sustainandgain.fun/) which contains client-focused explanations of the app.
+
