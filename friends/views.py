@@ -7,6 +7,8 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import DetailView, ListView, DeleteView, UpdateView
+import operator
+from functools import reduce
 
 from accounts.models import User
 from friends.forms import UpdateProfileForm
@@ -60,6 +62,7 @@ class FriendsListView(LoginRequiredMixin, ListView):
     """
     View to display the current user's friends list as well as friend requests
     """
+    model=Profile
     template_name = 'friends/friends_list.html'
     context_object_name = 'friends'
 
@@ -72,8 +75,6 @@ class FriendsListView(LoginRequiredMixin, ListView):
         """
         Returns the current user's friends and friend requests
         """
-        profile = Profile.objects.get_or_create(user=self.request.user)
-
         # List of user's friends where the request is accepted
         friends = self.request.user.profile.get_friends()
 
@@ -255,38 +256,153 @@ class UpdateProfileView(LoginRequiredMixin, UpdateView):
 
 class ProfileSearchView(ListView):
     """
-    View to provide a basic search for users
+    View to provide a basic search reuslts of User Database
     """
     model = User
     template_name = 'friends/profile_search.html'
 
+    # User.objects.filter(reduce(operator.and_, (Q(first_name__contains=x) for x in ['x', 'y', 'z'])))
+
+
     def get_queryset(self):
-        query = self.request.GET.get("q")
+        """
+        Returns a list of users whose username, first_name and last_name  contain the url parameter q (with basic ordering), 
+        if the url parameter f exists all friends and potential friends will be remove from the list
+
+                Returns:
+                        object_list (list[User]): List of filtered and ordered users
+        """
+
+        # url parameter q
+        query = self.request.GET.get("q").strip()
+        # list of words in q all set to lowercase
+        query_tokens = [q.lower() for q in query.split()]
+
+
         # f only exists if the search is made from the friends page
         f = self.request.GET.get("f")
-    
-        object_list = User.objects.filter(
-            Q(username__contains=query) |
-            Q(first_name__contains=query) |
-            Q(last_name__contains=query)
-        ).exclude(id=self.request.user.id)
         
+        # list of id of users to remove from final list
+        exclusions = [self.request.user.id]
+
         if f:
-            # removes current friends from object list
+            # adds friends and potential friends to exclusion list
             friend_ids = [
                 friend.id for friend in self.request.user.profile.get_friends(status='all')
                 ]
-            object_list = object_list.exclude(id__in = friend_ids) 
+            exclusions.extend(friend_ids)
 
-        if not object_list:
+        if len(query_tokens) == 0:
+            # if there are no tokens then there are no search results
+            return None
+        if len(query_tokens) == 1:
+            
+            # contains three list, for basic ranking of search output
+            temp_obj_list = [[],[],[]]
+
+            object_list = User.objects.filter(
+                Q(username__contains=query) |
+                Q(first_name__contains=query) |
+                Q(last_name__contains=query)
+            ).exclude(id__in=exclusions)
+
+            # bins users into 3 ranks
+            for user in object_list:
+                # since one word was searched for, it is assumed that the username is being searched for
+                # therefore the query bing in username is weighted more than the query being in the first of last name
+                count = 0
+                # if query is in username increase count by 2
+                count += 2*len(object_list.filter(Q(id = user.id) & Q(username__contains=query)))
+                # count increases by 1 if query is in first_name or last name, else 0
+                count += len(object_list.filter(Q(id = user.id) & Q(Q(first_name__contains=query) | Q(last_name__contains=query))))
+
+                # query is just in first or last name
+                if count == 1:
+                    temp_obj_list[2].append(user)
+                # query is just in the username
+                elif count == 2:
+                    temp_obj_list[1].append(user)
+                # query is in other username and first or last name
+                elif count == 3:
+                    temp_obj_list[0].append(user)
+
+        else:
+            # contains three list, for basic ranking of search output
+            temp_obj_list = [[],[],[],[],[]]
+
+            object_list = User.objects.filter(
+                # is username in any of the values
+                reduce(operator.or_, (Q(username__contains=q) for q in query_tokens)) |
+                # it is assumed that the last value in query is not a first name
+                reduce(operator.or_, (Q(first_name__contains=q) for q in query_tokens[0:-1] )) |
+                # it is assumed that the first value in query is not a last name
+                reduce(operator.or_, (Q(first_name__contains=q) for q in query_tokens[1:] ))
+            ).exclude(id__in=exclusions)
+
+            # bins users into 5 basic ranks
+            for user in object_list:
+                # here multiple words were in the search query, therefore it is assummed that a name is being searched for,
+                # therefore query being in the first or last name is weighted more than it being in the username
+
+                count = 0
+                # if query is in username increase count by 1
+                for t in query_tokens:
+                    if user.username.lower().find(t) == 0:
+                        count += 1
+                        break
+                # if query is in first name increase count 2
+                if user.first_name != '':
+                    for t in query_tokens[0:-1]:
+                        if user.first_name.lower()[0:len(t)] == t:
+                            count += 2
+                            break
+                # if query is in first name increase count 2
+                if user.last_name != '':
+                    for t in query_tokens[1:]:
+                        if user.last_name.lower()[0:len(t)] == t:
+                            count += 2
+                            break
+
+                # query is just in username
+                if count == 1:
+                    temp_obj_list[4].append(user)
+                # query is in jsut first or last name
+                elif count == 2:
+                    temp_obj_list[3].append(user)
+                # query is in first or last name and the username
+                elif count == 3:
+                    temp_obj_list[2].append(user)
+                # query is in first and last name
+                elif count == 4:
+                    temp_obj_list[1].append(user)
+                # query is in username and first name and last name
+                elif count == 5:
+                    temp_obj_list[0].append(user)
+        
+        # flattens temp_obj_list
+        object_list = [user for list in temp_obj_list for user in list]
+        
+        # sets object_list to None so that the template knows there were no search results
+        if len(object_list) == 0:
             object_list = None
-
+        
         return object_list
             
     def get_context_data(self, **kwargs):
+        """
+        Returns context data with information about whether the url f parameter existed
+
+                Returns:
+                        context (Dict[str, Any]): context data for the template
+        """
+
         context = super().get_context_data(**kwargs)
+        # only exists of the search was made from the search page
         f = self.request.GET.get("f")
+
         if f is not None:
+            # lets the template know that the user has mafe the search from the friends page
             context['searching_for_friend'] = True
+            
         return context
 
