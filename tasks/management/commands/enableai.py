@@ -7,7 +7,8 @@ import dotenv
 # Command which runs pip install torch transformers
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        os.system('pip install torch transformers')
+        os.system(' pip3 install --pre torch --index-url https://download.pytorch.org/whl/nightly/')
+        os.system('pip3 install transformers')
         # set change .env file so that AI=1
         os.environ["AI"] = str(1)
         dotenv_file = dotenv.find_dotenv()
