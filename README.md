@@ -34,6 +34,14 @@ Create an admin user
 python manage.py createsuperuser
 ```
 
+## Enable AI (optional)
+
+Run the following command to enable the AI
+
+```bash
+python manage.py enableai
+```
+
 ## Run
 
 ```bash
