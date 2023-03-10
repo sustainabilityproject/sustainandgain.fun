@@ -1,12 +1,12 @@
 import os
 import uuid
 
-import autoencoder
 from PIL import Image, ImageOps
 from django import forms
 from geopy import Nominatim
 
 from sustainability.settings import BASE_DIR
+from sustainability.settings import model, feature_extractor, AI
 from tasks.models import TaskInstance
 
 
@@ -53,8 +53,8 @@ class CompleteTaskForm(forms.ModelForm):
         if commit:
             task_instance.save()
 
-        if "coffee" in task_instance.task.title.lower() or "caffeine" in task_instance.task.title.lower():
-            bin_path = os.path.join(BASE_DIR, "media", "bin", task_instance.photo.name[12:])
+        if "coffee" in task_instance.task.title.lower() or "caffeine" in task_instance.task.title.lower() and AI:
+            import torch
             with Image.open(os.path.join(BASE_DIR, "media", task_instance.photo.name), 'r') as img:
                 # get dimensions of image
                 width, height = img.size
@@ -69,25 +69,20 @@ class CompleteTaskForm(forms.ModelForm):
                 img = img.crop((left, upper, right, lower))
 
                 # resize the image to 64x64
-                img = img.resize((32, 32))
+                img = img.resize((224, 224))
 
                 # fix orientation metadata using ImageOps.exif_transpose()
                 img = ImageOps.exif_transpose(img)
 
-                # save the cropped and resized image
-                img.save(bin_path)
+                inputs = feature_extractor(img, return_tensors="pt")
 
-            confidence = autoencoder.mug_confidence(os.path.join(BASE_DIR),
-                                                    os.path.join("/media", "bin", task_instance.photo.name[12:]))
-
-            if os.path.exists(bin_path):
-                os.remove(bin_path)
-            else:
-                print("Failed to delete file")
-
-            print(f"My reconstruction loss: {confidence}")
-            if confidence < 0.03:
-                task_instance.status = task_instance.COMPLETED
-                task_instance.save()
+                with torch.no_grad():
+                    logits = model(**inputs).logits
+                predicted_label = logits.argmax(-1).item()
+                if model.config.id2label[predicted_label] == "coffee mug" \
+                        or model.config.id2label[predicted_label] == "cup" \
+                        or model.config.id2label[predicted_label] == "espresso":
+                    task_instance.status = task_instance.COMPLETED
+                    task_instance.save()
 
         return task_instance
