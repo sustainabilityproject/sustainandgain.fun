@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 
 from tasks.models import TaskInstance
 
@@ -27,6 +28,9 @@ class League(models.Model):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('leagues:detail', kwargs={'pk': self.pk})
+
     def get_members(self):
         return self.leaguemember_set.filter(status='joined')
 
@@ -40,6 +44,9 @@ class League(models.Model):
         members = self.leaguemember_set.filter(status='joined')
         members = sorted(members, key=lambda member: member.total_points(), reverse=True)
         return members
+
+    def get_admins(self):
+        return self.leaguemember_set.filter(role='admin')
 
     def add_admin(self, profile):
         """
@@ -100,6 +107,7 @@ class League(models.Model):
             member.save()
             if request is not None:
                 messages.success(request, f'{profile.user.username} has been invited to join {self.name}')
+
             return
 
     def promote(self, request, profile):

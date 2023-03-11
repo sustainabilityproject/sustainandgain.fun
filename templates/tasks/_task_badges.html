@@ -1,4 +1,6 @@
+{#Badges which are added to feed tasks and task cards, in order to display task rarity and bomb tasks#}
 <style>
+{#    Create gold and silver metallic gradients respectively for different task rarities #}
     .badge-gold {
         color: white;
         background:linear-gradient(to right, #f7e98e, #BF953F, #AA771C);
@@ -9,16 +11,21 @@
         background: linear-gradient(to right, #D3D3D3, #C0C0C0, #A9A9A9);    }
 </style>
 
+<span class="border border-light badge badge-pill {{task.rarity_colour}} fs-12">♻&#xFE0E;</span>
+{#For bomb tasks, display a bomb symbol and the countdown#}
 {% if task.is_bomb %}
 <span class="badge badge-pill bg-danger">
+    {#&#xFE0E ensures that browsers display the icons as a Unicode symbol and not an emoji#}
     💣&#xFE0E
+    {#bomb_countdown is passed in depending if we want to show how long a bomb task is meant to last, or how long a specific user has to complete it#}
+    {#TODO add a dynamic countdown for active bomb tasks#}
     {{bomb_countdown}}
 </span>
 {% endif %}
 
+{#If tasks are not normal then display a rarity badge#}
 {% if task.rarity != 1 %}
 <span class="border border-light badge badge-pill {{task.rarity_colour}} fs-12">♻&#xFE0E
 </span>
 {% endif %}
-
 
