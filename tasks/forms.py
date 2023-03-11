@@ -53,7 +53,7 @@ class CompleteTaskForm(forms.ModelForm):
         if commit:
             task_instance.save()
 
-        if "coffee" in task_instance.task.title.lower() or "caffeine" in task_instance.task.title.lower() and AI:
+        if AI and ("coffee" in task_instance.task.title.lower() or "caffeine" in task_instance.task.title.lower()):
             import torch
             with Image.open(os.path.join(BASE_DIR, "media", task_instance.photo.name), 'r') as img:
                 # get dimensions of image
