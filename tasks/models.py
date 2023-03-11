@@ -43,7 +43,7 @@ class Task(models.Model):
         category (TaskCategory): The category the task belongs to.
         rarity (IntegerField): Rarity of the task. Normal, Silver, Gold.
         is_bomb (BooleanField): Does this task have a time limit.
-        bomb_time_limit (DurationField): How long you have to complete the task if it's a bomb taskgi.
+        bomb_time_limit (DurationField): How long you have to complete the task if it's a bomb task..
 
     Methods:
         rarity_colour(self): Return badge colour corresponding to rarity.
@@ -72,6 +72,13 @@ class Task(models.Model):
         (2, "Silver"),
         (3, "Gold")
     )
+
+    # Determines whether the task is a bomb task
+    # Bomb tasks grant no points on completion, but 'explode' and subtract points from a user if they fail to complete
+    # the task within a time limit
+    is_bomb = models.BooleanField(default=False)
+
+    bomb_time_limit = models.DurationField(null=True, blank=True)
 
     @property
     def rarity_colour(self):
@@ -114,7 +121,7 @@ class Task(models.Model):
 
     def clean(self):
         """
-        Raise ValidationError if there are inconsistencies in the time_to_repeat or points.
+        Raise ValidationError if there are inconsistencies in the time_to_repeat, points, and bomb time limits.
 
         Returns:
             self (Task): After review.
@@ -125,6 +132,12 @@ class Task(models.Model):
 
         if self.points <= 0:
             raise ValidationError('Tasks must grant a positive number of points')
+
+        if self.is_bomb and (self.bomb_time_limit is None):
+            raise ValidationError('Bomb tasks must have a time to complete set.')
+
+        elif (not self.is_bomb) and (self.bomb_time_limit is not None):
+            raise ValidationError('You can only set a bomb time limit if the task is a bomb task.')
 
         return self
 
@@ -149,6 +162,7 @@ class TaskInstance(models.Model):
         location (CharField): Where the task was completed.
         origin_message (CharField): Tells user why task is on their 'my tasks' page.
         tagged_someone (BooleanField): Has the user tagged someone else in this task.
+        tagged_whom (CharField): The username of the person you tagged in this task.
         status (CharField): Whether the task is Available, Active, Pending Approval, or Complete.
         bomb_instance_deadline (timedelta): For bomb tasks only, calculate when this instance of the task is due based
                                             on date_accepted and the task's bomb_time_to_complete
@@ -193,6 +207,20 @@ class TaskInstance(models.Model):
     # have you tagged someone in this task yet?
     tagged_someone = models.BooleanField(default=False)
 
+    # which person did you tag?
+    tagged_whom = models.CharField(max_length=150, null=True, blank=True)
+
+    @property
+    def bomb_instance_deadline(self):
+        """
+        Calculate the task deadline.
+        Adds the time limits to the time the task was accepted.
+        """
+        if self.task.is_bomb:
+            return self.time_accepted + self.task.bomb_time_limit
+        else:
+            return None
+
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
     PENDING_APPROVAL = 'PENDING'
@@ -226,7 +254,6 @@ class TaskInstance(models.Model):
             return 'bg-warning text-dark'
         elif self.status == TaskInstance.COMPLETED:
             return 'text-bg-success'
-
 
     def clean(self):
         """
