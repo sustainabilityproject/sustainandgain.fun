@@ -15,7 +15,7 @@ class Profile(models.Model):
     def __str__(self):
         return f'{self.user.username}'
 
-    def get_friends(self, status='a', id=None):
+    def get_friends(self, status='a'):
         """
         Returns a list of friends where the request has status specified by the status parameter
         a = accepted
@@ -25,7 +25,7 @@ class Profile(models.Model):
         if status != 'all':
             friends = [
                 request.to_profile if (request.from_profile == self) else request.from_profile 
-                for request in FriendRequest.objects.filter(Q(from_profile=self) | Q(to_profile=self), status='a')
+                for request in FriendRequest.objects.filter(Q(from_profile=self) | Q(to_profile=self), status=status)
                 ]
         else:
             friends = [
@@ -34,6 +34,35 @@ class Profile(models.Model):
                 ]
 
         return list(set(friends))
+    
+    def get_friends_and_requested_friends(self):
+        """
+        Returns dictionary populated with the profiles of the current profile's friends, incoming pending friends and outgoing pending friends in lists
+
+                Return:
+                        dict_of_friends (Dict[str, List[Profile]]): keys: 'a': list of accepted friends profiles 
+                                                                          'in_p': list of profiles from incoming friend requests
+                                                                          'out_p': list of profiles from outgoing friend requests
+        """
+
+        accepted_friends = []
+        in_pending_friends = []
+        out_pending_friends = []
+
+        for request in FriendRequest.objects.filter(Q(from_profile=self) | Q(to_profile=self)):
+            if request.status == 'a':
+                if request.to_profile != self:
+                    accepted_friends.append(request.to_profile)
+                else:
+                    accepted_friends.append(request.from_profile)
+            else:
+                if request.to_profile == self:
+                    in_pending_friends.append(request.from_profile)
+                else:
+                    out_pending_friends.append(request.to_profile)
+
+        dict_of_friends = {'a': accepted_friends, 'in_p': in_pending_friends, 'out_p': out_pending_friends}
+        return dict_of_friends
 
     @property
     def name(self):
