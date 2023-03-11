@@ -33,8 +33,9 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for task in completed_tasks %}
-                        <tr class="table-success">
+                    {% for task in completed_or_pending %}
+                        {% if task in completed_tasks %}
+                            <tr class="table-success">
                             <td>{{ task.task.title }}</td>
                             <td>+{{ task.task.points }}</td>
                             <td>
@@ -59,12 +60,10 @@
                                 {% else %}
                                     <p>You have no friends yet, try making a request from your profile</p>
                                 {% endif %}
-
                             </td>
-                        </tr>
-                    {% endfor %}
-                    {% for task in pending_tasks %}
-                        <tr class="table-warning">
+                            </tr>
+                        {% else %}
+                            <tr class="table-warning">
                             <td>{{ task.task.title }}</td>
                             <td>+{{ task.task.points }}</td>
                             <td>
@@ -73,7 +72,8 @@
                                     Once this task is approved you can tag a friend
                                 </p>
                             </td>
-                        </tr>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                     </tbody>
                 </table>

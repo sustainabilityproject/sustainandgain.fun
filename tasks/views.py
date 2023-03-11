@@ -33,7 +33,7 @@ class MyTasksView(LoginRequiredMixin, ListView):
         Returns:
             QuerySet[TaskInstance]: the task instances which belong to the user.
         """
-        return TaskInstance.objects.filter(profile=self.request.user.profile).order_by('time_completed')
+        return TaskInstance.objects.filter(profile=self.request.user.profile).order_by('-time_completed')
 
     def get_context_data(self, **kwargs):
         """
@@ -44,6 +44,7 @@ class MyTasksView(LoginRequiredMixin, ListView):
         """
         context = super().get_context_data(**kwargs)
         context['active_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.ACTIVE]
+        context['completed_or_pending'] = [task for task in context['tasks'] if task.status != TaskInstance.ACTIVE]
         context['completed_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.COMPLETED]
         context['pending_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.PENDING_APPROVAL]
         context['friends'] = self.request.user.profile.get_friends()
