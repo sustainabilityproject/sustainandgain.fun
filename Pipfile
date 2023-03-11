@@ -15,6 +15,8 @@ psycopg2-binary = "*"
 dj-database-url = "*"
 gunicorn = "*"
 geopy = "*"
+better-profanity = "*"
+django-allauth = "*"
 django-notifications-hq = "*"
 
 [dev-packages]

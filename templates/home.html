@@ -6,13 +6,13 @@
     {% if user.is_authenticated %}
         Logged in as {{ user.username }}
         <p>
-            <a href="{% url 'friends:profile' %}">Profile</a>
+            <a href="{% url 'friends:profile' user.profile.pk %}">Profile</a>
             <a href="{% url 'friends:list' %}">Friends</a>
         </p>
-        <p><a href="{% url 'logout' %}">Log Out</a></p>
+        <p><a href="{% url 'account_logout' %}">Log Out</a></p>
     {% else %}
         <p>You are not logged in</p>
-        <a href="{% url 'login' %}">Log In</a>
-        <a href="{% url 'accounts:register' %}">Register</a>
+        <a href="{% url 'account_login' %}">Log In</a>
+        <a href="{% url 'account_signup' %}">Register</a>
     {% endif %}
 {% endblock %}

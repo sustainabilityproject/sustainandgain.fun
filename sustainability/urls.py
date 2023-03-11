@@ -12,8 +12,8 @@ admin.site.index_title = 'Gamekeeper Area'
 
 urlpatterns = [
     # Account routes
-    path('accounts/', include('accounts.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
+    # path('accounts/', include('accounts.urls')),
+    path('accounts/', include('allauth.urls')),
 
     # Task routes
     path('tasks/', include('tasks.urls')),

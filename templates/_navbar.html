@@ -66,14 +66,14 @@
                     </li>
                     {% include 'notifications/_notifications_dropdown.html' %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}"> Login </a>
+                        <a class="nav-link" href="{% url 'account_login' %}"> Login </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:register' %}"> Register </a>
+                        <a class="nav-link" href="{% url 'account_signup' %}"> Register </a>
                     </li>
                 {% endif %}
             </ul>

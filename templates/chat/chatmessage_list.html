@@ -4,7 +4,7 @@
 <div class="chat-container">
     <div class="submitted-messages-container">
       <div>
-        {% for message in submitted_messages %}
+        {% for message in submitted_messages reversed %}
           <div class="message">
             <span class="timestamp">{{ message.timestamp|date:'SHORT_DATETIME_FORMAT' }}</span>
             <!-- <img src="{{ profile.image.url }}" height="50" width="50" class="rounded-circle"> -->
@@ -24,6 +24,10 @@
     </div>
   </div>
   <script>
+
+    var submittedMessagesContainer = document.querySelector('.submitted-messages-container');
+    submittedMessagesContainer.scrollTop = submittedMessagesContainer.scrollHeight;
+
     var chatForm = document.getElementById('chat-form');
     var messageInput = document.getElementById('id_content');
     messageInput.addEventListener('keydown', function(event) {

@@ -1,7 +1,6 @@
 .chat-container {
   height: 600px;
   width: 100%;
-  overflow: auto;
   display: flex;
   flex-direction: column;
   text-align: left;
