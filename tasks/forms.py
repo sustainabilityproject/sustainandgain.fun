@@ -79,9 +79,7 @@ class CompleteTaskForm(forms.ModelForm):
                 with torch.no_grad():
                     logits = model(**inputs).logits
                 predicted_label = logits.argmax(-1).item()
-                if model.config.id2label[predicted_label] == "coffee mug" \
-                        or model.config.id2label[predicted_label] == "cup" \
-                        or model.config.id2label[predicted_label] == "espresso":
+                if model.config.id2label[predicted_label] in ["coffee mug", "cup", "espresso"]:
                     task_instance.status = task_instance.COMPLETED
                     task_instance.save()
 
