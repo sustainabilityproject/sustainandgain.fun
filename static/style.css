@@ -1,0 +1,61 @@
+.chat-container {
+  height: 600px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.submitted-messages-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  word-wrap: break-word;
+  max-width: 100%;
+}
+
+.submitted-messages {
+  margin-top: 10px;
+  margin-left: 20px; /* Add a left margin of 20 pixels */
+  border: 1px solid #ccc;
+}
+
+.chat-input-container input {
+  resize: none !important;
+}
+
+
+.chat-input-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center; /* Center the input container horizontally */
+  align-items: center;
+  margin-top: auto; /* Push the input container to the bottom */
+  margin-bottom: 0; /* Remove the bottom margin */
+  position: fixed; /* Make the input container fixed to the bottom of the viewport */
+  bottom: 15px;
+  left: 0;
+  right: 0;
+  height: 60px; /* Set a fixed height for the input container */
+  text-align: center;
+  resize: none;
+  width: 100%;
+  
+}
+
+
+.submitted-messages h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.submitted-messages p {
+  text-align: left;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.message {
+  margin-bottom: 10px;
+  max-width: 100%;
+}

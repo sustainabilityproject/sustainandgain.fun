@@ -13,7 +13,7 @@ from functools import reduce
 from accounts.models import User
 from friends.forms import UpdateProfileForm
 from friends.models import FriendRequest, Profile
-from leagues.models import League, LeagueMember
+from leagues.models import League
 from tasks.models import TaskInstance
 
 
@@ -186,8 +186,7 @@ class AddFriendView(LoginRequiredMixin, View):
         # Create a new friend request
         FriendRequest.objects.create(from_profile=request.user.profile, to_profile=profile)
         messages.success(request, f'Friend request sent to {profile.user.username}!')
-        
-        
+
         return redirect(request.META['HTTP_REFERER'])
 
 
@@ -256,17 +255,14 @@ class UpdateProfileView(LoginRequiredMixin, UpdateView):
 
 class ProfileSearchView(ListView):
     """
-    View to provide a basic search reuslts of User Database
+    View to provide a basic search results of User Database
     """
     model = User
     template_name = 'friends/profile_search.html'
 
-    # User.objects.filter(reduce(operator.and_, (Q(first_name__contains=x) for x in ['x', 'y', 'z'])))
-
-
     def get_queryset(self):
         """
-        Returns a list of users whose username, first_name and last_name  contain the url parameter q (with basic ordering), 
+        Returns a list of users whose username, first_name and last_name  contain the url parameter q (with basic ordering),
         if the url parameter f exists all friends and potential friends will be remove from the list
 
                 Returns:
@@ -281,7 +277,7 @@ class ProfileSearchView(ListView):
 
         # f only exists if the search is made from the friends page
         f = self.request.GET.get("f")
-        
+
         # list of id of users to remove from final list
         exclusions = [self.request.user.id]
 
@@ -296,9 +292,9 @@ class ProfileSearchView(ListView):
             # if there are no tokens then there are no search results
             return None
         if len(query_tokens) == 1:
-            
+
             # contains three list, for basic ranking of search output
-            temp_obj_list = [[],[],[]]
+            temp_obj_list = [[], [], []]
 
             object_list = User.objects.filter(
                 Q(username__contains=query) |
@@ -366,7 +362,7 @@ class ProfileSearchView(ListView):
                 # query is just in username
                 if count == 1:
                     temp_obj_list[4].append(user)
-                # query is in jsut first or last name
+                # query is in just first or last name
                 elif count == 2:
                     temp_obj_list[3].append(user)
                 # query is in first or last name and the username
@@ -378,16 +374,16 @@ class ProfileSearchView(ListView):
                 # query is in username and first name and last name
                 elif count == 5:
                     temp_obj_list[0].append(user)
-        
+
         # flattens temp_obj_list
         object_list = [user for list in temp_obj_list for user in list]
-        
+
         # sets object_list to None so that the template knows there were no search results
         if len(object_list) == 0:
             object_list = None
-        
+
         return object_list
-            
+
     def get_context_data(self, **kwargs):
         """
         Returns context data with information about whether the url f parameter existed
@@ -401,8 +397,8 @@ class ProfileSearchView(ListView):
         f = self.request.GET.get("f")
 
         if f is not None:
-            # lets the template know that the user has mafe the search from the friends page
+            # lets the template know that the user has made the search from the friends page
             context['searching_for_friend'] = True
-            
+
         return context
 

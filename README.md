@@ -36,6 +36,20 @@ python manage.py createsuperuser
 
 ## Run
 
+### Local email
+
+You will need [docker](https://docs.docker.com/get-docker/) installed.
+
+Run local email server with the following
+
+```bash
+docker compose up
+```
+
+You can now view emails by going to [http://localhost:8025](http://localhost:8025)
+
+### Server
+
 ```bash
 python manage.py runserver 8000
 ```
