@@ -43,13 +43,7 @@
                     })
             },
             init() {
-                // Call getNotifications() initially
                 this.getNotifications();
-
-                // Call getNotifications() every 10 seconds
-                setInterval(() => {
-                    this.getNotifications();
-                }, 10000); // 10000 milliseconds = 10 seconds
             },
         }))
     })
