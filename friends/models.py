@@ -4,8 +4,21 @@ from django.db.models import Q
 from accounts.models import User
 
 
-
 class Profile(models.Model):
+    """
+    The user's profile.
+
+    Attributes:
+        user (User): The user associated with the profile.
+        image (ImageField): The profile picture.
+        friends (Profile): The user's friends.
+        bio (TextField): The biography.
+
+    Methods:
+        get_friends(self, status, id): Returns a list of friends.
+        get_friends_and_requested_friends(self): Return current friends and requested friends.
+        name(self): If the user has a preferred name, return that. Otherwise, return their username.
+    """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # single profile image
     image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
@@ -17,10 +30,18 @@ class Profile(models.Model):
 
     def get_friends(self, status='a'):
         """
-        Returns a list of friends where the request has status specified by the status parameter
+        Returns a list of friends.
+        Request status is specified by the status parameter:
         a = accepted
         p = pending
         all = both a and p requests
+
+        Args:
+            status (str): The type of relationship, accepted, pending, or both.
+            id: TODO
+
+        Returns:
+            friends (list): All friends with the appropriate status.
         """
         if status != 'all':
             friends = [
@@ -37,12 +58,11 @@ class Profile(models.Model):
     
     def get_friends_and_requested_friends(self):
         """
-        Returns dictionary populated with the profiles of the current profile's friends, incoming pending friends and outgoing pending friends in lists
+        Return profiles of current friends and incoming and outgoing requests.
 
-                Return:
-                        dict_of_friends (Dict[str, List[Profile]]): keys: 'a': list of accepted friends profiles 
-                                                                          'in_p': list of profiles from incoming friend requests
-                                                                          'out_p': list of profiles from outgoing friend requests
+        Returns:
+            dict_of_friends (Dict[str, List[Profile]]): a=list of accepted friends,
+                in_p=list of profiles from incoming requests, out_p=list of profiles from outgoing requests.
         """
 
         accepted_friends = []
@@ -66,10 +86,32 @@ class Profile(models.Model):
 
     @property
     def name(self):
+        """
+        Return the user's name.
+        If the user has a preferred name, return that. Otherwise, return their username.
+
+        Returns:
+            str: The user's name.
+        """
         return self.user.first_name + ' ' + self.user.last_name if self.user.first_name else self.user.username
 
 
 class FriendRequest(models.Model):
+    """
+    Model of a friend request.
+
+    Attributes:
+        from_profile (Profile): Where the request was sent from.
+        to_profile (Profile): Where the request was sent to.
+        status (CharField): 'p' pending or 'a' accepted.
+
+    Methods:
+        accept(self): Accept the friend request.
+        decline(self): Decline the friend request.
+        cancel(self): Cancel the friend request.
+        clean(self): Raise errors if trying to friend self or if request has been sent the other way.
+        save(self, *args, **kwargs): Clean self and save.
+    """
     STATUS_CHOICES = (
         ('p', 'Pending'),
         ('a', 'Accepted'),
@@ -86,18 +128,33 @@ class FriendRequest(models.Model):
         return f'{self.from_profile} -> {self.to_profile}: {self.status}'
 
     def accept(self):
+        """
+        Accept the friend request.
+        The two profiles become friends.
+        """
         self.status = 'a'
         self.save()
         self.to_profile.friends.add(self.from_profile, through_defaults={'status': 'a'})
         self.from_profile.friends.add(self.to_profile, through_defaults={'status': 'a'})
 
     def decline(self):
+        """
+        Decline the friend request.
+        The request is deleted.
+        """
         self.delete()
 
     def cancel(self):
+        """
+        Cancel the friend request.
+        The request is deleted.
+        """
         self.delete()
 
     def clean(self):
+        """
+        Raise errors if trying to friend self or if request has been sent the other way.
+        """
         from_profile = self.from_profile
         to_profile = self.to_profile
         # raises error if trying to friend self
@@ -111,5 +168,8 @@ class FriendRequest(models.Model):
             raise IntegrityError("Friend request has been sent the other way")
         
     def save(self,*args,**kwargs):
+        """
+        Clean self and save.
+        """
         self.full_clean()
         super().save(*args,**kwargs)
