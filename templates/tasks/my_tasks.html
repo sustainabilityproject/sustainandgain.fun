@@ -44,7 +44,7 @@
                                 </h5>
                                 {% if friends %}
                                     {% if task.tagged_someone %}
-                                        <p>You've already tagged someone in this task, try completing some more!</p>
+                                        <p>You tagged {{ task.tagged_whom }} in this task!</p>
                                     {% else %}
                                         <form method="post" action="{% url 'tasks:tag' task.id %}">
                                             {% csrf_token %}

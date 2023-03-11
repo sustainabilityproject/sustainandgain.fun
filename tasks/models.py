@@ -162,6 +162,7 @@ class TaskInstance(models.Model):
         location (CharField): Where the task was completed.
         origin_message (CharField): Tells user why task is on their 'my tasks' page.
         tagged_someone (BooleanField): Has the user tagged someone else in this task.
+        tagged_whom (CharField): The username of the person you tagged in this task.
         status (CharField): Whether the task is Available, Active, Pending Approval, or Complete.
 
     Methods:
@@ -203,6 +204,9 @@ class TaskInstance(models.Model):
 
     # have you tagged someone in this task yet?
     tagged_someone = models.BooleanField(default=False)
+
+    # which person did you tag?
+    tagged_whom = models.CharField(max_length=150, null=True, blank=True)
 
     @property
     def bomb_instance_deadline(self):
