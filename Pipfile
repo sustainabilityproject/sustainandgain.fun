@@ -16,6 +16,7 @@ dj-database-url = "*"
 gunicorn = "*"
 geopy = "*"
 better-profanity = "*"
+django-allauth = "*"
 
 [dev-packages]
 
