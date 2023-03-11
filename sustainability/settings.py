@@ -141,14 +141,10 @@ LOGOUT_REDIRECT_URL = "home"
 AUTH_USER_MODEL = "accounts.User"
 
 
-# If AI environment variable is set to true, then use AI
+# If AI environment variable is set to 1, then set AI to True, otherwise set AI to False
 # Enable AI by running:
 # python manage.py enableai
 AI = os.getenv('AI', '0').lower() in ['true', 't', '1']
-model = None
-feature_extractor = None
+
 if AI:
-    print("Loading AI...")
-    from transformers import ConvNextForImageClassification, ConvNextImageProcessor
-    model = ConvNextForImageClassification.from_pretrained("facebook/convnext-base-224")
-    feature_extractor = ConvNextImageProcessor.from_pretrained("facebook/convnext-base-224")
+    INSTALLED_APPS.append('imagenet.apps.ImagenetConfig')
