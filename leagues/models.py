@@ -9,6 +9,29 @@ from tasks.models import TaskInstance
 class League(models.Model):
     """
     A League is a group of users who can compete against each other.
+
+    Attributes:
+        name (CharField): The league's name.
+        description (TextField): The league's description.
+        members (Profile): The members of the league.
+        visibility (CharField): Public, Private.
+        invite_only (BooleanField): Can the league only be joined via invite.
+
+    Methods:
+        get_absolute_url(self): TODO
+        get_members(self): Return league members.
+        get_invited_members(self): Return invited users.
+        get_pending_members(self): Return pending members.
+        get_ranked_members(self): Return members in order of number of points.
+        get_admins(self): TODO
+        add_admin(self, profile): Add a user as an admin of the league.
+        join(self, request, profile): Join the league as a member.
+        invite(self, request, profile): Invite a user to join the league.
+        promote(self, request, profile): Promote a user to admin.
+        demote(self, request, profile): Demote a user from admin.
+        leave(self, request, profile): Leave the league.
+        kick(self, request, profile): Kick a user from the league.
+        clean(self): If the league is private, it must be invite-only.
     """
     name = models.CharField(max_length=100)
     description = models.TextField(default='', blank=True, max_length=500)
@@ -29,28 +52,61 @@ class League(models.Model):
         return self.name
 
     def get_absolute_url(self):
+        """
+        TODO
+        """
         return reverse('leagues:detail', kwargs={'pk': self.pk})
 
     def get_members(self):
+        """
+        Return league members.
+
+        Returns:
+            leaguemember_set: People who have joined the league.
+        """
         return self.leaguemember_set.filter(status='joined')
 
     def get_invited_members(self):
+        """
+        Return invited users.
+
+        Returns:
+            leaguemember_set: People who have been invited to the league.
+        """
         return self.leaguemember_set.filter(status='invited')
 
     def get_pending_members(self):
+        """
+        Return pending members.
+
+        Returns:
+            leaguemember_set: People whose status is pending.
+        """
         return self.leaguemember_set.filter(status='pending')
 
     def get_ranked_members(self):
+        """
+        Return members in order of number of points.
+
+        Returns:
+            members (leaguemember_set): Members in order of points.
+        """
         members = self.leaguemember_set.filter(status='joined')
         members = sorted(members, key=lambda member: member.total_points(), reverse=True)
         return members
 
     def get_admins(self):
+        """
+        TODO
+        """
         return self.leaguemember_set.filter(role='admin')
 
     def add_admin(self, profile):
         """
         Add a user as an admin of the league.
+
+        Args:
+            profile (Profile): The profile of the user to be made admin.
         """
         member, created = LeagueMember.objects.get_or_create(league=self, profile=profile)
         member.role = 'admin'
@@ -60,6 +116,9 @@ class League(models.Model):
     def join(self, request, profile):
         """
         Join the league as a member.
+
+        Args:
+            profile (Profile): The profile of the user to join.
         """
 
         profiles = [member.profile for member in self.get_members()]
@@ -87,6 +146,12 @@ class League(models.Model):
     def invite(self, request, profile):
         """
         Invite a user to join the league.
+
+        Args:
+            profile (Profile): The profile of the user to be invited.
+
+        Returns:
+            TODO
         """
 
         profiles = [member.profile for member in self.get_members()]
@@ -113,6 +178,12 @@ class League(models.Model):
     def promote(self, request, profile):
         """
         Promote a user to admin.
+
+        Args:
+            profile (Profile): The profile of the user to be promoted.
+
+        Returns:
+            TODO
         """
         member, created = LeagueMember.objects.get_or_create(league=self, profile=profile)
         member.role = 'admin'
@@ -124,6 +195,12 @@ class League(models.Model):
     def demote(self, request, profile):
         """
         Demote a user from admin.
+
+        Args:
+            profile (Profile): The profile of the user to be demoted.
+
+        Returns:
+            TODO
         """
         # If the user is the only admin, they cannot be demoted
         if LeagueMember.objects.filter(league=self, role='admin').count() == 1:
@@ -138,6 +215,12 @@ class League(models.Model):
     def leave(self, request, profile):
         """
         Leave the league.
+
+        Args:
+            profile (Profile): The profile of the leaving user.
+
+        Returns:
+            TODO
         """
         member = LeagueMember.objects.get(league=self, profile=profile)
         if profile not in self.members.all():
@@ -166,6 +249,9 @@ class League(models.Model):
     def kick(self, request, profile):
         """
         Kick a user from the league.
+
+        Args:
+            profile (Profile): The profile of the kicked user.
         """
         member = LeagueMember.objects.get(league=self, profile=profile)
         if profile not in self.members.all():
@@ -180,6 +266,12 @@ class League(models.Model):
         return
 
     def clean(self):
+        """
+        If the league is private, it must be invite-only.
+
+        Returns:
+            League: League where private must be invite-only.
+        """
         # If the league is private, it must be invite-only
         if self.visibility == 'private' and not self.invite_only:
             raise ValidationError('Private leagues must be invite-only')
@@ -189,15 +281,23 @@ class League(models.Model):
 class LeagueMember(models.Model):
     """
     A LeagueMember is a user who is a member of a league.
+
+    Attributes:
+        league (League): The member's league.
+        profile (Profile): The leagueMember's profile.
+        status (CharField): invited, joined, pending.
+        role (CharField): member, admin.
+
+    Methods:
+        total_points(self): Return the total points earned by the league member.
     """
     league = models.ForeignKey(League, on_delete=models.CASCADE)
     profile = models.ForeignKey('friends.Profile', on_delete=models.CASCADE)
 
-    """
-    Invited: user has been invited to join the league by an admin
-    Pending: user has requested to join an invite-only league
-    Joined: user is a member of the league
-    """
+    # Invited: user has been invited to join the league by an admin
+    # Pending: user has requested to join an invite-only league
+    # Joined: user is a member of the league
+
     status = models.CharField(max_length=20, choices=(('invited', 'Invited'),
                                                       ('joined', 'Joined'), ('pending', 'Pending')), default='pending')
 
@@ -210,6 +310,12 @@ class LeagueMember(models.Model):
         return f'{self.profile.user.username} in {self.league.name}'
 
     def total_points(self):
+        """
+        Return the total points earned by the league member.
+
+        Returns:
+            total_points (int): The sum of the values of the member's completed tasks.
+        """
         task_instances = TaskInstance.objects.filter(profile=self.profile, status=TaskInstance.COMPLETED)
         total_points = 0
         for task_instance in task_instances:
