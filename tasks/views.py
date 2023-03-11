@@ -33,7 +33,7 @@ class MyTasksView(LoginRequiredMixin, ListView):
         Returns:
             QuerySet[TaskInstance]: the task instances which belong to the user.
         """
-        return TaskInstance.objects.filter(profile=self.request.user.profile)
+        return TaskInstance.objects.filter(profile=self.request.user.profile).order_by('time_completed')
 
     def get_context_data(self, **kwargs):
         """
