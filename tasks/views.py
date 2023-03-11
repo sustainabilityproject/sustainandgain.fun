@@ -196,6 +196,7 @@ class SendTagView(LoginRequiredMixin, View):
             # you can't tag anyone else in this task now
             task_instance_sent.tagged_someone = True
             task_instance_sent.save()
+
         else:
             message = profile.user.username + ' is already doing that task'
             messages.info(request, message)

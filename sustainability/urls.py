@@ -30,9 +30,12 @@ urlpatterns = [
     # Home route
     path('', HomeView.as_view(), name='home'),
 
+    # Notifications
+    path('notifications/', include('notifications.urls')),
+
     # Gamekeeper routes
     path('gamekeeper/', admin.site.urls),
-    
+
     # Chat routes
     path('chat/', include('chat.urls')),
 

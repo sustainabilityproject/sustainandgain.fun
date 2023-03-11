@@ -11,7 +11,7 @@ from django.views.generic import DetailView, ListView, DeleteView, UpdateView
 from accounts.models import User
 from friends.forms import UpdateProfileForm
 from friends.models import FriendRequest, Profile
-from leagues.models import League, LeagueMember
+from leagues.models import League
 from tasks.models import TaskInstance
 
 
@@ -185,8 +185,8 @@ class AddFriendView(LoginRequiredMixin, View):
         # Create a new friend request
         FriendRequest.objects.create(from_profile=request.user.profile, to_profile=profile)
         messages.success(request, f'Friend request sent to {profile.user.username}!')
-        
-        
+
+
         return redirect(request.META['HTTP_REFERER'])
 
 
@@ -264,25 +264,25 @@ class ProfileSearchView(ListView):
         query = self.request.GET.get("q")
         # f only exists if the search is made from the friends page
         f = self.request.GET.get("f")
-    
+
         object_list = User.objects.filter(
             Q(username__contains=query) |
             Q(first_name__contains=query) |
             Q(last_name__contains=query)
         ).exclude(id=self.request.user.id)
-        
+
         if f:
             # removes current friends from object list
             friend_ids = [
                 friend.id for friend in self.request.user.profile.get_friends(status='all')
                 ]
-            object_list = object_list.exclude(id__in = friend_ids) 
+            object_list = object_list.exclude(id__in = friend_ids)
 
         if not object_list:
             object_list = None
 
         return object_list
-            
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         f = self.request.GET.get("f")
