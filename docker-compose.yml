@@ -7,3 +7,16 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+  postgres:
+    container_name: sustaindb
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=sustain
+      - POSTGRES_PASSWORD=sustain
+      - POSTGRES_DB=sustain
+    volumes:
+      - ./sustaindb:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
