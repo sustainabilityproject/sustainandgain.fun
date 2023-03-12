@@ -1,3 +1,6 @@
+use std::collections::HashMap;
+
+use maud::html;
 use serde::Deserialize;
 use sqlx::PgPool;
 use sqlx::types::Json;
@@ -63,32 +66,50 @@ pub async fn get_notifications(pool: &PgPool) -> Vec<Notification> {
     notifications
 }
 
-pub async fn send_notifications(pool: &PgPool, notifications: Vec<Notification>) {
+pub async fn send_notifications(pool: &PgPool, notifications: Vec<Notification>) -> Result<(), Box<dyn std::error::Error>> {
     let from = "Sustainability Steve <steve@sustainandgain.fun>";
-    let subject = "You have a new notification";
+    let subject = "[Sustain and Gain] You have new notifications";
 
+    let mut user_notifications: HashMap<String, Vec<Notification>> = HashMap::new();
     for n in notifications {
-        println!("Sending notification: {:?}", n);
-        let url = match &n.data {
-            Some(data) => match serde_json::from_value::<NotificationData>(data.0.clone()) {
-                Ok(notification_data) => match notification_data.url {
-                    Some(url) => format!("https://sustainandgain.fun{}", url),
-                    None => "https://sustainandgain.fun/".to_string(),
-                },
-                Err(_) => "https://sustainandgain.fun/".to_string(),
-            },
-            None => "https://sustainandgain.fun/".to_string(),
-        };
-        let to = &n.recipient_email;
-        let body = format!(
-            "<h1>Notification</h1>
-            <p>{} {}</p>
-            <p>{}</p>",
-            n.actor_username, n.verb, url
-        );
-        mail::send_mail(from, to, subject, body).await?;
+        user_notifications.entry(n.recipient_email.clone()).or_insert_with(Vec::new).push(n);
     }
 
+    for n in &user_notifications {
+        println!("Sending notification: {:?}", n);
+        let to = n.0.as_str();
+        let intro = format!("Hello {}! You have new notifications.", n.1[0].recipient_username);
+        let body = format!("{} You can view them at https://www.sustainandgain.fun/. Sustainability Steve", intro);
+        let html = html! {
+            div {
+                h2 { (intro) }
+                @for notification_group in user_notifications.values() {
+                    ul {
+                        @for notification in notification_group {
+                            li {
+                                p { (notification.actor_username) " " (notification.verb) }
+                                p {
+                                    a href=(
+                                        notification.data.as_ref()
+                                            .and_then(|data| serde_json::from_value::<NotificationData>(data.0.clone()).ok())
+                                            .and_then(|notification_data| notification_data.url.map(|url| format!("https://www.sustainandgain.fun{}", url)))
+                                            .unwrap_or_else(|| "https://sustainandgain.fun/".to_string())
+                                    ) {
+                                        "View"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                p { "Looking forward to seeing you on the site!"}
+                h3 { "Sustainability Steve" }
+            }
+        };
+        mail::send_mail(from, to, subject, html, body).await?;
+    }
+
+    Ok(())
 //     for n in notifications {
 //         sqlx::query!(
 //             r#"
