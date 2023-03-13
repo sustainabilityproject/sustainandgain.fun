@@ -24,7 +24,7 @@ def task_autocomplete(sender, instance, created, **kwargs):
     """
 
     # If the task has a photo, is not completed, and is a coffee task, run the AI model
-    if instance.photo and instance.status != instance.COMPLETED and \
+    if instance.ai_tag is None and instance.photo and instance.status != instance.COMPLETED and \
             ("coffee" in instance.task.title.lower() or "caffeine" in instance.task.title.lower()):
         import torch
         with Image.open(os.path.join(BASE_DIR, "media", instance.photo.name), 'r') as img:
@@ -57,6 +57,9 @@ def task_autocomplete(sender, instance, created, **kwargs):
             predicted_label = logits.argmax(-1).item()
             print(model.config.id2label[predicted_label])
 
+            # Save the tag even if not a coffee mug so that it is not run again
+            instance.ai_tag = model.config.id2label[predicted_label]
             if model.config.id2label[predicted_label] in ["coffee mug", "cup", "espresso"]:
                 instance.status = instance.COMPLETED
-                instance.save()
+
+            instance.save()

@@ -149,6 +149,7 @@ class TaskInstance(models.Model):
         location (CharField): Where the task was completed.
         origin_message (CharField): Tells user why task is on their 'my tasks' page.
         tagged_someone (BooleanField): Has the user tagged someone else in this task.
+        ai_tag (CharField): The identified object in the photo if AI is enabled.
         status (CharField): Whether the task is Available, Active, Pending Approval, or Complete.
         bomb_instance_deadline (timedelta): For bomb tasks only, calculate when this instance of the task is due based
                                             on date_accepted and the task's bomb_time_to_complete
@@ -192,6 +193,9 @@ class TaskInstance(models.Model):
 
     # have you tagged someone in this task yet?
     tagged_someone = models.BooleanField(default=False)
+
+    # AI Tag is a string which is the identified object in the image if AI is applied to the task
+    ai_tag = models.CharField(max_length=50, null=True, blank=True)
 
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
