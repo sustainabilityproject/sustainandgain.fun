@@ -86,7 +86,7 @@ pub async fn get_notifications(pool: &PgPool) -> Vec<Notification> {
         FROM notifications_notification n
         INNER JOIN accounts_user a ON n.actor_object_id = a.id::text
         INNER JOIN accounts_user r ON n.recipient_id = r.id
-        WHERE n.emailed = false AND r.email IS NOT NULL
+        WHERE n.emailed = false AND r.email != ''
         "#,
     )
         .fetch_all(pool)

@@ -54,7 +54,7 @@
     },
     "query": "\n            UPDATE notifications_notification\n            SET emailed = true\n            WHERE id = $1\n            "
   },
-  "c8488ac73c9fc244da737ff0e20f36b36904aee2e07e22d53ea52e9361aa26c2": {
+  "dafd6fe4bf0a04d9ae064c12c6e9d18574e39e981fb1a8d996d6471c7b63752d": {
     "describe": {
       "columns": [
         {
@@ -118,7 +118,7 @@
         "Left": []
       }
     },
-    "query": "\n        SELECT\n            n.id,\n            n.actor_object_id,\n            n.actor_content_type_id,\n            n.verb,\n            n.recipient_id,\n            n.data as \"data: Json<serde_json::Value>\",\n            r.username as recipient_username,\n            r.email as recipient_email,\n            a.username as actor_username\n        FROM notifications_notification n\n        INNER JOIN accounts_user a ON n.actor_object_id = a.id::text\n        INNER JOIN accounts_user r ON n.recipient_id = r.id\n        WHERE n.emailed = false AND r.email IS NOT NULL\n        "
+    "query": "\n        SELECT\n            n.id,\n            n.actor_object_id,\n            n.actor_content_type_id,\n            n.verb,\n            n.recipient_id,\n            n.data as \"data: Json<serde_json::Value>\",\n            r.username as recipient_username,\n            r.email as recipient_email,\n            a.username as actor_username\n        FROM notifications_notification n\n        INNER JOIN accounts_user a ON n.actor_object_id = a.id::text\n        INNER JOIN accounts_user r ON n.recipient_id = r.id\n        WHERE n.emailed = false AND r.email != ''\n        "
   },
   "fcfad2b4956494cc1a98d540ab03395fdc00c58220fe45fb811693ef1bbfea67": {
     "describe": {
