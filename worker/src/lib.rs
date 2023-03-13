@@ -1,5 +1,4 @@
 use sqlx::PgPool;
-use crate::bomb_task::process_bomb_tasks;
 
 use crate::schedule::schedule;
 
@@ -12,7 +11,6 @@ pub mod schedule;
 pub async fn run(pool: &PgPool) {
     println!("Running background worker");
 
-    process_bomb_tasks(pool).await;
     // Schedule the background worker
     schedule(pool.clone());
 }
