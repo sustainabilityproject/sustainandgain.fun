@@ -1,0 +1,142 @@
+{
+  "db": "PostgreSQL",
+  "67648f1ff43019f0e43063bdf386184fc0c21e70e7bf62899b0eafeeb4179a32": {
+    "describe": {
+      "columns": [
+        {
+          "name": "task_title",
+          "ordinal": 0,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "time_accepted",
+          "ordinal": 1,
+          "type_info": "Timestamptz"
+        },
+        {
+          "name": "bomb_time_limit",
+          "ordinal": 2,
+          "type_info": "Interval"
+        },
+        {
+          "name": "assigned_username",
+          "ordinal": 3,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "assigned_email",
+          "ordinal": 4,
+          "type_info": "Varchar"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        true,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n        SELECT\n            t.title AS task_title,\n            ti.time_accepted,\n            t.bomb_time_limit,\n            u.username AS assigned_username,\n            u.email AS assigned_email\n        FROM tasks_taskinstance ti\n        JOIN tasks_task t ON ti.task_id = t.id\n        JOIN friends_profile p ON ti.profile_id = p.id\n        JOIN accounts_user u ON p.user_id = u.id\n        WHERE t.is_bomb = true AND ti.status = 'ACTIVE'\n        "
+  },
+  "93c00a5eebb1b08b41ccf0ae33f3a90fa06dbe36055278a75f665a8782409737": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n            UPDATE notifications_notification\n            SET emailed = true\n            WHERE id = $1\n            "
+  },
+  "fcfad2b4956494cc1a98d540ab03395fdc00c58220fe45fb811693ef1bbfea67": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n                    UPDATE tasks_taskinstance\n                    SET status = 'EXPLODED'\n                    WHERE task_id = (\n                        SELECT id FROM tasks_task WHERE title = $1\n                    ) AND profile_id = (\n                        SELECT id FROM friends_profile WHERE user_id = (\n                            SELECT id FROM accounts_user WHERE email = $2\n                        )\n                    )\n                    "
+  },
+  "fe7d6ad7785323fefe5fb94954074806e07e9bd98846cec7595692ccb422a8f2": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "actor_object_id",
+          "ordinal": 1,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "actor_content_type_id",
+          "ordinal": 2,
+          "type_info": "Int4"
+        },
+        {
+          "name": "verb",
+          "ordinal": 3,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "recipient_id",
+          "ordinal": 4,
+          "type_info": "Int8"
+        },
+        {
+          "name": "data: Json<serde_json::Value>",
+          "ordinal": 5,
+          "type_info": "Text"
+        },
+        {
+          "name": "recipient_username",
+          "ordinal": 6,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "recipient_email",
+          "ordinal": 7,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "actor_username",
+          "ordinal": 8,
+          "type_info": "Varchar"
+        },
+        {
+          "name": "actor_email",
+          "ordinal": 9,
+          "type_info": "Varchar"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "\n        SELECT\n            n.id,\n            n.actor_object_id,\n            n.actor_content_type_id,\n            n.verb,\n            n.recipient_id,\n            n.data as \"data: Json<serde_json::Value>\",\n            r.username as recipient_username,\n            r.email as recipient_email,\n            a.username as actor_username,\n            a.email as actor_email\n        FROM notifications_notification n\n        INNER JOIN accounts_user a ON n.actor_object_id = a.id::text\n        INNER JOIN accounts_user r ON n.recipient_id = r.id\n        WHERE n.emailed = false\n        "
+  }
+}

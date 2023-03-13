@@ -225,11 +225,13 @@ class TaskInstance(models.Model):
     COMPLETED = 'COMPLETED'
     PENDING_APPROVAL = 'PENDING'
     ACTIVE = 'ACTIVE'
+    EXPLODED = 'EXPLODED'
 
     TASK_STATE_CHOICES = (
         (COMPLETED, 'Completed'),
         (PENDING_APPROVAL, 'Pending Approval'),
         (ACTIVE, 'Active'),
+        (EXPLODED, 'Exploded'),
     )
     status = models.CharField(
         max_length=9,
