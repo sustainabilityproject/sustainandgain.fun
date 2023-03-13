@@ -171,8 +171,8 @@ else:
 
 
 # If AI environment variable is set to 1, then set AI to True, otherwise set AI to False
-# Enable AI by running:
-# python manage.py enableai
+# Enable AI by changing the value of AI in .env file to 1
+# You will need to install torch and transformers
 AI = os.getenv('AI', '0').lower() in ['true', 't', '1']
 
 if AI:
