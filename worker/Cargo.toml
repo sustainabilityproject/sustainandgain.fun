@@ -31,4 +31,5 @@ features = [
     "macros",
     "postgres",
     "chrono",
+    "offline",
 ]
