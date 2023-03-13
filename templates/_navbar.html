@@ -35,8 +35,6 @@
                             {% if get_reported_count %}
                                 <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks
                                     ({% get_reported_count %})</a>
-                            {% else %}
-                                <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks</a>
                             {% endif %}
                         </li>
                     {% endif %}
