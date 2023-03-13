@@ -54,20 +54,7 @@
     },
     "query": "\n            UPDATE notifications_notification\n            SET emailed = true\n            WHERE id = $1\n            "
   },
-  "fcfad2b4956494cc1a98d540ab03395fdc00c58220fe45fb811693ef1bbfea67": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Text"
-        ]
-      }
-    },
-    "query": "\n                    UPDATE tasks_taskinstance\n                    SET status = 'EXPLODED'\n                    WHERE task_id = (\n                        SELECT id FROM tasks_task WHERE title = $1\n                    ) AND profile_id = (\n                        SELECT id FROM friends_profile WHERE user_id = (\n                            SELECT id FROM accounts_user WHERE email = $2\n                        )\n                    )\n                    "
-  },
-  "fe7d6ad7785323fefe5fb94954074806e07e9bd98846cec7595692ccb422a8f2": {
+  "c8488ac73c9fc244da737ff0e20f36b36904aee2e07e22d53ea52e9361aa26c2": {
     "describe": {
       "columns": [
         {
@@ -114,11 +101,6 @@
           "name": "actor_username",
           "ordinal": 8,
           "type_info": "Varchar"
-        },
-        {
-          "name": "actor_email",
-          "ordinal": 9,
-          "type_info": "Varchar"
         }
       ],
       "nullable": [
@@ -130,13 +112,25 @@
         true,
         false,
         false,
-        false,
         false
       ],
       "parameters": {
         "Left": []
       }
     },
-    "query": "\n        SELECT\n            n.id,\n            n.actor_object_id,\n            n.actor_content_type_id,\n            n.verb,\n            n.recipient_id,\n            n.data as \"data: Json<serde_json::Value>\",\n            r.username as recipient_username,\n            r.email as recipient_email,\n            a.username as actor_username,\n            a.email as actor_email\n        FROM notifications_notification n\n        INNER JOIN accounts_user a ON n.actor_object_id = a.id::text\n        INNER JOIN accounts_user r ON n.recipient_id = r.id\n        WHERE n.emailed = false\n        "
+    "query": "\n        SELECT\n            n.id,\n            n.actor_object_id,\n            n.actor_content_type_id,\n            n.verb,\n            n.recipient_id,\n            n.data as \"data: Json<serde_json::Value>\",\n            r.username as recipient_username,\n            r.email as recipient_email,\n            a.username as actor_username\n        FROM notifications_notification n\n        INNER JOIN accounts_user a ON n.actor_object_id = a.id::text\n        INNER JOIN accounts_user r ON n.recipient_id = r.id\n        WHERE n.emailed = false AND r.email IS NOT NULL\n        "
+  },
+  "fcfad2b4956494cc1a98d540ab03395fdc00c58220fe45fb811693ef1bbfea67": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n                    UPDATE tasks_taskinstance\n                    SET status = 'EXPLODED'\n                    WHERE task_id = (\n                        SELECT id FROM tasks_task WHERE title = $1\n                    ) AND profile_id = (\n                        SELECT id FROM friends_profile WHERE user_id = (\n                            SELECT id FROM accounts_user WHERE email = $2\n                        )\n                    )\n                    "
   }
 }
