@@ -1,13 +1,13 @@
 use sqlx::PgPool;
+use crate::schedule::schedule;
 
-use crate::notifications::{get_notifications, send_notifications};
-
-pub mod notifications;
-pub mod mail;
+mod notifications;
+mod mail;
+pub mod schedule;
 
 pub async fn run(pool: &PgPool) {
     println!("Running background worker");
 
-    send_notifications(pool, get_notifications(pool).await).await;
+    schedule(pool.clone());
 }
 

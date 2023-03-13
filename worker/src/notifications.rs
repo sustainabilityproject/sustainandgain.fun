@@ -7,7 +7,7 @@ use sqlx::types::Json;
 
 use crate::mail;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct Notification {
     pub id: i32,
     pub actor_object_id: String,
@@ -19,6 +19,31 @@ pub struct Notification {
     pub recipient_email: String,
     pub actor_username: String,
     pub actor_email: String,
+}
+
+
+impl Notification {
+    fn html(&self) -> maud::Markup {
+        html! {
+            li {
+                p { (self.actor_username) " " (self.verb) }
+                p {
+                    a href=(
+                        self.data.as_ref()
+                            .and_then(|data| serde_json::from_value::<NotificationData>(data.0.clone()).ok())
+                            .and_then(|notification_data| notification_data.url.map(|url| format!("https://www.sustainandgain.fun{}", url)))
+                            .unwrap_or_else(|| "https://sustainandgain.fun/".to_string())
+                    ) {
+                        "View"
+                    }
+                }
+            }
+        }
+    }
+
+    fn body(&self, intro: &str) -> String {
+        format!("{} You can view them at https://www.sustainandgain.fun/. Sustainability Steve", intro)
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -71,7 +96,7 @@ pub async fn send_notifications(pool: &PgPool, notifications: Vec<Notification>)
     let subject = "[Sustain and Gain] You have new notifications";
 
     let mut user_notifications: HashMap<String, Vec<Notification>> = HashMap::new();
-    for n in notifications {
+    for n in notifications.clone() {
         user_notifications.entry(n.recipient_email.clone()).or_insert_with(Vec::new).push(n);
     }
 
@@ -79,26 +104,14 @@ pub async fn send_notifications(pool: &PgPool, notifications: Vec<Notification>)
         println!("Sending notification: {:?}", n);
         let to = n.0.as_str();
         let intro = format!("Hello {}! You have new notifications.", n.1[0].recipient_username);
-        let body = format!("{} You can view them at https://www.sustainandgain.fun/. Sustainability Steve", intro);
+        let body = n.1[0].body(&intro);
         let html = html! {
             div {
                 h2 { (intro) }
                 @for notification_group in user_notifications.values() {
                     ul {
                         @for notification in notification_group {
-                            li {
-                                p { (notification.actor_username) " " (notification.verb) }
-                                p {
-                                    a href=(
-                                        notification.data.as_ref()
-                                            .and_then(|data| serde_json::from_value::<NotificationData>(data.0.clone()).ok())
-                                            .and_then(|notification_data| notification_data.url.map(|url| format!("https://www.sustainandgain.fun{}", url)))
-                                            .unwrap_or_else(|| "https://sustainandgain.fun/".to_string())
-                                    ) {
-                                        "View"
-                                    }
-                                }
-                            }
+                            (notification.html())
                         }
                     }
                 }
@@ -109,18 +122,19 @@ pub async fn send_notifications(pool: &PgPool, notifications: Vec<Notification>)
         mail::send_mail(from, to, subject, html, body).await?;
     }
 
+    for n in notifications {
+        sqlx::query!(
+            r#"
+            UPDATE notifications_notification
+            SET emailed = true
+            WHERE id = $1
+            "#,
+            n.id
+        )
+            .execute(pool)
+            .await
+            .expect("Failed to update notification");
+    }
+
     Ok(())
-//     for n in notifications {
-//         sqlx::query!(
-//             r#"
-//             UPDATE notifications_notification
-//             SET emailed = true
-//             WHERE id = $1
-//             "#,
-//             n.id
-//         )
-//         .execute(pool)
-//         .await
-//         .expect("Failed to update notification");
-//     }
 }
