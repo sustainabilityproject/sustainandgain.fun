@@ -93,5 +93,8 @@ pub async fn send_deployed_email() {
     let from = "Sustainability Steve <steve@sustainandgain.fun>";
     let to = "dev@sustainandgain.fun";
     let subject = "Sustain and Gain has been deployed!";
-    let _ = send_mail(from, to, subject, html, body.to_string()).await;
+    let result = send_mail(from, to, subject, html, body.to_string()).await;
+    if let Err(e) = result {
+        eprintln!("Failed to send email: {}", e);
+    }
 }
