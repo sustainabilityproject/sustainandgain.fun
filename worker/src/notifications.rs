@@ -140,11 +140,9 @@ pub async fn send_notifications(pool: &PgPool, notifications: Vec<Notification>)
         let html = html! {
             div {
                 h2 { (intro) }
-                @for notification_group in user_notifications.values() {
-                    ul {
-                        @for notification in notification_group {
-                            (notification.html())
-                        }
+                ul {
+                    @for notification in n.1 {
+                        (notification.html())
                     }
                 }
                 p { "Looking forward to seeing you on the site!"}
