@@ -26,8 +26,8 @@ pub fn schedule(pool: PgPool) {
     let pool = Arc::new(pool);
     let mut scheduler = Scheduler::new();
 
-    // Schedule the background worker to run every day at 12:00 and send notifications
-    scheduler.every(1.day()).at("12:00").run({
+    // Schedule the background worker to run every day at 13:45 and send notifications
+    scheduler.every(1.day()).at("13:45").run({
         let pool = pool.clone();
         move || {
             let pool = pool.clone();
@@ -60,7 +60,7 @@ pub fn schedule(pool: PgPool) {
     loop {
         // Run the scheduler in a loop
         scheduler.run_pending();
-        // Sleep for 1 hour
-        std::thread::sleep(Duration::from_millis(3600000));
+        // Sleep for 1 second
+        std::thread::sleep(Duration::from_millis(1000));
     }
 }
