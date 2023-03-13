@@ -82,3 +82,16 @@ pub async fn send_mail(
     println!("Email sent: {:?}", result);
     Ok(())
 }
+
+pub async fn send_deployed_email() {
+    let html = maud::html! {
+        div {
+            h1 { "Sustain and Gain has been deployed!" }
+        }
+    };
+    let body = "Sustain and Gain has been deployed!";
+    let from = "Sustainability Steve <steve@sustainandgain.fun>";
+    let to = "dev@sustainandgain.fun";
+    let subject = "Sustain and Gain has been deployed!";
+    let _ = send_mail(from, to, subject, html, body.to_string()).await;
+}

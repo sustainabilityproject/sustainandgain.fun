@@ -11,6 +11,9 @@ pub mod schedule;
 pub async fn run(pool: &PgPool) {
     println!("Running background worker");
 
+    // Send an email notifying that the app has been deployed
+    mail::send_deployed_email().await;
+
     // Schedule the background worker
     schedule(pool.clone());
 }
