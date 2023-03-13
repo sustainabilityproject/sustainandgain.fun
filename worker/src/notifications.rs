@@ -19,7 +19,6 @@ pub struct Notification {
     pub recipient_username: String,
     pub recipient_email: String,
     pub actor_username: String,
-    pub actor_email: String,
 }
 
 
@@ -83,12 +82,11 @@ pub async fn get_notifications(pool: &PgPool) -> Vec<Notification> {
             n.data as "data: Json<serde_json::Value>",
             r.username as recipient_username,
             r.email as recipient_email,
-            a.username as actor_username,
-            a.email as actor_email
+            a.username as actor_username
         FROM notifications_notification n
         INNER JOIN accounts_user a ON n.actor_object_id = a.id::text
         INNER JOIN accounts_user r ON n.recipient_id = r.id
-        WHERE n.emailed = false
+        WHERE n.emailed = false AND r.email IS NOT NULL
         "#,
     )
         .fetch_all(pool)

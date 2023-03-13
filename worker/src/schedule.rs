@@ -26,8 +26,8 @@ pub fn schedule(pool: PgPool) {
     let pool = Arc::new(pool);
     let mut scheduler = Scheduler::new();
 
-    // Schedule the background worker to run every day at 13:45 and send notifications
-    scheduler.every(1.day()).at("13:45").run({
+    // Schedule the background worker to run every day at 14:15 and send notifications
+    scheduler.every(1.day()).at("14:15").run({
         let pool = pool.clone();
         move || {
             let pool = pool.clone();
