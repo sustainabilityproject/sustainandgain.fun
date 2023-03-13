@@ -7,10 +7,13 @@ use worker::run;
 
 #[tokio::main]
 async fn main() {
+    // Load the environment variables
     dotenv().ok();
-    // let debug = env::var("DEBUG").unwrap_or("0".to_string()) == "1";
+
+    // Connect to the database
     let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    // connect to postgres
     let pool = PgPool::connect(&db_url).await.expect("Failed to connect to Postgres");
+
+    // Run the background worker
     run(&pool).await;
 }

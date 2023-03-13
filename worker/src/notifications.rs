@@ -7,6 +7,7 @@ use sqlx::types::Json;
 
 use crate::mail;
 
+/// Notification is a representation of a notification in the database
 #[derive(Debug, Deserialize, Clone)]
 pub struct Notification {
     pub id: i32,
@@ -23,6 +24,7 @@ pub struct Notification {
 
 
 impl Notification {
+    /// HTML returns the HTML representation of the notification
     fn html(&self) -> maud::Markup {
         html! {
             li {
@@ -41,16 +43,33 @@ impl Notification {
         }
     }
 
+    /// Body returns the plain text representation of the notification
     fn body(&self, intro: &str) -> String {
         format!("{} You can view them at https://www.sustainandgain.fun/. Sustainability Steve", intro)
     }
 }
 
+
+/// NotificationData is the data associated with a notification which contains the URL to the notification
 #[derive(Debug, Deserialize)]
 pub struct NotificationData {
     pub url: Option<String>,
 }
 
+/// get_notifications returns all notifications that have not yet been emailed
+///
+/// ```
+/// use sqlx::PgPool;
+/// use worker::notifications::get_notifications;
+///
+/// async fn run(pool: &PgPool) {
+///    let notifications = get_notifications(pool).await;
+///
+///   for notification in notifications {
+///      println!("{:?}", notification);
+///  }
+/// }
+/// ```
 pub async fn get_notifications(pool: &PgPool) -> Vec<Notification> {
     let notifications: Vec<Notification> = sqlx::query_as!(
         Notification,
@@ -91,15 +110,30 @@ pub async fn get_notifications(pool: &PgPool) -> Vec<Notification> {
     notifications
 }
 
+/// send_notifications sends the given notifications and marks them as emailed
+///
+/// ```
+/// use sqlx::PgPool;
+/// use worker::notifications::{get_notifications, send_notifications};
+///
+/// async fn run(pool: &PgPool) {
+///    let notifications = get_notifications(pool).await;
+///    if let Err(e) = send_notifications(&pool, notifications).await {
+///         eprintln!("Failed to send notifications: {}", e);
+///    }
+/// }
+/// ```
 pub async fn send_notifications(pool: &PgPool, notifications: Vec<Notification>) -> Result<(), Box<dyn std::error::Error>> {
     let from = "Sustainability Steve <steve@sustainandgain.fun>";
     let subject = "[Sustain and Gain] You have new notifications";
 
+    // Group the notifications by user
     let mut user_notifications: HashMap<String, Vec<Notification>> = HashMap::new();
     for n in notifications.clone() {
         user_notifications.entry(n.recipient_email.clone()).or_insert_with(Vec::new).push(n);
     }
 
+    // For each user, send them an email with all of their notifications
     for n in &user_notifications {
         println!("Sending notification: {:?}", n);
         let to = n.0.as_str();
@@ -122,6 +156,7 @@ pub async fn send_notifications(pool: &PgPool, notifications: Vec<Notification>)
         mail::send_mail(from, to, subject, html, body).await?;
     }
 
+    // Mark the notifications as emailed
     for n in notifications {
         sqlx::query!(
             r#"

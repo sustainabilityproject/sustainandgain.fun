@@ -1,8 +1,29 @@
 use lettre::{
-    transport::smtp::authentication::Credentials, Message, AsyncSmtpTransport, Tokio1Executor, AsyncTransport,
+    AsyncSmtpTransport, AsyncTransport, Message, Tokio1Executor, transport::smtp::authentication::Credentials,
 };
 use lettre::message::{header, MultiPart, SinglePart};
 
+/// Send an email
+///
+/// ```
+/// use worker::mail::send_mail;
+///
+/// async fn run() {
+///     let html = maud::html! {
+///         div {
+///             h1 { "Hello World!" }
+///         }
+///     };
+///     let body = "Hello World!";
+///     let from = "Sustainability Steve <steve@sustainandgain.fun>";
+///     let to = "test@test.com";
+///     let subject = "Hello World!";
+///
+///     if let Err(e) = send_mail(from, to, subject, html, body.to_string()).await {
+///         eprintln!("Failed to send email: {}", e);
+///     }
+/// }
+/// ```
 pub async fn send_mail(
     from: &str,
     to: &str,
@@ -18,6 +39,8 @@ pub async fn send_mail(
 
     let smtp_credentials = Credentials::new(username, password);
 
+    // In production, we use TLS to encrypt the connection
+    // In development, we use a dangerous builder to allow insecure connections
     let mailer = match email_use_tls.as_str() {
         "True" => AsyncSmtpTransport::<Tokio1Executor>::starttls_relay(&email_host)
             .unwrap()
@@ -34,6 +57,8 @@ pub async fn send_mail(
             .port(email_port.parse::<u16>()?)
             .build(),
     };
+
+    // Build the email
     let email = Message::builder()
         .from(from.parse()?)
         .to(to.parse()?)
@@ -52,6 +77,7 @@ pub async fn send_mail(
                 ),
         )?;
 
+    // Send the email
     let result = mailer.send(email).await?;
     println!("Email sent: {:?}", result);
     Ok(())
