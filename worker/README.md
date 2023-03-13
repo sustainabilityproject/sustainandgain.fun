@@ -1,6 +1,10 @@
 # Background Worker
 
-A background worker which checks for new notifications and sends them to the user via email.
+## Features
+
+- Sends emails to users every day at 12:00 with all new notifications.
+- Processes bomb tasks and sends email if they are exploding in less than 2 hours.
+- If a bomb task has not been completed by the time it is supposed to explode, it's status is changed to `EXPLODED`.
 
 ## Setup
 

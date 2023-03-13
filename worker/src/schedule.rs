@@ -28,7 +28,7 @@ pub fn schedule(pool: PgPool) {
 
     // Schedule the background worker to run every day at 12:00 and send notifications
     scheduler.every(1.day()).at("12:00").run({
-        let pool = pool;
+        let pool = pool.clone();
         move || {
             let pool = pool.clone();
             tokio::spawn(async move {
@@ -43,10 +43,24 @@ pub fn schedule(pool: PgPool) {
         }
     });
 
+    // Schedule the background worker to run every hour and process bomb tasks
+    scheduler.every(1.hour()).run({
+        let pool = pool;
+        move || {
+            let pool = pool.clone();
+            tokio::spawn(async move {
+                // Process bomb tasks
+                if let Err(e) = crate::bomb_task::process_bomb_tasks(&pool).await {
+                    eprintln!("Failed to process bomb tasks: {}", e);
+                }
+            });
+        }
+    });
+
     loop {
         // Run the scheduler in a loop
         scheduler.run_pending();
-        // Sleep for 10 minutes
-        std::thread::sleep(Duration::from_millis(600000));
+        // Sleep for 1 hour
+        std::thread::sleep(Duration::from_millis(3600000));
     }
 }
