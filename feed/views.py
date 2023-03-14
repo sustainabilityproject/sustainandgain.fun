@@ -34,7 +34,8 @@ class FeedView(LoginRequiredMixin, ListView):
         Returns:
             tasks (TaskInstance): The tasks to be displayed.
         """
-        tasks = TaskInstance.objects.exclude(status=TaskInstance.ACTIVE)
+        # Exclude active tasks and exploded tasks
+        tasks = TaskInstance.objects.exclude(status=TaskInstance.ACTIVE).exclude(status=TaskInstance.EXPLODED)
         # Only show tasks of the user or their friends.
         tasks = [task for task in tasks if
                  task.profile == self.request.user.profile or task.profile in self.request.user.profile.get_friends()]
