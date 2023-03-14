@@ -18,7 +18,7 @@ class ChatView(LoginRequiredMixin, ListView, FormView):
 
     Methods:
         get_queryset(self): Return the 50 most recent messages in order, newest to oldest.
-        form_valid(self, form): TODO
+        form_valid(self, form): Sets the form's author to the user and save it when valid data is POSTed.
         get_context_data(self, **kwargs):
     """
     model = ChatMessage
@@ -37,7 +37,11 @@ class ChatView(LoginRequiredMixin, ListView, FormView):
 
     def form_valid(self, form):
         """
-        TODO
+        Sets the form's author to the user and save it when valid data is POSTed.
+
+        Returns:
+           HttpResponseRedirect(success_url): an HTTP redirection to the form's success_url.
+
         """
         form.instance.author = self.request.user
         form.save()

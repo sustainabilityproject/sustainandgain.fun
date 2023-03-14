@@ -14,7 +14,7 @@ class UpdateProfileForm(forms.ModelForm):
         last_name (CharField): The last name displayed.
 
     Methods:
-        __init__(self, *args, **kwargs): TODO
+        __init__(self, *args, **kwargs): Constructor method which calls the super constructor and initialises fields.
         save(self, commit): Save changes to the profile.
     """
     first_name = forms.CharField(max_length=30, required=False)
@@ -22,14 +22,19 @@ class UpdateProfileForm(forms.ModelForm):
 
     class Meta:
         """
-        TODO
+        Metadata inner class to define the model and fields the ModelForm should use.
+
+        Attributes:
+            model (Model): The model to base the form on.
+            fields (list[str]): The fields of the model which should be a part of the form.
         """
         model = Profile
         fields = ['first_name', 'last_name', 'image', 'bio']
 
     def __init__(self, *args, **kwargs):
         """
-        TODO
+        Constructor method which calls the super constructor and initialises fields to their current values so that the
+        user can then edit them.
         """
         super().__init__(*args, **kwargs)
         self.fields['first_name'].initial = self.instance.user.first_name
