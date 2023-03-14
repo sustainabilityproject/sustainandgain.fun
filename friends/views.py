@@ -64,9 +64,16 @@ class ProfileView(LoginRequiredMixin, DetailView):
         context['friends'] = friends
         context['leagues'] = League.objects.filter(leaguemember__profile=profile, leaguemember__status='joined')
 
-        # calcs the number of point a player has
-        tasks = TaskInstance.objects.filter(profile=profile)
-        context['points'] = sum([task.task.points for task in tasks if task.status == TaskInstance.COMPLETED])
+        # Calculates the total points of the user
+        points = 0
+        for task in TaskInstance.objects.filter(profile=profile, status=TaskInstance.COMPLETED):
+            points += task.task.points
+
+        # Subtract exploded tasks
+        for task in TaskInstance.objects.filter(profile=profile, status=TaskInstance.EXPLODED):
+            points -= task.task.points
+        
+        context['points'] = points
 
         return context
 
