@@ -316,8 +316,12 @@ class LeagueMember(models.Model):
         Returns:
             total_points (int): The sum of the values of the member's completed tasks.
         """
-        task_instances = TaskInstance.objects.filter(profile=self.profile, status=TaskInstance.COMPLETED)
-        total_points = 0
-        for task_instance in task_instances:
-            total_points += task_instance.task.points
-        return total_points
+        points = 0
+        for task in TaskInstance.objects.filter(profile=self.profile, status=TaskInstance.COMPLETED):
+            points += task.task.points
+
+        # Subtract exploded tasks
+        for task in TaskInstance.objects.filter(profile=self.profile, status=TaskInstance.EXPLODED):
+            points -= task.task.points
+
+        return points
