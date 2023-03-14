@@ -426,9 +426,9 @@ class ProfileSearchView(ListView):
             temp_obj_list = [[], [], []]
 
             object_list = User.objects.filter(
-                Q(username__contains=query) |
-                Q(first_name__contains=query) |
-                Q(last_name__contains=query)
+                Q(username__istartswith=query) |
+                Q(first_name__istartswith=query) |
+                Q(last_name__istartswith=query)
             ).exclude(id__in=exclusions)
 
             # bins users into 3 ranks
@@ -437,9 +437,9 @@ class ProfileSearchView(ListView):
                 # therefore the query bing in username is weighted more than the query being in the first of last name
                 count = 0
                 # if query is in username increase count by 2
-                count += 2*len(object_list.filter(Q(id = user.id) & Q(username__contains=query)))
+                count += 2*len(object_list.filter(Q(id = user.id) & Q(username__istartswith=query)))
                 # count increases by 1 if query is in first_name or last name, else 0
-                count += len(object_list.filter(Q(id = user.id) & Q(Q(first_name__contains=query) | Q(last_name__contains=query))))
+                count += len(object_list.filter(Q(id = user.id) & Q(Q(first_name__istartswith=query) | Q(last_name__istartswith=query))))
 
                 # query is just in first or last name
                 if count == 1:
@@ -457,11 +457,11 @@ class ProfileSearchView(ListView):
 
             object_list = User.objects.filter(
                 # is username in any of the values
-                reduce(operator.or_, (Q(username__contains=q) for q in query_tokens)) |
+                reduce(operator.or_, (Q(username__istartswith=q) for q in query_tokens)) |
                 # it is assumed that the last value in query is not a first name
-                reduce(operator.or_, (Q(first_name__contains=q) for q in query_tokens[0:-1] )) |
+                reduce(operator.or_, (Q(first_name__istartswith=q) for q in query_tokens[0:-1] )) |
                 # it is assumed that the first value in query is not a last name
-                reduce(operator.or_, (Q(first_name__contains=q) for q in query_tokens[1:] ))
+                reduce(operator.or_, (Q(last_name__istartswith=q) for q in query_tokens[1:] ))
             ).exclude(id__in=exclusions)
 
             # bins users into 5 basic ranks
