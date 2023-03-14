@@ -5,6 +5,7 @@ from django.db import models
 from django.utils import timezone
 
 from friends.models import Profile
+from PIL import Image
 
 
 class TaskCategory(models.Model):
@@ -285,6 +286,25 @@ class TaskInstance(models.Model):
             raise ValidationError("If a task is no longer active, it must have a time completed")
 
         return self
+
+
+    # Overwrite save method to resize photo if it is too large
+    def save(self, *args, **kwargs):
+        # Call the parent save() method to save the object as usual
+        super().save(*args, **kwargs)
+
+        if self.photo:
+            # Open the image file using Pillow
+            img = Image.open(self.photo.path)
+
+            # Set a maximum size for the photo, e.g., 800x800 pixels
+            max_size = (800, 800)
+
+            # Resize the image if it's larger than the maximum size
+            if img.size[0] > max_size[0] or img.size[1] > max_size[1]:
+                img.thumbnail(max_size, Image.ANTIALIAS)
+                img.save(self.photo.path)
+        
 
     def report_task_complete(self):
         """
