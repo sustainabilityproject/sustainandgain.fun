@@ -2,9 +2,13 @@ import datetime
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, UpdateView
 from django.views.generic import TemplateView
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+
+from .models import Comment
+from django.views import View
 
 from tasks.models import TaskInstance
 
@@ -268,3 +272,35 @@ class RestoreTaskView(LoginRequiredMixin, UpdateView):
         task.save()
         messages.success(request, 'You restored a task.')
         return redirect('feed:reported')
+
+
+
+class TaskDetailView(View):
+    template_name = 'feed/task_detail.html'
+
+    def get(self, request, task_instance_id):
+        task_instance = get_object_or_404(TaskInstance, pk=task_instance_id)
+        comments = Comment.objects.filter(task_instance=task_instance).order_by('-created_at')
+        context = {'task_instance': task_instance, 'comments': comments}
+        return render(request, self.template_name, context)
+
+class CommentView(LoginRequiredMixin, View):
+    def post(self, request, task_instance_id):
+        task_instance = get_object_or_404(TaskInstance, id=task_instance_id)
+        text = request.POST['text']
+        
+        if text:
+            comment = Comment.objects.create(
+                user=request.user,
+                task_instance=task_instance,
+                text=text
+            )
+            comment.save()
+            messages.success(request, 'Comment successfully added.')
+        else:
+            messages.error(request, 'Comment text cannot be empty.')
+
+        return redirect('feed:task_detail', task_instance_id)
+
+    def get(self, request, *args, **kwargs):
+        return redirect('feed:index')
