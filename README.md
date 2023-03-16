@@ -34,6 +34,12 @@ Create an admin user
 python manage.py createsuperuser
 ```
 
+## Enable AI (optional)
+
+Install [PyTorch](https://pytorch.org/get-started/locally/) and [Transformers](https://pypi.org/project/transformers/) with pip.
+
+Change the value of AI in `.env` to `1`.
+
 ## Run
 
 ### Local email

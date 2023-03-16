@@ -171,3 +171,12 @@ else:
     EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
     EMAIL_USE_TLS = True
     DEFAULT_FROM_EMAIL = 'Sustain and Gain <noreply@sustainandgain.fun>'
+
+
+# If AI environment variable is set to 1, then set AI to True, otherwise set AI to False
+# Enable AI by changing the value of AI in .env file to 1
+# You will need to install torch and transformers
+AI = str(os.getenv('AI', '0')).lower() in ['true', 't', '1']
+
+if AI:
+    INSTALLED_APPS.append('imagenet.apps.ImagenetConfig')
