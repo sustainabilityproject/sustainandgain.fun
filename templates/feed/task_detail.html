@@ -2,34 +2,36 @@
 
 {% block content %}
   <div class="container">
-    <h1>{{ task_instance.task.title }}</h1>
+    <h1>{{ task_instance.task.title }} <span class="badge {{ task_instance.status_colour }} fs-12">{{ task_instance.status }}</span>
+        {% include 'tasks/_task_badges.html' with task=task_instance.task instance=task_instance %}
+    </h1>
     <p>{{ task_instance.task.description }}</p>
     {% if task_instance.task.photo %}
-      <div class="mt-3">
-        <img src="{{ task_instance.task.photo.url }}" class="img-fluid" alt="{{ task_instance.task.title }}">
-      </div>
+        <div class="mt-3">
+            <img src="{{ task_instance.task.photo.url }}" class="img-fluid" alt="{{ task_instance.task.title }}">
+        </div>
     {% endif %}
     <hr>
     <h2>Comments</h2>
     <div id="comments-container" class="mb-3" style="max-height: 400px; overflow-y: scroll;">
-      {% for comment in comments %}
-        <div class="card mb-2">
-          <div class="card-body">
-            <h5 class="card-title">{{ comment.user.profile.name }}</h5>
-            <p class="card-text">{{ comment.text }}</p>
-            <p class="card-text text-muted">{{ comment.created_at|date:"H:i \o\n d/m/Y" }}</p>
-          </div>
-        </div>
-      {% empty %}
-        <p>No comments yet.</p>
-      {% endfor %}
+        {% for comment in comments %}
+            <div class="card mb-2">
+                <div class="card-body">
+                    <h5 class="card-title">{{ comment.user.profile.name }}</h5>
+                    <p class="card-text">{{ comment.text }}</p>
+                    <p class="card-text text-muted">{{ comment.created_at|date:"H:i \o\n d/m/Y" }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
     </div>
     <form id="comment-form" method="post" action="{% url 'feed:comment' task_instance.id %}">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="text">Add a comment:</label>
-        <textarea name="text" id="text" class="form-control" rows="3" required></textarea>
-      </div>
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="text">Add a comment:</label>
+            <textarea name="text" id="text" class="form-control" rows="3" required></textarea>
+        </div>
     </form>
   </div>
   <script>
@@ -70,5 +72,6 @@
       };
       xhr.send();
     }
+    
   </script>
 {% endblock %}

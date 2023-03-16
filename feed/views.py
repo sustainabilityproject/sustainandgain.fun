@@ -12,6 +12,9 @@ from django.views import View
 
 from tasks.models import TaskInstance
 
+import re
+from better_profanity import profanity
+
 
 class FeedView(LoginRequiredMixin, ListView):
     """
@@ -284,6 +287,12 @@ class TaskDetailView(View):
         context = {'task_instance': task_instance, 'comments': comments}
         return render(request, self.template_name, context)
 
+def sanitize_input(input_str):
+    pattern = re.compile(r"[^A-Za-z0-9\s\.\,\?\!\-\(\)\[\]\{\}\:\;\"\'\`]", re.IGNORECASE)
+    input_str = pattern.sub("", input_str)
+    return profanity.censor(input_str, '*')
+
+
 class CommentView(LoginRequiredMixin, View):
     def post(self, request, task_instance_id):
         task_instance = get_object_or_404(TaskInstance, id=task_instance_id)
@@ -293,7 +302,7 @@ class CommentView(LoginRequiredMixin, View):
             comment = Comment.objects.create(
                 user=request.user,
                 task_instance=task_instance,
-                text=text
+                text=sanitize_input(text)
             )
             comment.save()
             messages.success(request, 'Comment successfully added.')
