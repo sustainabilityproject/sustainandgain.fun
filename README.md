@@ -46,7 +46,52 @@ python manage.py test
 ```
 
 ## Structure
-The project is set up as a typical Django project.
+The project is set up as a typical Django project. Different Django apps handle different parts of the app's
+functionality. 
+```
+├───accounts
+│   └───migrations
+├───autoencoder
+│   └───src
+├───chat
+│   └───migrations
+├───feed
+│   └───migrations
+├───friends
+│   ├───migrations
+│   ├───templatetags
+│   └───tests
+├───leagues
+│   ├───migrations
+│   └───tests
+├───media
+│   ├───bin
+│   ├───default
+│   └───task_photos
+├───promotional things
+│   ├───Images
+│   └───logo design
+├───static
+├───sustainability
+│   ├───tests
+│   │   └───factories
+│   └───__pycache__
+├───tasks
+│   ├───migrations
+│   ├───templatetags
+│   └───tests
+├───templates
+│   ├───account
+│   ├───admin
+│   ├───chat
+│   ├───feed
+│   ├───friends
+│   ├───leagues
+│   ├───notifications
+│   └───tasks
+└───worker
+    └───src
+   ```
 Functionality is divided across apps which have their own views, URLs and models.
 * *sustainability* is the base app, containing the settings and delegating URLs to the correct apps.
 * *accounts* manages user creation and authentication, based on the inbuilt Django user system.
