@@ -84,7 +84,8 @@ Each Django app has a ```tests``` folder containing the tests for that app - rea
 The project is set up as a typical Django project. Most directories are Django apps, which handle different parts of the application's
 functionality.
 
-A typical Django app is set up like this:
+### A typical Django app
+Most of our project's directories are Django apps. A typical Django app is set up like this:
 ```
 │   admin.py            Defines which models in this app are editable from the admin page.         
 │   forms.py            Define forms which are relevant to this app's models.
@@ -99,7 +100,7 @@ A typical Django app is set up like this:
         factories.py    Allow the building of 'default' models to make writing tests easier.
         test_models.py  A test file automatically run when the test suite is run.
 ```
-
+### Project file structure
 Below is the overall product structure. Most directories are Django apps (see above) - where directories are not Django
 apps, an explanation has been provided.
 ```
@@ -109,7 +110,6 @@ apps, an explanation has been provided.
 ├───accounts        A Django app that manages accounts and authentication (see above for Django app structure)
 │
 ├───autoencoder     A Rust neural network used to detect and automatically validate some images
-│   └───src
 │
 ├───chat            A Django app that manages a global chat function (see above for Django app structure)
 │   
@@ -133,7 +133,7 @@ apps, an explanation has been provided.
 │  
 ├───templates           Contains the Django HTML templates displayed to users via views 
 │   
-└───worker              Contains the background worker which handles automatic emailing, bomb task countdowns etc.
+└───worker              Contains the Rust background worker which handles automatic emailing, bomb task countdowns etc.
    ```
 ## Documentation
 Code is commented with Python docstrings.
