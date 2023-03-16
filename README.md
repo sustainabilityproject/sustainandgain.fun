@@ -121,9 +121,7 @@ apps, an explanation has been provided.
 │   
 ├───leagues         A Django app that manages leagues users compete in (see above for Django app structure)
 │   
-├───media           
-│   ├───bin
-│   └───default
+├───media           Stores media such as user profile pictures and uploaded images.
 │
 ├───promotional things  Promotional information for the client like logos and images
 │  
