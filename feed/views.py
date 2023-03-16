@@ -2,11 +2,18 @@ import datetime
 
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, UpdateView
 from django.views.generic import TemplateView
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+
+from .models import Comment
+from django.views import View
 
 from tasks.models import TaskInstance
+
+import re
+from better_profanity import profanity
 
 
 class FeedView(LoginRequiredMixin, ListView):
@@ -268,3 +275,90 @@ class RestoreTaskView(LoginRequiredMixin, UpdateView):
         task.save()
         messages.success(request, 'You restored a task.')
         return redirect('feed:reported')
+
+
+
+class TaskDetailView(View):
+    """
+    A class-based view to handle the display of a specific TaskInstance detail page,
+    including its related comments.
+    """
+    template_name = 'feed/task_detail.html'
+
+    def get(self, request, task_instance_id):
+        """
+        Handles GET requests for the TaskInstance detail page.
+
+        Args:
+            request (HttpRequest): The incoming request object.
+            task_instance_id (int): The primary key of the TaskInstance to display.
+
+        Returns:
+            HttpResponse: The rendered TaskInstance detail page with its related comments.
+        """
+        task_instance = get_object_or_404(TaskInstance, pk=task_instance_id)
+        comments = Comment.objects.filter(task_instance=task_instance).order_by('-created_at')
+        context = {'task_instance': task_instance, 'comments': comments}
+        return render(request, self.template_name, context)
+
+def sanitize_input(input_str):
+    """
+    Removes any special characters from the input string and censors profanity.
+
+    Args:
+        input_str (str): The input string to sanitize.
+
+    Returns:
+        str: The sanitized input string.
+    """
+    pattern = re.compile(r"[^A-Za-z0-9\s\.\,\?\!\-\(\)\[\]\{\}\:\;\"\'\`]", re.IGNORECASE)
+    input_str = pattern.sub("", input_str)
+    return profanity.censor(input_str, '*')
+
+
+class CommentView(LoginRequiredMixin, View):
+    """
+    A class-based view to handle the creation of new comments for a specific TaskInstance.
+    Requires user to be logged in.
+    """
+
+    def post(self, request, task_instance_id):
+        """
+        Handles POST requests for creating a new comment related to a TaskInstance.
+
+        Args:
+            request (HttpRequest): The incoming request object.
+            task_instance_id (int): The primary key of the TaskInstance the comment is related to.
+
+        Returns:
+            HttpResponseRedirect: Redirects to the TaskInstance detail page after comment creation.
+        """
+        task_instance = get_object_or_404(TaskInstance, id=task_instance_id)
+        text = request.POST['text']
+        
+        if text:
+            comment = Comment.objects.create(
+                user=request.user,
+                task_instance=task_instance,
+                text=sanitize_input(text)
+            )
+            comment.save()
+            messages.success(request, 'Comment successfully added.')
+        else:
+            messages.error(request, 'Comment text cannot be empty.')
+
+        return redirect('feed:task_detail', task_instance_id)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Handles GET requests and redirects users to the main index page.
+
+        Args:
+            request (HttpRequest): The incoming request object.
+            *args: Variable-length arguments.
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            HttpResponseRedirect: Redirects users to the main index page.
+        """
+        return redirect('feed:index')
