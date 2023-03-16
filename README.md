@@ -1,10 +1,11 @@
 # Sustain and Gain 
 Sustain and Gain is a mobile web app where users compete to earn points by completing sustainable tasks.
-##Contents
+
+## Contents
 1. [Setting up and running the app](#setting-up-and-running-the-app)
 2. [Project Structure](#project-structure)
 3. [Documentation](#documentation)
-#Setting up and running the app
+# Setting up and running the app
 
 
 ## Setup
@@ -79,7 +80,7 @@ Additionally, the test suite is automatically run via GitHub actions for pushes,
 Each Django app has a ```tests``` folder containing the tests for that app - read more about project structure
 [below](#project-structure).
 
-#Project Structure
+# Project Structure
 The project is set up as a typical Django project. Most directories are Django apps, which handle different parts of the application's
 functionality.
 
