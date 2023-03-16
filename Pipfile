@@ -3,6 +3,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
+[[source]]
+url = "https://download.pytorch.org/whl/cpu"
+verify_ssl = true
+name = "downloadpytorch"
+
 [packages]
 django = "*"
 django-bootstrap5 = "*"
@@ -18,6 +23,8 @@ geopy = "*"
 better-profanity = "*"
 django-allauth = "*"
 django-notifications-hq = "*"
+torch = {version = "*", index = "downloadpytorch"}
+transformers = "*"
 
 [dev-packages]
 
