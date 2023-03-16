@@ -23,7 +23,7 @@
             </a>
             <h5 class="card-title my-1">{{ task.task.title }} <span
                     class="badge {{ task.status_colour }} fs-12">{{ task.status }}</span>
-                {% include 'tasks/_task_rarity_badge.html' with task=task.task %}
+                {% include 'tasks/_task_badges.html' with task=task.task instance=task %}
             </h5>
             <p class="card-text text-muted">Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}</p>
             <p>{{ task.task.description }}</p>

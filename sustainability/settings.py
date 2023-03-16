@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
 
     'django_bootstrap5',
+    'notifications',
 
     'accounts.apps.AccountsConfig',
     'tasks.apps.TasksConfig',
@@ -149,6 +150,8 @@ LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 
 AUTH_USER_MODEL = "accounts.User"
+
+DJANGO_NOTIFICATIONS_CONFIG = {'USE_JSONFIELD': True}
 
 SITE_ID = 1
 

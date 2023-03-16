@@ -5,6 +5,7 @@ from django.db import models
 from django.utils import timezone
 
 from friends.models import Profile
+from PIL import Image
 
 
 class TaskCategory(models.Model):
@@ -43,7 +44,7 @@ class Task(models.Model):
         category (TaskCategory): The category the task belongs to.
         rarity (IntegerField): Rarity of the task. Normal, Silver, Gold.
         is_bomb (BooleanField): Does this task have a time limit.
-        bomb_time_limit (DurationField): How long you have to complete the task if it's a bomb taskgi.
+        bomb_time_limit (DurationField): How long you have to complete the task if it's a bomb task..
 
     Methods:
         rarity_colour(self): Return badge colour corresponding to rarity.
@@ -72,6 +73,13 @@ class Task(models.Model):
         (2, "Silver"),
         (3, "Gold")
     )
+
+    # Determines whether the task is a bomb task
+    # Bomb tasks grant no points on completion, but 'explode' and subtract points from a user if they fail to complete
+    # the task within a time limit
+    is_bomb = models.BooleanField(default=False)
+
+    bomb_time_limit = models.DurationField(null=True, blank=True)
 
     @property
     def rarity_colour(self):
@@ -114,7 +122,7 @@ class Task(models.Model):
 
     def clean(self):
         """
-        Raise ValidationError if there are inconsistencies in the time_to_repeat or points.
+        Raise ValidationError if there are inconsistencies in the time_to_repeat, points, and bomb time limits.
 
         Returns:
             self (Task): After review.
@@ -125,6 +133,12 @@ class Task(models.Model):
 
         if self.points <= 0:
             raise ValidationError('Tasks must grant a positive number of points')
+
+        if self.is_bomb and (self.bomb_time_limit is None):
+            raise ValidationError('Bomb tasks must have a time to complete set.')
+
+        elif (not self.is_bomb) and (self.bomb_time_limit is not None):
+            raise ValidationError('You can only set a bomb time limit if the task is a bomb task.')
 
         return self
 
@@ -149,6 +163,7 @@ class TaskInstance(models.Model):
         location (CharField): Where the task was completed.
         origin_message (CharField): Tells user why task is on their 'my tasks' page.
         tagged_someone (BooleanField): Has the user tagged someone else in this task.
+        tagged_whom (CharField): The username of the person you tagged in this task.
         ai_tag (CharField): The identified object in the photo if AI is enabled.
         status (CharField): Whether the task is Available, Active, Pending Approval, or Complete.
         bomb_instance_deadline (timedelta): For bomb tasks only, calculate when this instance of the task is due based
@@ -194,6 +209,20 @@ class TaskInstance(models.Model):
     # have you tagged someone in this task yet?
     tagged_someone = models.BooleanField(default=False)
 
+    # which person did you tag?
+    tagged_whom = models.CharField(max_length=150, null=True, blank=True)
+
+    @property
+    def bomb_instance_deadline(self):
+        """
+        Calculate the task deadline.
+        Adds the time limits to the time the task was accepted.
+        """
+        if self.task.is_bomb:
+            return self.time_accepted + self.task.bomb_time_limit
+        else:
+            return None
+
     # AI Tag is a string which is the identified object in the image if AI is applied to the task
     ai_tag = models.CharField(max_length=50, null=True, blank=True)
 
@@ -201,11 +230,13 @@ class TaskInstance(models.Model):
     COMPLETED = 'COMPLETED'
     PENDING_APPROVAL = 'PENDING'
     ACTIVE = 'ACTIVE'
+    EXPLODED = 'EXPLODED'
 
     TASK_STATE_CHOICES = (
         (COMPLETED, 'Completed'),
         (PENDING_APPROVAL, 'Pending Approval'),
         (ACTIVE, 'Active'),
+        (EXPLODED, 'Exploded'),
     )
     status = models.CharField(
         max_length=9,
@@ -230,7 +261,6 @@ class TaskInstance(models.Model):
             return 'bg-warning text-dark'
         elif self.status == TaskInstance.COMPLETED:
             return 'text-bg-success'
-
 
     def clean(self):
         """
@@ -260,6 +290,25 @@ class TaskInstance(models.Model):
             raise ValidationError("If a task is no longer active, it must have a time completed")
 
         return self
+
+
+    # Overwrite save method to resize photo if it is too large
+    def save(self, *args, **kwargs):
+        # Call the parent save() method to save the object as usual
+        super().save(*args, **kwargs)
+
+        if self.photo:
+            # Open the image file using Pillow
+            img = Image.open(self.photo.path)
+
+            # Set a maximum size for the photo, e.g., 800x800 pixels
+            max_size = (800, 800)
+
+            # Resize the image if it's larger than the maximum size
+            if img.size[0] > max_size[0] or img.size[1] > max_size[1]:
+                img.thumbnail(max_size, Image.ANTIALIAS)
+                img.save(self.photo.path)
+
 
     def report_task_complete(self):
         """

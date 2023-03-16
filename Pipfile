@@ -17,6 +17,7 @@ gunicorn = "*"
 geopy = "*"
 better-profanity = "*"
 django-allauth = "*"
+django-notifications-hq = "*"
 
 [dev-packages]
 

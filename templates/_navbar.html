@@ -23,7 +23,8 @@
                         {% load incoming_requests %}
                         {% get_friend_requests user.profile as friend_requests %}
                         {% if friend_requests %}
-                            <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends ({{ friend_requests }})</a>
+                            <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends
+                                ({{ friend_requests }})</a>
                         {% else %}
                             <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends</a>
                         {% endif %}
@@ -34,8 +35,12 @@
                     {% if user.is_staff %}
                         <li class="nav-item">
                             {% load poll_extras %}
-                            <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks
-                                ({% get_reported_count %})</a>
+                            {% if get_reported_count %}
+                                <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks
+                                    ({% get_reported_count %})</a>
+                            {% else %}
+                                <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks</a>
+                            {% endif %}
                         </li>
                     {% endif %}
                 {% endif %}
@@ -59,6 +64,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'friends:profile' user.pk %}">{{ user.username }}</a>
                     </li>
+                    {% include 'notifications/_notifications_dropdown.html' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
                     </li>
