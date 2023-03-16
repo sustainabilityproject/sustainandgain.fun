@@ -1,4 +1,11 @@
-# Sustainability Project
+# Sustain and Gain 
+Sustain and Gain is a mobile web app where users compete to earn points by completing sustainable tasks.
+##Contents
+1. [Setting up and running the app](#setting-up-and-running-the-app)
+2. [Project Structure](#project-structure)
+3. [Documentation](#documentation)
+#Setting up and running the app
+
 
 ## Setup
 
@@ -61,73 +68,80 @@ python manage.py runserver 8000
 ```
 
 ## Test
+The test suite can be run using the default Django test command:
 ```bash
 python manage.py test
 ```
+This discovers and runs all tests in files with names like ```*test.py```
+.
+Additionally, the test suite is automatically run via GitHub actions for pushes, merges and pull requests.
 
-## Structure
-The project is set up as a typical Django project. Different Django apps handle different parts of the app's
-functionality. 
+Each Django app has a ```tests``` folder containing the tests for that app - read more about project structure
+[below](#project-structure).
+
+#Project Structure
+The project is set up as a typical Django project. Most directories are Django apps, which handle different parts of the application's
+functionality.
+
+A typical Django app is set up like this:
 ```
-├───accounts
-│   └───migrations
-├───autoencoder
+│   admin.py            Defines which models in this app are editable from the admin page.         
+│   forms.py            Define forms which are relevant to this app's models.
+│   models.py           Models contain essential fields and behaviors of the data stored, typically mapped to a database
+│   signals.py          Signals notify another Django app when some behaviour takes place.
+│   urls.py             Map website URLs to Django views.
+│   views.py            Define the web responses to give a user based on a web request.
+│
+├───migrations          Generated information used to build the models database.
+│
+└───tests               Tests for each Django app are within that app.
+        factories.py    Allow the building of 'default' models to make writing tests easier.
+        test_models.py  A test file automatically run when the test suite is run.
+```
+
+Below is the overall product structure. Most directories are Django apps (see above) - where directories are not Django
+apps, an explanation has been provided.
+```
+├───.github         Contains GitHub-specific information
+│   └───workflows   Actions automatically run on GitHub pushes (running tests, deployment)
+│
+├───accounts        A Django app that manages accounts and authentication (see above for Django app structure)
+│
+├───autoencoder     A Rust neural network used to detect and automatically validate some images
 │   └───src
-├───chat
-│   └───migrations
-├───feed
-│   └───migrations
-├───friends
-│   ├───migrations
-│   ├───templatetags
-│   └───tests
-├───leagues
-│   ├───migrations
-│   └───tests
-├───media
+│
+├───chat            A Django app that manages a global chat function (see above for Django app structure)
+│   
+├───feed            A Django app that manages the home feed users see (see above for Django app structure)
+│   
+├───friends         A Django app that manages the friend system (see above for Django app structure)
+│   
+├───imagenet        An imported AI solution for automatically validating tasks.
+│   
+├───leagues         A Django app that manages leagues users compete in (see above for Django app structure)
+│   
+├───media           
 │   ├───bin
-│   ├───default
-│   └───task_photos
-├───promotional things
-│   ├───Images
-│   └───logo design
-├───static
-├───sustainability
-│   ├───tests
-│   │   └───factories
-│   └───__pycache__
-├───tasks
-│   ├───migrations
-│   ├───templatetags
-│   └───tests
-├───templates
-│   ├───account
-│   ├───admin
-│   ├───chat
-│   ├───feed
-│   ├───friends
-│   ├───leagues
-│   ├───notifications
-│   └───tasks
-└───worker
-    └───src
+│   └───default
+│
+├───promotional things  Promotional information for the client like logos and images
+│  
+├───static              Contains static resources which need to be loaded elsewhere like the favicon.
+│
+├───sustainability      The base Django app, containing settings and configuration.
+│  
+├───tasks               A Django app that manages tasks (see above for Django app structure)
+│  
+├───templates           Contains the Django HTML templates displayed to users via views 
+│   
+└───worker              Contains the background worker which handles automatic emailing, bomb task countdowns etc.
    ```
-Functionality is divided across apps which have their own views, URLs and models.
-* *sustainability* is the base app, containing the settings and delegating URLs to the correct apps.
-* *accounts* manages user creation and authentication, based on the inbuilt Django user system.
-* *autoencoder* contains the from-scratch machine learning system we have implemented for automatic task validation
-* *chat* contains the global site chat system
-* *feed* contains the feed of completed tasks that users see by default when they are logged in
-* *friends* manages friend requests and the profile system
-* *leagues* contains the league system which allows users to join leagues and compete with each other
-* *tasks* contains models and views for the tasks which users accept and complete
+## Documentation
+Code is commented with Python docstrings.
 
-There are also some folders which are not Django apps:
-* *media* contains the uploaded task photos
-* *promotional things* contains client-focused branding material and imagery
-* *static* contains static, unchanging resources which need to be loaded elsewhere such as the favicon
-* *templates* contains the Django HTML templates which are displayed to users via views
+We have a user-focused [documentation website](https://docs.sustainandgain.fun/) which explains the app's features, as
+well as promotional documents in the 'promotional things' folder including a site overview, logo designs and images.
 
-## Additional resources
-We have a [Kanban board](https://trello.com/b/DwykNGu4/kanban-board) on Trello, and a [documentation website](https://docs.sustainandgain.fun/) which contains client-focused explanations of the app.
+Additionally, we have a [Kanban board](https://trello.com/b/DwykNGu4/kanban-board) on Trello to manage the agile process.
+
 
