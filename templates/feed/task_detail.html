@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col-sm-12 col-md-6 col-lg-3 mt-3 mx-auto">
+    <h2>{{ task_instance.task.title }} <span class="badge {{ task_instance.status_colour }} fs-12">{{ task_instance.status }}</span>
+        {% include 'tasks/_task_badges.html' with task=task_instance.task instance=task_instance %}
+    </h2>
+    <p>{{ task_instance.task.description }}</p>
+    <a href="{{ task_instance.photo.url }}">
+        <img src="{{ task_instance.photo.url }}" class="card-img-top" alt="{{ task_instance }}">
+    </a>
+    <hr>
+    <h2>Comments</h2>
+    <div id="comments-container" class="mb-3" style="max-height: 400px; overflow-y: scroll;">
+        {% for comment in comments %}
+            <div class="card mb-2">
+                <div class="card-body">
+                  <a class="btn btn-light" style="max-width: 100%;" href="{% url 'friends:profile' comment.user.profile.pk %}">
+                      <img src="{{ comment.user.profile.image.url }}" class="rounded-circle" width="20" height="20"
+                          alt="{{ comment.user.profile }}">
+                      {{ comment.user.profile.name }}
+                      <span class="text-muted">@{{ comment.user.profile.user.username }}</span>
+                  </a>
+                    <p class="card-text">{{ comment.text }}</p>
+                    <p class="card-text text-muted">{{ comment.created_at|date:"H:i \o\n d/m/Y" }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </div>
+    <form id="comment-form" method="post" action="{% url 'feed:comment' task_instance.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="text">Add a comment:</label>
+            <textarea name="text" id="text" class="form-control" rows="3" required></textarea>
+        </div>
+    </form>
+  </div>
+  <script>
+    // Get the comment form element
+    var commentForm = document.getElementById('comment-form');
+    // Get the message input element
+    var messageInput = document.getElementById('text');
+
+    // Add event listener to handle keydown events for the message input
+    messageInput.addEventListener('keydown', function(event) {
+      // If the Enter key is pressed without holding the Shift key
+      if (event.keyCode === 13 && !event.shiftKey) {
+        // Prevent the default behavior
+        event.preventDefault();
+        // Trim the input content
+        var messageContent = messageInput.value.trim();
+        
+        // If there is any content in the input
+        if (messageContent) {
+          // Get the CSRF token
+          var csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+          // Create a new XMLHttpRequest object
+          var xhr = new XMLHttpRequest();
+          // Initialize the POST request
+          xhr.open('POST', commentForm.action);
+          // Set request headers
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          xhr.setRequestHeader('X-CSRFToken', csrfToken);
+          // Set the onload callback function
+          xhr.onload = function() {
+            // If the request is successful
+            if (xhr.status === 200) {
+              // Clear the input field
+              messageInput.value = '';
+              // Fetch the latest comments
+              fetchComments();
+            }
+          };
+          // Send the POST request with the encoded message content
+          xhr.send('text=' + encodeURIComponent(messageContent));
+        }
+      }
+    });
+
+    // Function to fetch the latest comments
+    function fetchComments() {
+      // Create a new XMLHttpRequest object
+      var xhr = new XMLHttpRequest();
+      // Initialize the GET request
+      xhr.open('GET', '{% url "feed:task_detail" task_instance.id %}');
+      // Set the onload callback function
+      xhr.onload = function() {
+        // If the request is successful
+        if (xhr.status === 200) {
+          // Parse the response as an HTML document
+          var parser = new DOMParser();
+          var html = parser.parseFromString(xhr.response, 'text/html');
+          // Get the new comments container element
+          var newCommentsContainer = html.querySelector('#comments-container');
+          // Get the current comments container element
+          var currentCommentsContainer = document.querySelector('#comments-container');
+          // Update the current comments container with the new content
+          currentCommentsContainer.innerHTML = newCommentsContainer.innerHTML;
+        }
+      };
+      // Send the GET request
+      xhr.send();
+    }
+    
+  </script>
+
+{% endblock %}
