@@ -12,8 +12,8 @@ admin.site.index_title = 'Gamekeeper Area'
 
 urlpatterns = [
     # Account routes
-    path('accounts/', include('accounts.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
+    # path('accounts/', include('accounts.urls')),
+    path('accounts/', include('allauth.urls')),
 
     # Task routes
     path('tasks/', include('tasks.urls')),
@@ -30,9 +30,12 @@ urlpatterns = [
     # Home route
     path('', HomeView.as_view(), name='home'),
 
+    # Notifications
+    path('notifications/', include('notifications.urls')),
+
     # Gamekeeper routes
     path('gamekeeper/', admin.site.urls),
-    
+
     # Chat routes
     path('chat/', include('chat.urls')),
 

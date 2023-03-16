@@ -33,7 +33,7 @@ class MyTasksView(LoginRequiredMixin, ListView):
         Returns:
             QuerySet[TaskInstance]: the task instances which belong to the user.
         """
-        return TaskInstance.objects.filter(profile=self.request.user.profile)
+        return TaskInstance.objects.filter(profile=self.request.user.profile).order_by('-time_completed')
 
     def get_context_data(self, **kwargs):
         """
@@ -44,6 +44,7 @@ class MyTasksView(LoginRequiredMixin, ListView):
         """
         context = super().get_context_data(**kwargs)
         context['active_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.ACTIVE]
+        context['completed_or_pending'] = [task for task in context['tasks'] if task.status != TaskInstance.ACTIVE]
         context['completed_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.COMPLETED]
         context['pending_tasks'] = [task for task in context['tasks'] if task.status == TaskInstance.PENDING_APPROVAL]
         context['friends'] = self.request.user.profile.get_friends()
@@ -193,9 +194,11 @@ class SendTagView(LoginRequiredMixin, View):
             )
             t.save()
 
-            # you can't tag anyone else in this task now
+            # records the person you tagged, you now can't tag anyone else
             task_instance_sent.tagged_someone = True
+            task_instance_sent.tagged_whom = profile.user.username
             task_instance_sent.save()
+
         else:
             message = profile.user.username + ' is already doing that task'
             messages.info(request, message)
