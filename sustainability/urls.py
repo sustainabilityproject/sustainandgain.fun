@@ -36,9 +36,6 @@ urlpatterns = [
     # Gamekeeper routes
     path('gamekeeper/', admin.site.urls),
 
-    # Chat routes
-    path('chat/', include('chat.urls')),
-
 ]
 
 if settings.DEBUG:
