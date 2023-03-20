@@ -5,12 +5,23 @@
             <img src="{% static 'logo/icon.svg' %}" alt="Sustain+Gain" height="30">
             {% if request.resolver_match.namespaces.0 %}
                 <span class="display-5 align-middle text-white fw-bolder">
+                {% if request.resolver_match.namespaces.0 == "leagues" or request.resolver_match.namespaces.0 == "friends" %}
+                    Social
+                {% else %}
                     {{ request.resolver_match.namespaces.0|title }}
+                {% endif %}
                 </span>
             {% else %}
-            <img src="{% static 'logo/sustain-gain-text.svg' %}" alt="Sustain+Gain" height="20">
+                <img src="{% static 'logo/sustain-gain-text.svg' %}" alt="Sustain+Gain" height="20">
             {% endif %}
         </a>
+        {% if user.is_authenticated %}
+            <ul class="navbar-nav d-sm-block d-md-block d-lg-none">
+                <li class="nav-item">
+                    <img src="{{ user.profile.image.url }}" alt="Me" height="40" width="40" class="rounded-circle">
+                </li>
+            </ul>
+        {% endif %}
         <div class="collapse navbar-collapse d-none d-lg-block" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {% if user.is_authenticated %}
