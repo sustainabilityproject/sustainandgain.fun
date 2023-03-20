@@ -35,30 +35,23 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         """
-        Get own profile, friends, leagues, and points.
+        Get profile, friends, leagues, and points, and mutual friends if profile is not the logged in user
 
         Returns:
-           context (dict[str, Any]): profile, friends, leagues, points.
+           context (dict[str, Any]): profile, friends, mutual_friends, leagues, points.
         """
         context = super().get_context_data(**kwargs)
         # defines profile depending on the existence of user_id and its value relative to the current logged in user
-        try:
-            # user id of requested profile
-            user_id = self.kwargs['pk']
+    
+        # user id of requested profile
+        user_id = self.kwargs['pk']
 
-            if user_id != self.request.user.id:
-                # if the user id is different from the current logged in user
-                profile = Profile.objects.filter(id=user_id).first()
-                if profile is None:
-                    context['other_user'] = False
-                    profile = self.request.user.profile
-                else:
-                    context['other_user'] = True
-            else:
-                context['other_user'] = False
-                profile = self.request.user.profile
-
-        except KeyError:
+        if user_id != self.request.user.id:
+            # if the user id is different from the current logged in user
+            profile = Profile.objects.filter(id=user_id).first()
+            context['other_user'] = True
+        else:
+            context['other_user'] = False
             profile = self.request.user.profile
 
         # Gets friends of profile
