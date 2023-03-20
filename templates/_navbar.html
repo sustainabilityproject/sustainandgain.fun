@@ -29,17 +29,12 @@
                             <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends</a>
                         {% endif %}
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-item nav-link" href="{% url 'chat' %}">Chat</a>
-                    </li>
                     {% if user.is_staff %}
                         <li class="nav-item">
                             {% load poll_extras %}
                             {% if get_reported_count %}
                                 <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks
                                     ({% get_reported_count %})</a>
-                            {% else %}
-                                <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks</a>
                             {% endif %}
                         </li>
                     {% endif %}
