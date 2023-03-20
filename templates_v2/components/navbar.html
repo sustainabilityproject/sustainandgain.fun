@@ -18,7 +18,9 @@
         {% if user.is_authenticated %}
             <ul class="navbar-nav d-sm-block d-md-block d-lg-none">
                 <li class="nav-item">
-                    <img src="{{ user.profile.image.url }}" alt="Me" height="40" width="40" class="rounded-circle">
+                    <a class="nav-link" href="{% url 'friends:profile' user.pk %}">
+                        <img src="{{ user.profile.image.url }}" alt="Me" height="40" width="40" class="rounded-circle">
+                    </a>
                 </li>
             </ul>
         {% endif %}
