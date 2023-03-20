@@ -108,10 +108,6 @@ apps, an explanation has been provided.
 │   └───workflows   Actions automatically run on GitHub pushes (running tests, deployment)
 │
 ├───accounts        A Django app that manages accounts and authentication (see above for Django app structure)
-│
-├───autoencoder     A Rust neural network used to detect and automatically validate some images
-│
-├───chat            A Django app that manages a global chat function (see above for Django app structure)
 │   
 ├───feed            A Django app that manages the home feed users see (see above for Django app structure)
 │   
@@ -122,8 +118,6 @@ apps, an explanation has been provided.
 ├───leagues         A Django app that manages leagues users compete in (see above for Django app structure)
 │   
 ├───media           Stores media such as user profile pictures and uploaded images.
-│
-├───promotional things  Promotional information for the client like logos and images
 │  
 ├───static              Contains static resources which need to be loaded elsewhere like the favicon.
 │
