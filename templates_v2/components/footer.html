@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand navbar-light bg-secondary">
+<nav class="navbar navbar-expand navbar-light mx-2">
     <div class="container-fluid  mx-auto" style="max-width: 50em;">
         <div class="navbar-nav d-flex justify-content-between align-items-center w-100 fs-1">
             <a class="nav-link p-0 m-0 d-flex flex-column" aria-current="page" href="{% url 'feed:feed' %}">
@@ -10,12 +10,42 @@
             <a class="nav-link p-0 m-0 d-flex flex-column" href="{% url 'leagues:list' %}">
                 <i class="bi-people-fill mx-auto {% if request.resolver_match.namespaces.0 == "leagues" %}active{% endif %}"></i>
             </a>
-            <a class="nav-link p-0 m-0 d-flex flex-column" href="#">
-                <i class="bi-bell-fill mx-auto {% if request.resolver_match.namespaces.0 == "notifications" %}active{% endif %}"></i>
+            <a class="nav-link p-0 m-0 d-flex flex-column" href="#" x-data="getNotifications">
+                <i class="bi-bell-fill mx-auto {% if request.resolver_match.namespaces.0 == "notifications" %}active{% endif %}">
+                 <span x-cloak x-text="notificationCount"
+                       class="position-absolute translate-middle badge rounded-pill bg-danger fs-6"
+                       x-show="notificationCount > 0">
+                 </span>
+                </i>
             </a>
         </div>
     </div>
 </nav>
+
+<script>
+    window.addEventListener('alpine:init', () => {
+        Alpine.data('getNotifications', () => ({
+            notifications: [{
+                actor: 'Loading...',
+                verb: 'Loading...',
+                data: {
+                    url: '#'
+                }
+            }],
+            notificationCount: 0,
+            getNotifications() {
+                fetch('/notifications/api/unread_list/?max=5')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.notificationCount = data.unread_count;
+                    })
+            },
+            init() {
+                this.getNotifications();
+            },
+        }))
+    })
+</script>
 
 <style>
     i {
