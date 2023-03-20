@@ -309,14 +309,15 @@ class TaskInstance(models.Model):
                     break
 
             if contains_orientation:
-                exif = dict(img._getexif().items())
-
-                if exif[orientation] == 3:
-                    img = img.rotate(180, expand=True)
-                elif exif[orientation] == 6:
-                    img = img.rotate(270, expand=True)
-                elif exif[orientation] == 8:
-                    img = img.rotate(90, expand=True)
+                exif = img._getexif()
+                if exif:
+                    exif = dict(exif)
+                    if exif[orientation] == 3:
+                        img = img.rotate(180, expand=True)
+                    elif exif[orientation] == 6:
+                        img = img.rotate(270, expand=True)
+                    elif exif[orientation] == 8:
+                        img = img.rotate(90, expand=True)
 
             # Set a maximum size for the photo, e.g., 800x800 pixels
             max_size = (800, 800)
