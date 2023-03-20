@@ -19,11 +19,11 @@
 </head>
 <body>
 
-<header class="site-header">
-    {% include "_navbar.html" %}
+<header class="site-header top-0 position-sticky" style="z-index: 1000;">
+    {% include "components/navbar.html" %}
 </header>
 
-<main role="main" class="container-fluid">
+<main role="main" class="container-fluid my-1">
     <div class="position-fixed bottom-0" style="z-index: 2000;">
         {% bootstrap_messages %}
     </div>
@@ -33,7 +33,7 @@
 </main>
 
 {% if user.is_authenticated %}
-    <footer class="site-footer bottom-0 position-fixed w-100">
+    <footer class="site-footer bottom-0 position-sticky w-100 d-sm-block d-md-block d-lg-none">
         {% include "components/footer.html" %}
     </footer>
 {% endif %}

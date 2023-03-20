@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Task Feed{% endblock %}
+
+{% block content %}
+    <div>
+        <h1>Reported Tasks</h1>
+        <div class="row">
+            {% for task in reported_tasks %}
+                {% include 'feed/_feed_task.html' with task=task %}
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
