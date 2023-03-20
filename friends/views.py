@@ -59,18 +59,18 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
         # finds mutual friends if other_user
         if context['other_user']:
-            non_mulutal_friends = []
-            mulutal_friends = []
+            non_mutual_friends = []
+            mutual_friends = []
             users_friends = self.request.user.profile.get_friends()
             for friend in friends:
                 if friend in users_friends:
                     # if the friend is mutual
-                    mulutal_friends.append(friend)
+                    mutual_friends.append(friend)
                 else:
-                    non_mulutal_friends.append(friend)
+                    non_mutual_friends.append(friend)
             
-            context['friends'] = non_mulutal_friends
-            context['mutual_friends'] = mulutal_friends
+            context['friends'] = non_mutual_friends
+            context['mutual_friends'] = mutual_friends
         else:
             context['friends'] = friends
 
