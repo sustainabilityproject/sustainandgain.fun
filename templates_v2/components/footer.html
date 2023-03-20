@@ -22,31 +22,6 @@
     </div>
 </nav>
 
-<script>
-    window.addEventListener('alpine:init', () => {
-        Alpine.data('getNotifications', () => ({
-            notifications: [{
-                actor: 'Loading...',
-                verb: 'Loading...',
-                data: {
-                    url: '#'
-                }
-            }],
-            notificationCount: 0,
-            getNotifications() {
-                fetch('/notifications/api/unread_list/?max=5')
-                    .then(response => response.json())
-                    .then(data => {
-                        this.notificationCount = data.unread_count;
-                    })
-            },
-            init() {
-                this.getNotifications();
-            },
-        }))
-    })
-</script>
-
 <style>
     i {
         color: #ffffff;

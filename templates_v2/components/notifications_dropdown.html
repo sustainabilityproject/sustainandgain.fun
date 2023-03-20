@@ -1,0 +1,50 @@
+<li class="dropdown nav-item" x-data="getNotifications" x-on:click="getNotifications()">
+    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+       data-bs-toggle="dropdown" aria-expanded="false">
+       <i class="bi-bell-fill"></i> <span id="notificationCount" class="badge bg-success" x-show="notificationCount > 0"
+                            x-text="notificationCount">
+    </span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+        <li x-show="notificationCount !== 0">
+            <a class="dropdown-item" x-on:click="fetch('/notifications/mark-all-as-read/')" href="#">Clear
+                notifications</a>
+        </li>
+        <template x-for="(item, index) in notifications">
+            <li>
+                <a class="dropdown-item" :href="item.data.url" x-text="`${item.actor} ${item.verb}`"></a>
+            </li>
+        </template>
+        <template x-if="notificationCount === 0">
+            <li>
+                <a class="dropdown-item" href="#">No notifications</a>
+            </li>
+        </template>
+    </ul>
+</li>
+
+<script>
+    window.addEventListener('alpine:init', () => {
+        Alpine.data('getNotifications', () => ({
+            notifications: [{
+                actor: '',
+                verb: '',
+                data: {
+                    url: '#'
+                }
+            }],
+            notificationCount: 0,
+            getNotifications() {
+                fetch('/notifications/api/unread_list/?max=5')
+                    .then(response => response.json())
+                    .then(data => {
+                        this.notifications = data.unread_list;
+                        this.notificationCount = data.unread_count;
+                    })
+            },
+            init() {
+                this.getNotifications();
+            },
+        }))
+    })
+</script>

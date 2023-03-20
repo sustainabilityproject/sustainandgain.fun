@@ -77,7 +77,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'friends:profile' user.pk %}">{{ user.username }}</a>
                     </li>
-                    {% include 'notifications/_notifications_dropdown.html' %}
+                    {% include 'components/notifications_dropdown.html' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
                     </li>
