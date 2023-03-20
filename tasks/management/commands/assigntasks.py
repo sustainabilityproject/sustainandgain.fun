@@ -3,6 +3,7 @@ import random
 from django.core.management.base import BaseCommand, CommandError
 from tasks.models import Task, TaskInstance
 from friends.models import Profile
+from notifications.signals import notify
 
 
 class Command(BaseCommand):
@@ -47,7 +48,8 @@ class Command(BaseCommand):
                         task=random_task,
                         profile=profile,
                         status=TaskInstance.ACTIVE,
-                        origin_message='Sustainable Steve assigned you this task! Good luck friend :)'
+                        origin_message='Sustainable Steve tagged you with this task!'
                     )
                     t.save()
+
                     print(f"Assigned task {random_task.title} to user {profile.user.username}")
