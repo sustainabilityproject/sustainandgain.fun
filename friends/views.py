@@ -43,15 +43,19 @@ class ProfileView(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         # defines profile depending on the existence of user_id and its value relative to the current logged in user
         try:
+            # user id of requested profile
             user_id = self.kwargs['pk']
 
             if user_id != self.request.user.id:
+                # if the user id is different from the current logged in user
                 profile = Profile.objects.filter(id=user_id).first()
                 if profile is None:
+                    context['other_user'] = False
                     profile = self.request.user.profile
                 else:
                     context['other_user'] = True
             else:
+                context['other_user'] = False
                 profile = self.request.user.profile
 
         except KeyError:
@@ -60,8 +64,24 @@ class ProfileView(LoginRequiredMixin, DetailView):
         # Gets friends of profile
         friends = profile.get_friends()
 
+        # finds mutual friends if other_user
+        if context['other_user']:
+            non_mulutal_friends = []
+            mulutal_friends = []
+            users_friends = self.request.user.profile.get_friends()
+            for friend in friends:
+                if friend in users_friends:
+                    # if the friend is mutual
+                    mulutal_friends.append(friend)
+                else:
+                    non_mulutal_friends.append(friend)
+            
+            context['friends'] = non_mulutal_friends
+            context['mutual_friends'] = mulutal_friends
+        else:
+            context['friends'] = friends
+
         context['profile'] = profile
-        context['friends'] = friends
         context['leagues'] = League.objects.filter(leaguemember__profile=profile, leaguemember__status='joined')
 
         # Calculates the total points of the user
