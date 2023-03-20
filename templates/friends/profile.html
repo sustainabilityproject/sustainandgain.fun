@@ -85,7 +85,33 @@
                 {% endif %}
             </div>
         </div>
-
+        {% if other_user %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <h2 class="card-title">
+                    Mutual Friends
+                    {% if mutual_friends %}
+                    <span class="text-muted">{{ mutual_friends|length }}</span>
+                    {% else %}
+                    <span class="text-muted">0</span>
+                    {% endif %}
+                </h2>
+                    <div>
+                        
+                        {% for friend in mutual_friends %}
+                            <a class="btn btn-light mb-1" href="{% url 'friends:profile' friend.id %}">
+                                <img src="{{ friend.image.url }}" height="20" width="20" alt="">
+                                {% if friend.name != friend.user.username %}
+                                    {{ friend.name }} <span class="text-muted">@{{ friend.user.username }}</span>
+                                {% else %}
+                                    @{{ friend.user.username }}
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+            </div>
+        </div>
+        {% endif %}
         <div class="card mb-3">
             <div class="card-body">
                 <h2>
