@@ -35,12 +35,11 @@ class Command(BaseCommand):
                 print(f"Assigned no tasks to user {profile.user.username} since they have all tasks active.")
 
             else:
-
                 random_task = random.choice(Task.objects.all())
 
                 # keep picking tasks until we get one available for the user
                 while not random_task.is_available(profile):
-                    random_task = random.choice(Task.objects.all)
+                    random_task = random.choice(Task.objects.all())
 
                 # then create a new instance of that task for them
                 if random_task.is_available(profile):
