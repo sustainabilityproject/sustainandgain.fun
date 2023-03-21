@@ -142,7 +142,7 @@ Additionally, we have a [Kanban board](https://trello.com/b/DwykNGu4/kanban-boar
 For general concerns, please email contact@sustainandgain.fun
 
 ## Developer Contact
-If you need to contact the developers directy, our emails are listed below.
+If you need to contact the developers directly, our emails are listed below.
 - cms@sustainandgain.fun
 - charlie@sustainandgain.fun
 - nicholas@sustainandgain.fun
