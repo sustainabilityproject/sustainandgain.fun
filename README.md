@@ -1,4 +1,4 @@
-# Sustain and Gain 
+![Sustain+Gain](./static/logo/sustain-gain.svg)
 Sustain and Gain is a mobile web app where users compete to earn points by completing sustainable tasks.
 
 ## Contents
