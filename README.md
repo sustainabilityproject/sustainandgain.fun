@@ -5,6 +5,7 @@ Sustain and Gain is a mobile web app where users compete to earn points by compl
 1. [Setting up and running the app](#setting-up-and-running-the-app)
 2. [Project Structure](#project-structure)
 3. [Documentation](#documentation)
+4. [Contact](#contact)
 # Setting up and running the app
 
 
@@ -108,10 +109,6 @@ apps, an explanation has been provided.
 │   └───workflows   Actions automatically run on GitHub pushes (running tests, deployment)
 │
 ├───accounts        A Django app that manages accounts and authentication (see above for Django app structure)
-│
-├───autoencoder     A Rust neural network used to detect and automatically validate some images
-│
-├───chat            A Django app that manages a global chat function (see above for Django app structure)
 │   
 ├───feed            A Django app that manages the home feed users see (see above for Django app structure)
 │   
@@ -122,8 +119,6 @@ apps, an explanation has been provided.
 ├───leagues         A Django app that manages leagues users compete in (see above for Django app structure)
 │   
 ├───media           Stores media such as user profile pictures and uploaded images.
-│
-├───promotional things  Promotional information for the client like logos and images
 │  
 ├───static              Contains static resources which need to be loaded elsewhere like the favicon.
 │
@@ -143,4 +138,14 @@ well as promotional documents in the 'promotional things' folder including a sit
 
 Additionally, we have a [Kanban board](https://trello.com/b/DwykNGu4/kanban-board) on Trello to manage the agile process.
 
+# Contact
+For general concerns, please email contact@sustainandgain.fun
 
+## Developer Contact
+If you need to contact the developers directly, our emails are listed below.
+- cms@sustainandgain.fun
+- charlie@sustainandgain.fun
+- nicholas@sustainandgain.fun
+- james@sustainandgain.fun
+- annabelle@sustainandgain.fun
+- harry@sustainandgain.fun
