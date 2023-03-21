@@ -24,12 +24,16 @@
                 </div>
 
                 <div class="col-2 d-flex align-items-center justify-content-end">
-                    <a class="text-decoration-none" href="{% url 'tasks:list' %}">
+                    {% if not other_user %}
+                        <a class="text-decoration-none" href="{% url 'tasks:list' %}">
+                    {% endif %}
                         <div class="card-body rounded-2 bg-success text-white d-flex flex-column align-items-center">
                             <h2 class="fw-bold">{{ points }}</h2>
                             <div>Points</div>
                         </div>
-                    </a>
+                    {% if not other_user %}
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
