@@ -57,7 +57,7 @@ impl BombTask {
     fn html(&self) -> maud::Markup {
         html! {
             li {
-                p { (self.task_title) " explodes in " (self.human_readable_time_left()) "!" }
+                p { (self.task_title) " explodes " (self.human_readable_time_left())"!" }
                 p {
                     a href="https://www.sustainandgain.fun/tasks/" {
                         "View"
@@ -112,7 +112,7 @@ pub async fn process_bomb_tasks(pool: &PgPool) -> Result<(), Box<dyn std::error:
     // Send an email to each user with their bomb tasks which are about to expire
     for (email, bomb_tasks) in bomb_tasks_by_email {
         let html = html! {
-            h2 { "Hi " (bomb_tasks[0].assigned_username) "!" }
+            h2 { "Hi " (bomb_tasks[0].assigned_username)"!" }
             p { "You have " (bomb_tasks.len()) " task(s) that are expiring soon:" }
             ul {
                 @for bomb_task in &bomb_tasks {
