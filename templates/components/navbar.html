@@ -1,16 +1,18 @@
 {% load static %}
 <nav class="navbar navbar-expand-lg navbar-dark link-white bg-secondary">
-    <div class="container-fluid">
+    <div class="container-fluid justify-content-between">
         <a class="navbar-brand" href="{% url 'home' %}">
             <img src="{% static 'logo/icon.svg' %}" alt="Sustain+Gain" height="30">
-            {% if request.resolver_match.namespaces.0 %}
-                <span class="display-5 align-middle text-white fw-bolder">
-                    {{ request.resolver_match.namespaces.0|title }}
-                </span>
-            {% else %}
+            {% if not request.resolver_match.namespaces.0 %}
                 <img src="{% static 'logo/sustain-gain-text.svg' %}" alt="Sustain+Gain" height="20">
             {% endif %}
         </a>
+        {% if request.resolver_match.namespaces.0 %}
+            <span class="display-5 align-middle text-white fw-bolder">
+                    {{ request.resolver_match.namespaces.0|title }}
+                </span>
+        {% endif %}
+
         {% if user.is_authenticated %}
             <ul class="navbar-nav d-sm-flex d-md-flex flex-row d-lg-none w-auto align-items-center">
                 <li class="nav-item px-1">
@@ -19,7 +21,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right text-danger"></i></a>
+                    <a class="nav-link" href="{% url 'account_logout' %}"><i
+                            class="bi bi-box-arrow-right text-danger"></i></a>
                 </li>
             </ul>
         {% endif %}
