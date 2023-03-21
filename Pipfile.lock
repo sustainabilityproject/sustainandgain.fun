@@ -195,6 +195,14 @@
             "markers": "python_full_version >= '3.7.0'",
             "version": "==3.1.0"
         },
+        "colorama": {
+            "hashes": [
+                "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44",
+                "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"
+            ],
+            "markers": "platform_system == 'Windows'",
+            "version": "==0.4.6"
+        },
         "cryptography": {
             "hashes": [
                 "sha256:103e8f7155f3ce2ffa0049fe60169878d47a4364b277906386f8de21c9234aa1",
@@ -249,10 +257,10 @@
         },
         "django-allauth": {
             "hashes": [
-                "sha256:c8a32a1b163725e9e6b60dcd78e795cec749d68bd35003a33f7707c692928be2"
+                "sha256:1336f430d5797e7484dfddc6ddb1d5f61f04bb24a9519b64756847d089b2ffba"
             ],
             "index": "pypi",
-            "version": "==0.53.0"
+            "version": "==0.53.1"
         },
         "django-bootstrap5": {
             "hashes": [
@@ -328,11 +336,11 @@
         },
         "huggingface-hub": {
             "hashes": [
-                "sha256:246e8eb39b6e6e9d9d5846e4b56c265cdf1872f48ba5a13a1321295d371626f5",
-                "sha256:745c4cbd97a27fc5c1c6c89cb477662004c88bc3dd89bafc1a27ef24af77f944"
+                "sha256:1f95f65c5e7aa76728701402f55b697ee8a8b50234adda91fbdbb81038fbcd21",
+                "sha256:f73a298a55028575334f9670d86b8171a4dd890b320315f3ad28a20b9eb3b5bc"
             ],
             "markers": "python_full_version >= '3.7.0'",
-            "version": "==0.13.2"
+            "version": "==0.13.3"
         },
         "idna": {
             "hashes": [
