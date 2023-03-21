@@ -74,7 +74,8 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
         # Generate a list of all tasks that are available for this user
         current_profile = self.request.user.profile
-        tasks_list = [task for task in Task.objects.all() if task.is_available(current_profile)]
+        tasks_list = [task for task in Task.objects.all() if task.is_available(current_profile)
+                      and task.can_user_self_assign]
         context['tasks_list'] = tasks_list
         return context
 
