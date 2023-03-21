@@ -1,57 +1,55 @@
 {% extends 'base.html' %}
 
-{% block title %}Sustain and Gain{% endblock %}
+{% block title %}Sustain+Gain{% endblock %}
 
 {% load static %}
 
 {% block content %}
+    <link rel="stylesheet" type="text/css" href="{% static 'landing_page.css' %}">
+    <div class="container-wrapper">
+        <div class="container">
+            <div class="text-center">
+                <img src="/static/logo/sustain-gain-text.svg" alt="Sustain+Gain" style="max-width: 100%;">
+            </div>
+            <br>
+            <p class="lead text-center">Join the fun and take action for a sustainable future. Complete eco-friendly
+                tasks, make friends, and earn points to climb the leaderboard!</p>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h2>🌿 Get Started Today! ✨</h2>
 
-<link rel="stylesheet" type="text/css" href="{% static 'landing_page.css' %}">
-<div class="container-wrapper">
-    <div class="container">
-        <div class="text-center">
-            <img src="/static/logo/sustain-gain-text.svg" alt="Sustain+Gain" height="40">
-        </div>
-        <br>
-        <p class="lead text-center">Join the fun and take action for a sustainable future. Complete eco-friendly tasks, make friends, and earn points to climb the leaderboard!</p>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h2>🌿 Get Started Today! ✨</h2>
-                
-                <a href="{% url 'account_login' %}" class="btn btn-custom btn-lg btn-block">Log In</a>
+                    <a href="{% url 'account_login' %}" class="btn btn-custom btn-lg btn-block">Log In</a>
+                </div>
+            </div>
+            <hr>
+            <div class="row text-center">
+                <div class="col-md-4">
+                    <h3>🌱 Earn Points & Rewards</h3>
+                    <p>Complete sustainable tasks to help your league come out on top. Watch your progress and make a
+                        difference with every action!</p>
+                </div>
+                <div class="col-md-4">
+                    <h3>🏆 Join Leagues & Compete</h3>
+                    <p>Join leagues to compete on a leaderboard with other members. Challenge your friends and motivate
+                        each other to make a bigger impact!</p>
+                    <p><a href="/leagues/" class="btn btn-custom btn-lg btn-block">View current public leagues</a></p>
+                </div>
+                <div class="col-md-4">
+                    <h3>👫 Connect with Friends</h3>
+                    <p>Add friends to your network, view their completed tasks, and inspire each other to take more
+                        eco-friendly actions!</p>
+                </div>
+            </div>
+            <hr>
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h2>Join Our Caring Community 🌍💚</h2>
+                    <p>Be part of a vibrant, eco-conscious community that supports your journey towards sustainability.
+                        Share ideas, collaborate on projects, and make lasting connections while working together to
+                        protect our planet!</p>
+                    <a href="{% url 'account_signup' %}" class="btn btn-custom btn-lg btn-block">Sign Up</a>
+                </div>
             </div>
         </div>
-        <hr>
-        <div class="row text-center">
-            <div class="col-md-4">
-                <h3>🌱 Earn Points & Rewards</h3>
-                <p>Complete sustainable tasks to help your league come out on top. Watch your progress and make a difference with every action!</p>
-            </div>
-            <div class="col-md-4">
-                <h3>🏆 Join Leagues & Compete</h3>
-                <p>Join leagues to compete on a leaderboard with other members. Challenge your friends and motivate each other to make a bigger impact!</p>
-                <p><a href="/leagues/" class="btn btn-custom btn-lg btn-block">View current public leagues</a></p>
-            </div>
-            <div class="col-md-4">
-                <h3>👫 Connect with Friends</h3>
-                <p>Add friends to your network, view their completed tasks, and inspire each other to take more eco-friendly actions!</p>
-            </div>
-        </div>
-        <hr>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h2>Join Our Caring Community 🌍💚</h2>
-                <p>Be part of a vibrant, eco-conscious community that supports your journey towards sustainability. Share ideas, collaborate on projects, and make lasting connections while working together to protect our planet!</p>
-                <a href="{% url 'account_signup' %}" class="btn btn-custom btn-lg btn-block">Sign Up</a>
-            </div>
-        </div>
-        <!-- <hr>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <h2>Introducing Sustainable Steve! 🤖💙</h2>
-                <p>Meet Sustainable Steve, your personal eco-guide! He'll recommend tasks based on your interests and support you every step of the way. With Steve's help, you'll become an eco-warrior in no time! Let's go! 🌿✨</p>
-            </div>
-        </div> -->
     </div>
-</div>
 {% endblock %}
