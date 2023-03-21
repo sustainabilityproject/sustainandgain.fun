@@ -12,11 +12,14 @@
             {% endif %}
         </a>
         {% if user.is_authenticated %}
-            <ul class="navbar-nav d-sm-block d-md-block d-lg-none">
-                <li class="nav-item">
+            <ul class="navbar-nav d-sm-flex d-md-flex flex-row d-lg-none w-auto align-items-center">
+                <li class="nav-item px-1">
                     <a class="nav-link" href="{% url 'friends:profile' user.pk %}">
                         <img src="{{ user.profile.image.url }}" alt="Me" height="40" width="40" class="rounded-circle">
                     </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'account_logout' %}"><i class="bi bi-box-arrow-right text-danger"></i></a>
                 </li>
             </ul>
         {% endif %}
