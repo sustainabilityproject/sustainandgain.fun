@@ -10,5 +10,5 @@ from tasks.models import TaskInstance
 @receiver(post_save, sender=TaskInstance)
 def send_tag_notification(sender, instance, created, **kwargs):
     if 'tagged you' in instance.origin_message:
-        notify.send(instance.profile, recipient=instance.profile.user, verb='tagged you in a task.',
+        notify.send(instance.profile, recipient=instance.profile.user, verb=' - Sustainable Steve tagged you in a task!',
                     action_object=instance, target=instance.task, url=reverse('tasks:list'), public=False)
