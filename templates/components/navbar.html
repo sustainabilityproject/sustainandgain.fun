@@ -1,0 +1,105 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark link-white bg-secondary">
+    <div class="container-fluid justify-content-between">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <img src="{% static 'logo/icon.svg' %}" alt="Sustain+Gain" height="30">
+            {% if not request.resolver_match.namespaces.0 %}
+                <img src="{% static 'logo/sustain-gain-text.svg' %}" alt="Sustain+Gain" height="20">
+            {% endif %}
+        </a>
+        {% if request.resolver_match.namespaces.0 %}
+            <span class="display-5 align-middle text-white fw-bolder">
+            {% if request.resolver_match.url_name == "profile" %}
+                Profile
+            {% else %}
+                {{ request.resolver_match.namespaces.0|title }}
+            {% endif %}
+                </span>
+        {% endif %}
+        <ul class="navbar-nav d-sm-flex d-md-flex flex-row d-lg-none w-auto align-items-center">
+            {% if user.is_authenticated %}
+                <li class="nav-item" style="margin-right: 0.5em;">
+                    <a class="nav-link" href="{% url 'friends:profile' user.pk %}">
+                        <img src="{{ user.profile.image.url }}" alt="Me" height="40" width="40" class="rounded-circle">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'account_logout' %}"><i
+                            class="bi bi-box-arrow-right text-danger"></i></a>
+                </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_login' %}">Login<i style="padding-left: 0.5em;" class="bi bi-box-arrow-in-right"></i></a>
+                    </li>
+            {% endif %}
+        </ul>
+
+        <div class="collapse navbar-collapse d-none d-lg-block" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Tasks
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'tasks:list' %}">My Tasks</a></li>
+                            <li><a class="dropdown-item" href="{% url 'tasks:available' %}">Available Tasks</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        {% load incoming_requests %}
+                        {% get_friend_requests user.profile as friend_requests %}
+                        {% if friend_requests %}
+                            <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends
+                                ({{ friend_requests }})</a>
+                        {% else %}
+                            <a class="nav-item nav-link" href="{% url 'friends:list' %}">Friends</a>
+                        {% endif %}
+                    </li>
+                    {% if user.is_staff %}
+                        <li class="nav-item">
+                            {% load poll_extras %}
+                            {% if get_reported_count %}
+                                <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks
+                                    ({% get_reported_count %})</a>
+                            {% endif %}
+                        </li>
+                    {% endif %}
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-item nav-link" href="{% url 'leagues:list' %}">Leagues</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav me-right mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <form class="nav-link" action="{% url 'friends:profile_search' %}" method="get">
+                        <input name="q" type="text" placeholder="Search Users...">
+                    </form>
+                </li>
+                {% if user.is_authenticated %}
+                    {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="btn btn-success text-white nav-item nav-link" href="{% url 'admin:index' %}">Gamekeeper
+                                Area</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'friends:profile' user.pk %}">{{ user.username }}</a>
+                    </li>
+                    {% include 'components/notifications_dropdown.html' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_login' %}"> Login </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account_signup' %}"> Register </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

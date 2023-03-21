@@ -5,7 +5,7 @@ from django.db import models
 from django.utils import timezone
 
 from friends.models import Profile
-from PIL import Image
+from PIL import Image, ExifTags
 
 
 class TaskCategory(models.Model):
@@ -45,6 +45,7 @@ class Task(models.Model):
         rarity (IntegerField): Rarity of the task. Normal, Silver, Gold.
         is_bomb (BooleanField): Does this task have a time limit.
         bomb_time_limit (DurationField): How long you have to complete the task if it's a bomb task..
+        can_user_self_assign (BooleanField): can users give themselves the task (true) or does it have to be Steve (false)
 
     Methods:
         rarity_colour(self): Return badge colour corresponding to rarity.
@@ -81,6 +82,9 @@ class Task(models.Model):
 
     bomb_time_limit = models.DurationField(null=True, blank=True)
 
+    # can users give themselves the task (true) or does it have to be Steve (false)
+    can_user_self_assign = models.BooleanField(default=True)
+
     @property
     def rarity_colour(self):
         """
@@ -109,11 +113,13 @@ class Task(models.Model):
             Boolean: Whether this task is available for the user.
         """
         this_task_instances = TaskInstance.objects.filter(task=self.pk, profile=profile.pk)
+        this_task_instances = this_task_instances.order_by('-time_accepted')
 
         for instance in this_task_instances:
             if instance.status in [TaskInstance.PENDING_APPROVAL, TaskInstance.ACTIVE]:
                 return False
-
+            elif instance.status in [TaskInstance.EXPLODED]:
+                return True
             else:
                 if timezone.now() < instance.time_completed + instance.task.time_to_repeat:
                     return False
@@ -164,6 +170,7 @@ class TaskInstance(models.Model):
         origin_message (CharField): Tells user why task is on their 'my tasks' page.
         tagged_someone (BooleanField): Has the user tagged someone else in this task.
         tagged_whom (CharField): The username of the person you tagged in this task.
+        ai_tag (CharField): The identified object in the photo if AI is enabled.
         status (CharField): Whether the task is Available, Active, Pending Approval, or Complete.
         bomb_instance_deadline (timedelta): For bomb tasks only, calculate when this instance of the task is due based
                                             on date_accepted and the task's bomb_time_to_complete
@@ -221,6 +228,9 @@ class TaskInstance(models.Model):
             return self.time_accepted + self.task.bomb_time_limit
         else:
             return None
+
+    # AI Tag is a string which is the identified object in the image if AI is applied to the task
+    ai_tag = models.CharField(max_length=50, null=True, blank=True)
 
     # Constants representing possible task states
     COMPLETED = 'COMPLETED'
@@ -287,7 +297,6 @@ class TaskInstance(models.Model):
 
         return self
 
-
     # Overwrite save method to resize photo if it is too large
     def save(self, *args, **kwargs):
         # Call the parent save() method to save the object as usual
@@ -297,6 +306,24 @@ class TaskInstance(models.Model):
             # Open the image file using Pillow
             img = Image.open(self.photo.path)
 
+            # Extract the orientation information from the image's EXIF metadata
+            contains_orientation = False
+            for orientation in ExifTags.TAGS.keys():
+                if ExifTags.TAGS[orientation] == 'Orientation':
+                    contains_orientation = True
+                    break
+
+            if contains_orientation:
+                exif = img._getexif()
+                if exif:
+                    exif = dict(exif)
+                    if exif[orientation] == 3:
+                        img = img.rotate(180, expand=True)
+                    elif exif[orientation] == 6:
+                        img = img.rotate(270, expand=True)
+                    elif exif[orientation] == 8:
+                        img = img.rotate(90, expand=True)
+
             # Set a maximum size for the photo, e.g., 800x800 pixels
             max_size = (800, 800)
 
@@ -304,7 +331,6 @@ class TaskInstance(models.Model):
             if img.size[0] > max_size[0] or img.size[1] > max_size[1]:
                 img.thumbnail(max_size, Image.ANTIALIAS)
                 img.save(self.photo.path)
-        
 
     def report_task_complete(self):
         """

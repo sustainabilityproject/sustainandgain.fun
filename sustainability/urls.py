@@ -3,6 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 from feed.views import HomeView
 
@@ -36,9 +37,11 @@ urlpatterns = [
     # Gamekeeper routes
     path('gamekeeper/', admin.site.urls),
 
-    # Chat routes
-    path('chat/', include('chat.urls')),
+    # Robots.txt
+    path('robots.txt', RedirectView.as_view(url='/static/robots.txt', permanent=True), ),
 
+    # Favicon
+    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=True), ),
 ]
 
 if settings.DEBUG:

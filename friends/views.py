@@ -1,3 +1,6 @@
+import operator
+from functools import reduce
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
@@ -7,8 +10,6 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.views.generic import DetailView, ListView, DeleteView, UpdateView
-import operator
-from functools import reduce
 
 from accounts.models import User
 from friends.forms import UpdateProfileForm
@@ -35,33 +36,46 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         """
-        Get own profile, friends, leagues, and points.
+        Get profile, friends, leagues, and points, and mutual friends if profile is not the logged in user
 
         Returns:
-           context (dict[str, Any]): profile, friends, leagues, points.
+           context (dict[str, Any]): profile, friends, mutual_friends, leagues, points.
         """
         context = super().get_context_data(**kwargs)
         # defines profile depending on the existence of user_id and its value relative to the current logged in user
-        try:
-            user_id = self.kwargs['pk']
 
-            if user_id != self.request.user.id:
-                profile = Profile.objects.filter(id=user_id).first()
-                if profile is None:
-                    profile = self.request.user.profile
-                else:
-                    context['other_user'] = True
-            else:
-                profile = self.request.user.profile
+        # user id of requested profile
+        user_id = self.kwargs['pk']
 
-        except KeyError:
+        if user_id != self.request.user.id:
+            # if the user id is different from the current logged in user
+            profile = Profile.objects.filter(id=user_id).first()
+            context['other_user'] = True
+        else:
+            context['other_user'] = False
             profile = self.request.user.profile
 
         # Gets friends of profile
         friends = profile.get_friends()
 
+        # finds mutual friends if other_user
+        if context['other_user']:
+            non_mutual_friends = []
+            mutual_friends = []
+            users_friends = self.request.user.profile.get_friends()
+            for friend in friends:
+                if friend in users_friends:
+                    # if the friend is mutual
+                    mutual_friends.append(friend)
+                else:
+                    non_mutual_friends.append(friend)
+
+            context['friends'] = non_mutual_friends
+            context['mutual_friends'] = mutual_friends
+        else:
+            context['friends'] = friends
+
         context['profile'] = profile
-        context['friends'] = friends
         context['leagues'] = League.objects.filter(leaguemember__profile=profile, leaguemember__status='joined')
 
         # Calculates the total points of the user
@@ -72,7 +86,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
         # Subtract exploded tasks
         for task in TaskInstance.objects.filter(profile=profile, status=TaskInstance.EXPLODED):
             points -= task.task.points
-        
+
         context['points'] = points
 
         return context
@@ -91,7 +105,7 @@ class FriendsListView(LoginRequiredMixin, ListView):
         get_context_data(self, **kwargs): Add friend requests to context.
 
     """
-    model=Profile
+    model = Profile
     template_name = 'friends/friends_list.html'
     context_object_name = 'friends'
 
@@ -166,7 +180,9 @@ class RemoveFriendView(LoginRequiredMixin, DeleteView):
             friend_request (FriendRequest): A friend request.
         """
         friend_request = FriendRequest.objects.filter(
-            Q(from_profile=self.request.user.profile) | Q(to_profile=self.request.user.profile))
+            Q(from_profile=self.request.user.profile) & Q(to_profile__user__username=self.kwargs['username']) |
+            Q(to_profile=self.request.user.profile) & Q(from_profile__user__username=self.kwargs['username'])
+        )
         return friend_request
 
     def get_context_data(self, **kwargs):
@@ -273,6 +289,7 @@ class AcceptFriendRequestView(LoginRequiredMixin, View):
     Methods:
         post(self, request, request_id): Accept the friend request.
     """
+
     def post(self, request, request_id):
         """
         Accept the friend request.
@@ -414,7 +431,7 @@ class ProfileSearchView(ListView):
             # adds friends and potential friends to exclusion list
             friend_ids = [
                 friend.id for friend in self.request.user.profile.get_friends(status='all')
-                ]
+            ]
             exclusions.extend(friend_ids)
 
         if len(query_tokens) == 0:
@@ -437,9 +454,10 @@ class ProfileSearchView(ListView):
                 # therefore the query bing in username is weighted more than the query being in the first of last name
                 count = 0
                 # if query is in username increase count by 2
-                count += 2*len(object_list.filter(Q(id = user.id) & Q(username__istartswith=query)))
+                count += 2 * len(object_list.filter(Q(id=user.id) & Q(username__istartswith=query)))
                 # count increases by 1 if query is in first_name or last name, else 0
-                count += len(object_list.filter(Q(id = user.id) & Q(Q(first_name__istartswith=query) | Q(last_name__istartswith=query))))
+                count += len(object_list.filter(
+                    Q(id=user.id) & Q(Q(first_name__istartswith=query) | Q(last_name__istartswith=query))))
 
                 # query is just in first or last name
                 if count == 1:
@@ -459,9 +477,9 @@ class ProfileSearchView(ListView):
                 # is username in any of the values
                 reduce(operator.or_, (Q(username__istartswith=q) for q in query_tokens)) |
                 # it is assumed that the last value in query is not a first name
-                reduce(operator.or_, (Q(first_name__istartswith=q) for q in query_tokens[0:-1] )) |
+                reduce(operator.or_, (Q(first_name__istartswith=q) for q in query_tokens[0:-1])) |
                 # it is assumed that the first value in query is not a last name
-                reduce(operator.or_, (Q(last_name__istartswith=q) for q in query_tokens[1:] ))
+                reduce(operator.or_, (Q(last_name__istartswith=q) for q in query_tokens[1:]))
             ).exclude(id__in=exclusions)
 
             # bins users into 5 basic ranks
@@ -527,4 +545,3 @@ class ProfileSearchView(ListView):
         context['friends'] = [friend.user for friend in self.request.user.profile.get_friends(status='all')]
 
         return context
-

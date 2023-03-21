@@ -1,0 +1,19 @@
+<div class="alert alert-block alert-{{ notice.level }} {% if not notice.unread %}alert-dark{% endif %}">
+    <a class="close pull-right" href="{% url 'notifications:mark_as_read' notice.slug %}">
+        <i class="icon-close"></i>
+    </a>
+
+    <h4>
+        <i class="icon-mail{% if notice.unread %}-alt{% endif %}"></i>
+        {{ notice.actor }}
+        {{ notice.verb }}
+    </h4>
+
+    <p>{{ notice.timesince }} ago</p>
+
+    <div class="notice-actions">
+        {% if notice.data.url %}
+            <a class="btn" href="{{ notice.data.url }}">View</a>
+        {% endif %}
+    </div>
+</div>

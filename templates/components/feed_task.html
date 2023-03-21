@@ -1,0 +1,102 @@
+<div class="col-sm-12 col-md-6 col-lg-3 mt-3">
+    <div class="card h-100">
+        {% if task.photo %}
+            <a href="{{ task.photo.url }}">
+                <img src="{{ task.photo.url }}" class="card-img-top" alt="{{ task }}">
+                {% if task.location %}
+                    <div class="card-img-overlay h-25">
+                        <div class="btn btn-light" style="font-size: 0.75rem;">
+                            <i class="bi bi-geo-alt-fill text-dark"></i>
+                            {{ task.location }}
+                        </div>
+                    </div>
+                {% endif %}
+            </a>
+        {% endif %}
+        <div class="card-body d-flex flex-column">
+            <a class="btn btn-dark" style="max-width: 100%;" href="{% url 'friends:profile' task.profile.pk %}">
+                <img src="{{ task.profile.image.url }}" class="rounded-circle" width="20" height="20"
+                     alt="{{ task.profile }}">
+                {{ task.profile.name }}
+                <span class="text-muted">@{{ task.profile.user.username }}</span>
+            </a>
+            <h5 class="card-title my-1">{{ task.task.title }} <span
+                    class="badge {{ task.status_colour }} fs-12">{{ task.status }}</span>
+                {% include 'components/task_badges.html' with task=task.task instance=task %}
+            </h5>
+            <p class="card-text text-muted">Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}</p>
+            <p>{{ task.task.description }}</p>
+            {% if task.note %}
+                <div class="alert alert-light my-1">
+                    <h6 class="fw-bold">Notes</h6>
+                    <p class="card-text">{{ task.note }}</p>
+                </div>
+            {% endif %}
+
+            {% if user.is_staff and task.reports.count > 0 %}
+                <div class="alert alert-danger">
+                    Reported by {{ task.reports.count }} user{{ task.reports.count|pluralize }}
+                    <p class="my-0">
+                        {% for profile in task.reports.all|slice:'3' %}
+                            <a href="{% url 'friends:profile' profile.pk %}">{{ profile }}</a>
+                        {% endfor %}
+                        {% if task.reports.count > 3 %}
+                            and {{ task.reports.count|add:'-3' }} more
+                        {% endif %}
+                    </p>
+                </div>
+            {% endif %}
+
+            <div class="d-flex justify-content-between mt-auto">
+                {% if user.is_staff and task.reports.count > 0 %}
+                    <div class="btn-group">
+                        <form method="post" action="{% url 'feed:restore' task.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                                Restore
+                            </button>
+                        </form>
+                    </div>
+                    <div class="btn-group">
+                        <form method="post" action="{% url 'feed:delete' task.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash3"></i>
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="btn-group">
+                        <form method="post" action="{% url 'feed:like' task.id %}">
+                            {% csrf_token %}
+                            {% if user.profile in task.likes.all %}
+                                <button class="btn btn-success" type="submit" disabled>
+                            {% else %}
+                                <button class="btn btn-primary" type="submit">
+                            {% endif %}
+                            <i class="bi bi-hand-thumbs-up-fill"></i>
+                            {{ task.likes.count }}
+                            </button>
+                        </form>
+                    </div>
+                    <div class="btn-group">
+                        <form method="post" action="{% url 'feed:report' task.id %}">
+                            {% csrf_token %}
+                            {% if user.profile in task.reports.all %}
+                                <button class="btn btn-danger" type="submit" disabled>
+                            {% else %}
+                                <button class="btn btn-light" type="submit">
+                            {% endif %}
+                            <i class="bi bi-exclamation-octagon text-dark"></i>
+                            Report
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+            <a href="{% url 'feed:task_detail' task.id %}" class="btn btn-primary mt-2">Comments</a>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ profile.name }}{% endblock %}
+{% block title %}{{ profile.name }} - Sustain+Gain{% endblock %}
 
 {% block content %}
     <div class="container">
@@ -24,12 +24,16 @@
                 </div>
 
                 <div class="col-2 d-flex align-items-center justify-content-end">
-                    <a class="text-decoration-none" href="{% url 'tasks:list' %}">
+                    {% if not other_user %}
+                        <a class="text-decoration-none" href="{% url 'tasks:list' %}">
+                    {% endif %}
                         <div class="card-body rounded-2 bg-success text-white d-flex flex-column align-items-center">
                             <h2 class="fw-bold">{{ points }}</h2>
                             <div>Points</div>
                         </div>
-                    </a>
+                    {% if not other_user %}
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -85,7 +89,33 @@
                 {% endif %}
             </div>
         </div>
-
+        {% if other_user %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <h2 class="card-title">
+                    Mutual Friends
+                    {% if mutual_friends %}
+                    <span class="text-muted">{{ mutual_friends|length }}</span>
+                    {% else %}
+                    <span class="text-muted">0</span>
+                    {% endif %}
+                </h2>
+                    <div>
+                        
+                        {% for friend in mutual_friends %}
+                            <a class="btn btn-light mb-1" href="{% url 'friends:profile' friend.id %}">
+                                <img src="{{ friend.image.url }}" height="20" width="20" alt="">
+                                {% if friend.name != friend.user.username %}
+                                    {{ friend.name }} <span class="text-muted">@{{ friend.user.username }}</span>
+                                {% else %}
+                                    @{{ friend.user.username }}
+                                {% endif %}
+                            </a>
+                        {% endfor %}
+                    </div>
+            </div>
+        </div>
+        {% endif %}
         <div class="card mb-3">
             <div class="card-body">
                 <h2>
