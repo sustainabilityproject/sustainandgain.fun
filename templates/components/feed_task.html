@@ -1,16 +1,18 @@
 <div class="col-sm-12 col-md-6 col-lg-3 mt-3">
     <div class="card h-100">
-        <a href="{{ task.photo.url }}">
-            <img src="{{ task.photo.url }}" class="card-img-top" alt="{{ task }}">
-            {% if task.location %}
-                <div class="card-img-overlay h-25">
-                    <div class="btn btn-light" style="font-size: 0.75rem;">
-                        <i class="bi bi-geo-alt-fill text-dark"></i>
-                        {{ task.location }}
+        {% if task.photo %}
+            <a href="{{ task.photo.url }}">
+                <img src="{{ task.photo.url }}" class="card-img-top" alt="{{ task }}">
+                {% if task.location %}
+                    <div class="card-img-overlay h-25">
+                        <div class="btn btn-light" style="font-size: 0.75rem;">
+                            <i class="bi bi-geo-alt-fill text-dark"></i>
+                            {{ task.location }}
+                        </div>
                     </div>
-                </div>
-            {% endif %}
-        </a>
+                {% endif %}
+            </a>
+        {% endif %}
         <div class="card-body d-flex flex-column">
             <a class="btn btn-dark" style="max-width: 100%;" href="{% url 'friends:profile' task.profile.pk %}">
                 <img src="{{ task.profile.image.url }}" class="rounded-circle" width="20" height="20"
