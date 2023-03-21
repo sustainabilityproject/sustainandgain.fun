@@ -1,12 +1,36 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'home' %}">Sustain and Gain</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-dark link-white bg-secondary">
+    <div class="container-fluid justify-content-between">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <img src="{% static 'logo/icon.svg' %}" alt="Sustain+Gain" height="30">
+            {% if not request.resolver_match.namespaces.0 %}
+                <img src="{% static 'logo/sustain-gain-text.svg' %}" alt="Sustain+Gain" height="20">
+            {% endif %}
+        </a>
+        {% if request.resolver_match.namespaces.0 %}
+            <span class="display-5 align-middle text-white fw-bolder">
+            {% if request.resolver_match.url_name == "profile" %}
+                Profile
+            {% else %}
+                {{ request.resolver_match.namespaces.0|title }}
+            {% endif %}
+                </span>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+            <ul class="navbar-nav d-sm-flex d-md-flex flex-row d-lg-none w-auto align-items-center">
+                <li class="nav-item" style="margin-right: 0.5em;">
+                    <a class="nav-link" href="{% url 'friends:profile' user.pk %}">
+                        <img src="{{ user.profile.image.url }}" alt="Me" height="40" width="40" class="rounded-circle">
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'account_logout' %}"><i
+                            class="bi bi-box-arrow-right text-danger"></i></a>
+                </li>
+            </ul>
+        {% endif %}
+        <div class="collapse navbar-collapse d-none d-lg-block" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
@@ -59,7 +83,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'friends:profile' user.pk %}">{{ user.username }}</a>
                     </li>
-                    {% include 'notifications/_notifications_dropdown.html' %}
+                    {% include 'components/notifications_dropdown.html' %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'account_logout' %}">Logout</a>
                     </li>

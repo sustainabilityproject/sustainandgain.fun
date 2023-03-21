@@ -1,19 +1,18 @@
 <div class="col-sm-12 col-md-6 col-lg-3 mt-3">
     <div class="card h-100">
-        <a href="{{ task.photo.url }}">
-            <img src="{{ task.photo.url }}" class="card-img-top" alt="{{ task }}">
-            {% if task.location %}
-                <div class="card-img-overlay h-25">
-                    <div class="btn btn-light" style="font-size: 0.75rem;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                             class="bi bi-geo-alt-fill" viewBox="0 0 16 16">
-                            <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
-                        </svg>
-                        {{ task.location }}
+        {% if task.photo %}
+            <a href="{{ task.photo.url }}">
+                <img src="{{ task.photo.url }}" class="card-img-top" alt="{{ task }}">
+                {% if task.location %}
+                    <div class="card-img-overlay h-25">
+                        <div class="btn btn-light" style="font-size: 0.75rem;">
+                            <i class="bi bi-geo-alt-fill text-dark"></i>
+                            {{ task.location }}
+                        </div>
                     </div>
-                </div>
-            {% endif %}
-        </a>
+                {% endif %}
+            </a>
+        {% endif %}
         <div class="card-body d-flex flex-column">
             <a class="btn btn-dark" style="max-width: 100%;" href="{% url 'friends:profile' task.profile.pk %}">
                 <img src="{{ task.profile.image.url }}" class="rounded-circle" width="20" height="20"
@@ -23,7 +22,7 @@
             </a>
             <h5 class="card-title my-1">{{ task.task.title }} <span
                     class="badge {{ task.status_colour }} fs-12">{{ task.status }}</span>
-                {% include 'tasks/_task_badges.html' with task=task.task instance=task %}
+                {% include 'components/task_badges.html' with task=task.task instance=task %}
             </h5>
             <p class="card-text text-muted">Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}</p>
             <p>{{ task.task.description }}</p>
@@ -54,12 +53,7 @@
                         <form method="post" action="{% url 'feed:restore' task.id %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-success">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     class="bi bi-arrow-counterclockwise" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd"
-                                          d="M8 3a5 5 0 1 1-4.546 2.914.5.5 0 0 0-.908-.417A6 6 0 1 0 8 2v1z"/>
-                                    <path d="M8 4.466V.534a.25.25 0 0 0-.41-.192L5.23 2.308a.25.25 0 0 0 0 .384l2.36 1.966A.25.25 0 0 0 8 4.466z"/>
-                                </svg>
+                                <i class="bi bi-arrow-counterclockwise"></i>
                                 Restore
                             </button>
                         </form>
@@ -68,10 +62,7 @@
                         <form method="post" action="{% url 'feed:delete' task.id %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     class="bi bi-trash3" viewBox="0 0 16 16">
-                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"/>
-                                </svg>
+                                <i class="bi bi-trash3"></i>
                                 Delete
                             </button>
                         </form>
@@ -85,10 +76,7 @@
                             {% else %}
                                 <button class="btn btn-primary" type="submit">
                             {% endif %}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                 class="bi bi-hand-thumbs-up-fill" viewBox="0 0 16 16">
-                                <path d="M6.956 1.745C7.021.81 7.908.087 8.864.325l.261.066c.463.116.874.456 1.012.965.22.816.533 2.511.062 4.51a9.84 9.84 0 0 1 .443-.051c.713-.065 1.669-.072 2.516.21.518.173.994.681 1.2 1.273.184.532.16 1.162-.234 1.733.058.119.103.242.138.363.077.27.113.567.113.856 0 .289-.036.586-.113.856-.039.135-.09.273-.16.404.169.387.107.819-.003 1.148a3.163 3.163 0 0 1-.488.901c.054.152.076.312.076.465 0 .305-.089.625-.253.912C13.1 15.522 12.437 16 11.5 16H8c-.605 0-1.07-.081-1.466-.218a4.82 4.82 0 0 1-.97-.484l-.048-.03c-.504-.307-.999-.609-2.068-.722C2.682 14.464 2 13.846 2 13V9c0-.85.685-1.432 1.357-1.615.849-.232 1.574-.787 2.132-1.41.56-.627.914-1.28 1.039-1.639.199-.575.356-1.539.428-2.59z"></path>
-                            </svg>
+                            <i class="bi bi-hand-thumbs-up-fill"></i>
                             {{ task.likes.count }}
                             </button>
                         </form>
@@ -101,11 +89,7 @@
                             {% else %}
                                 <button class="btn btn-light" type="submit">
                             {% endif %}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                 class="bi bi-exclamation-octagon" viewBox="0 0 16 16">
-                                <path d="M4.54.146A.5.5 0 0 1 4.893 0h6.214a.5.5 0 0 1 .353.146l4.394 4.394a.5.5 0 0 1 .146.353v6.214a.5.5 0 0 1-.146.353l-4.394 4.394a.5.5 0 0 1-.353.146H4.893a.5.5 0 0 1-.353-.146L.146 11.46A.5.5 0 0 1 0 11.107V4.893a.5.5 0 0 1 .146-.353L4.54.146zM5.1 1 1 5.1v5.8L5.1 15h5.8l4.1-4.1V5.1L10.9 1H5.1z"></path>
-                                <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"></path>
-                            </svg>
+                            <i class="bi bi-exclamation-octagon text-dark"></i>
                             Report
                             </button>
                         </form>
@@ -113,7 +97,6 @@
                 {% endif %}
             </div>
             <a href="{% url 'feed:task_detail' task.id %}" class="btn btn-primary mt-2">Comments</a>
-
         </div>
     </div>
 </div>

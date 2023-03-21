@@ -1,3 +1,22 @@
+:root {
+  --bs-primary: #81e291;
+  --bs-primary-rgb: 129,226,145;
+  --bs-secondary: #00242c;
+  --bs-secondary-rgb: 0,36,44;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+    flex-grow: 1;
+}
+
+[x-cloak] { display: none !important; }
+
 .chat-container {
   height: 600px;
   width: 100%;

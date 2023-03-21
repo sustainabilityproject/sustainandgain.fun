@@ -1,36 +1,41 @@
 {% extends 'base.html' %}
-{% block content %}
 
-<h2>Users</h2>
-{% if object_list %}
-    <ul class="list-inline">
-    {% for result_user in object_list %}
-        <li >
-        <a class="btn btn-light mb-1" href="{% url 'friends:profile' result_user.id %}">
-        <img src="{{ result_user.profile.image.url }}" height="40" width="40" alt="">
-        {% if result_user.profile.name != result_user.username %}
-            {{ result_user.profile.name }} <span class="text-muted">@{{ result_user.profile.user.username }}</span>
-        {% else %}
-            @{{ result_user.profile.user.username }}
-        {% endif %}                            
-        </a>
-        {% if searching_for_friend %}
-            <a>
-            <form method="post" action="{% url 'friends:add' %}">
-                {% csrf_token %}
-                <input name="username" type="hidden" value="{{ result_user.username }}">
-                <button type="submit">Add</button>
-            </form>
-            </a>
-        {% endif %}
-        </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No results found, please try again</p>
-    <form action="{% url 'friends:profile_search' %}" method="get">
-    <input name="q" type="text" placeholder="Search for Friend">
-    <input name="f" type="hidden" value = 'True'> 
-    </form>
-{% endif %}
+{% block title %}
+    Search - Sustain+Gain
+{% endblock %}
+
+{% block content %}
+    <h2>Users</h2>
+    {% if object_list %}
+        <ul class="list-inline">
+            {% for result_user in object_list %}
+                <li>
+                    <a class="btn btn-light mb-1" href="{% url 'friends:profile' result_user.id %}">
+                        <img src="{{ result_user.profile.image.url }}" height="40" width="40" alt="">
+                        {% if result_user.profile.name != result_user.username %}
+                            {{ result_user.profile.name }}
+                            <span class="text-muted">@{{ result_user.profile.user.username }}</span>
+                        {% else %}
+                            @{{ result_user.profile.user.username }}
+                        {% endif %}
+                    </a>
+                    {% if searching_for_friend %}
+                        <a>
+                            <form method="post" action="{% url 'friends:add' %}">
+                                {% csrf_token %}
+                                <input name="username" type="hidden" value="{{ result_user.username }}">
+                                <button type="submit">Add</button>
+                            </form>
+                        </a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No results found, please try again</p>
+        <form action="{% url 'friends:profile_search' %}" method="get">
+            <input name="q" type="text" placeholder="Search for Friend">
+            <input name="f" type="hidden" value='True'>
+        </form>
+    {% endif %}
 {% endblock %}

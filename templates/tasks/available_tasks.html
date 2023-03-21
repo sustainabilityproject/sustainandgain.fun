@@ -1,15 +1,15 @@
 {% extends 'base.html' %}
-{% block title %}Available Tasks{% endblock %}
+{% block title %}Available Tasks - Sustain+Gain{% endblock %}
 
 {% block content %}
     <div class="container mx-auto">
-        <div class="active p-3 mt-3">
-            <h1>Available Tasks</h1>
+        <div class="active mt-3">
+            <h1 class="fw-bold display-1">Available</h1>
             {% if tasks_list %}
                 <div class="row">
                     {% for task in tasks_list %}
                         {% url 'tasks:accept' task.id as action_url %}
-                        {% include 'tasks/_task_card.html' with title=task.title description=task.description points=task.points action_text="Accept" bomb_countdown=task.formatted_bomb_time_limit task=task%}
+                        {% include 'components/task_card.html' with title=task.title description=task.description points=task.points action_text="Accept" bomb_countdown=task.formatted_bomb_time_limit task=task%}
                     {% endfor %}
                 </div>
             {% else %}

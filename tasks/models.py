@@ -45,6 +45,7 @@ class Task(models.Model):
         rarity (IntegerField): Rarity of the task. Normal, Silver, Gold.
         is_bomb (BooleanField): Does this task have a time limit.
         bomb_time_limit (DurationField): How long you have to complete the task if it's a bomb task..
+        can_user_self_assign (BooleanField): can users give themselves the task (true) or does it have to be Steve (false)
 
     Methods:
         rarity_colour(self): Return badge colour corresponding to rarity.
@@ -81,6 +82,9 @@ class Task(models.Model):
 
     bomb_time_limit = models.DurationField(null=True, blank=True)
 
+    # can users give themselves the task (true) or does it have to be Steve (false)
+    can_user_self_assign = models.BooleanField(default=True)
+
     @property
     def rarity_colour(self):
         """
@@ -109,11 +113,13 @@ class Task(models.Model):
             Boolean: Whether this task is available for the user.
         """
         this_task_instances = TaskInstance.objects.filter(task=self.pk, profile=profile.pk)
+        this_task_instances = this_task_instances.order_by('-time_accepted')
 
         for instance in this_task_instances:
             if instance.status in [TaskInstance.PENDING_APPROVAL, TaskInstance.ACTIVE]:
                 return False
-
+            elif instance.status in [TaskInstance.EXPLODED]:
+                return True
             else:
                 if timezone.now() < instance.time_completed + instance.task.time_to_repeat:
                     return False
@@ -291,7 +297,6 @@ class TaskInstance(models.Model):
 
         return self
 
-
     # Overwrite save method to resize photo if it is too large
     def save(self, *args, **kwargs):
         # Call the parent save() method to save the object as usual
@@ -326,7 +331,6 @@ class TaskInstance(models.Model):
             if img.size[0] > max_size[0] or img.size[1] > max_size[1]:
                 img.thumbnail(max_size, Image.ANTIALIAS)
                 img.save(self.photo.path)
-
 
     def report_task_complete(self):
         """
