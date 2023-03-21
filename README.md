@@ -5,6 +5,7 @@ Sustain and Gain is a mobile web app where users compete to earn points by compl
 1. [Setting up and running the app](#setting-up-and-running-the-app)
 2. [Project Structure](#project-structure)
 3. [Documentation](#documentation)
+4. [Contact](#contact)
 # Setting up and running the app
 
 
@@ -137,4 +138,5 @@ well as promotional documents in the 'promotional things' folder including a sit
 
 Additionally, we have a [Kanban board](https://trello.com/b/DwykNGu4/kanban-board) on Trello to manage the agile process.
 
-
+# Contact
+If you need to contact us, please email info@sustainandgain.fun
