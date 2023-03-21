@@ -1,0 +1,77 @@
+/* landing_page.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('background-image.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    height: 100vh;
+}
+
+.container-wrapper {
+    width: 100%;
+    padding: 1rem;
+}
+
+/* landing_page.css */
+
+.container {
+    margin: 0 auto;
+    padding: 2rem;
+    background-color: rgba(0, 36, 44, 0.8); /* Add transparency by setting the alpha value to 0.8 */
+    border-radius: 1rem;
+}
+
+
+.logo {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #ffffff;
+}
+
+h2, h3, h4, h5, h6 {
+    font-size: 20px;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.lead {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    color: #ffffff;
+    margin-bottom: 1rem;
+}
+
+hr {
+    border: 1px solid #ffffff;
+    margin: 2rem 0;
+}
+
+p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #ffffff;
+}
+
+.text-center {
+    text-align: center;
+}
+
+
+.btn-custom {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .btn-custom:hover {
+    background-color: #0b5ed7;
+    border-color: #0077b6;
+    color: #fff;
+  }
