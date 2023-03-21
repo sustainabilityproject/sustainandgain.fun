@@ -4,8 +4,10 @@
 
 {% block content %}
     <div class="container">
-        <div class="d-flex justify-content-between my-auto mt-2">
-            <h1>{{ league }}</h1>
+        <div class="d-flex flex-column flex-lg-row justify-content-between my-auto mt-2">
+            <div>
+                <h1>{{ league }}</h1>
+            </div>
             <div class="my-auto">
                 {% if admin %}
                     <div class="border p-1 border-3 border-danger rounded">
@@ -64,60 +66,62 @@
 
         <h2>Members</h2>
         {% if is_public or is_member or is_invited %}
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Rank</th>
-                    <th>Username</th>
-                    <th>Points</th>
-                    {% if admin %}
-                        <th>Role</th>
-                        <th>Actions</th>
-                    {% endif %}
-                </tr>
-                </thead>
-                <tbody>
-                {% for member in members %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
                     <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ member.profile.user.username }}</td>
-                        <td>{{ member.total_points }}</td>
+                        <th>Rank</th>
+                        <th>Username</th>
+                        <th>Points</th>
                         {% if admin %}
-                            <td>
-                                {{ member.role }}
-                            </td>
-                            <td>
-                                <div class="btn-group">
-                                    {% if member.role == 'member' %}
-                                        <form class="mx-1"
-                                              action="{% url 'leagues:promote' league.id member.profile.user.username %}"
-                                              method="post">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-primary">Promote</button>
-                                        </form>
-                                    {% elif member.role == 'admin' %}
-                                        <form class="mx-1"
-                                              action="{% url 'leagues:demote' league.id member.profile.user.username %}"
-                                              method="post">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-warning">Demote</button>
-                                        </form>
-                                    {% endif %}
-                                    {% if member.profile != user.profile %}
-                                        <form class="mx-1"
-                                              action="{% url 'leagues:remove' league.id member.profile.user.username %}"
-                                              method="post">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger">Kick</button>
-                                        </form>
-                                    {% endif %}
-                                </div>
-                            </td>
+                            <th>Role</th>
+                            <th>Actions</th>
                         {% endif %}
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for member in members %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ member.profile.user.username }}</td>
+                            <td>{{ member.total_points }}</td>
+                            {% if admin %}
+                                <td>
+                                    {{ member.role }}
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        {% if member.role == 'member' %}
+                                            <form class="mx-1"
+                                                  action="{% url 'leagues:promote' league.id member.profile.user.username %}"
+                                                  method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-primary">Promote</button>
+                                            </form>
+                                        {% elif member.role == 'admin' %}
+                                            <form class="mx-1"
+                                                  action="{% url 'leagues:demote' league.id member.profile.user.username %}"
+                                                  method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-warning">Demote</button>
+                                            </form>
+                                        {% endif %}
+                                        {% if member.profile != user.profile %}
+                                            <form class="mx-1"
+                                                  action="{% url 'leagues:remove' league.id member.profile.user.username %}"
+                                                  method="post">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger">Kick</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
             <p>This league is private. Request to join to view members.</p>
         {% endif %}

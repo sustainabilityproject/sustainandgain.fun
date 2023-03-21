@@ -2,7 +2,7 @@
     <div class="card h-100">
         <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ title }}
-                {% include 'tasks/_task_badges.html' with task=task instance=instance bomb_countdown=bomb_countdown%}
+                {% include 'components/task_badges.html' with task=task instance=instance bomb_countdown=bomb_countdown%}
             </h5>
             <span class="badge text-bg-success fs-6" style="max-width: 4rem;">+{{ points }}</span>
             <p class="card-text">{{ description }}</p>
