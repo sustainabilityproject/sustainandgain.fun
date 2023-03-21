@@ -8,7 +8,7 @@
     <div class="col-sm-12 col-md-6 col-lg-3 mt-3 mx-auto">
         <h2>{{ task_instance.task.title }} <span
                 class="badge {{ task_instance.status_colour }} fs-12">{{ task_instance.status }}</span>
-            {% include 'tasks/_task_badges.html' with task=task_instance.task instance=task_instance %}
+            {% include 'components/task_badges.html' with task=task_instance.task instance=task_instance %}
         </h2>
         <p>{{ task_instance.task.description }}</p>
         <a href="{{ task_instance.photo.url }}">
