@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Notifications - Sustain+Gain{% endblock %}
+
+{% block content %}
+    {% if notifications %}
+        <form action="{% url 'notifications:mark_all_as_read' %}" method="post" class="py-1">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Mark all as read</button>
+        </form>
+        <ul class="notifications px-0">
+            {% for notice in notifications %}
+                {% include 'notifications/notice.html' %}
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="text-center">No notifications</p>
+    {% endif %}
+{% endblock %}

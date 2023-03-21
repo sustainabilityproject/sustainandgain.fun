@@ -13,7 +13,7 @@
             <a class="nav-link p-0 m-0 d-flex flex-column" href="{% url 'friends:list' %}">
                 <i class="bi-people-fill mx-auto {% if request.resolver_match.namespaces.0 == "friends" %}active{% endif %}"></i>
             </a>
-            <a class="nav-link p-0 m-0 d-flex flex-column" href="#" x-data="getNotifications">
+            <a class="nav-link p-0 m-0 d-flex flex-column" href="{% url 'notifications:unread' %}" x-data="getNotifications">
                 <i class="bi-bell-fill mx-auto {% if request.resolver_match.namespaces.0 == "notifications" %}active{% endif %}">
                  <span x-cloak x-text="notificationCount"
                        class="position-absolute translate-middle badge rounded-pill bg-danger fs-6"
