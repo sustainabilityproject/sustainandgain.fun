@@ -8,7 +8,10 @@
                 <i class="bi-card-checklist mx-auto {% if request.resolver_match.namespaces.0 == "tasks" %}active{% endif %}"></i>
             </a>
             <a class="nav-link p-0 m-0 d-flex flex-column" href="{% url 'leagues:list' %}">
-                <i class="bi-people-fill mx-auto {% if request.resolver_match.namespaces.0 == "leagues" %}active{% endif %}"></i>
+                <i class="bi-award-fill mx-auto {% if request.resolver_match.namespaces.0 == "leagues" %}active{% endif %}"></i>
+            </a>
+            <a class="nav-link p-0 m-0 d-flex flex-column" href="{% url 'friends:list' %}">
+                <i class="bi-people-fill mx-auto {% if request.resolver_match.namespaces.0 == "friends" %}active{% endif %}"></i>
             </a>
             <a class="nav-link p-0 m-0 d-flex flex-column" href="#" x-data="getNotifications">
                 <i class="bi-bell-fill mx-auto {% if request.resolver_match.namespaces.0 == "notifications" %}active{% endif %}">

@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+    Complete "{{ task.task.title }}"
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-3">
+        {% if task.status == "COMPLETED" %}
+            <h1>Task already completed</h1>
+        {% else %}
+            <h1>Complete "{{ task.task.title }}"</h1>
+            {% if task.photo %}
+                <img src="{{ task.photo.url }}" alt="Photo" style="max-width: 20%">
+            {% endif %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% bootstrap_button button_type="submit" content="Complete" %}
+            </form>
+            <script>
+                // Get the user's location using the Geolocation API
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    var latitude = position.coords.latitude;
+                    var longitude = position.coords.longitude;
+
+                    // Set the values of the hidden input fields
+                    document.getElementById("id_latitude").value = latitude;
+                    document.getElementById("id_longitude").value = longitude;
+                });
+            </script>
+        {% endif %}
+    </div>
+{% endblock %}

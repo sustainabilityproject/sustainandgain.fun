@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}My Tasks{% endblock %}
+
+{% block content %}
+    <div class="container mx-auto">
+        <div class="active mt-3">
+            <h1 class="fw-bold display-1"><i class="bi bi-hourglass-split text-primary"></i>Active</h1>
+            {% if active_tasks %}
+                <div class="row">
+                    {% for task in active_tasks %}
+                        {% url 'tasks:complete' task.id as action_url %}
+                        {% include 'components/task_card.html' with title=task.task.title description=task.task.description points=task.task.points action_text="Complete" origin_message=task.origin_message task=task.task instance=task bomb_countdown=task.bomb_instance_deadline %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>You have no active tasks!</p>
+            {% endif %}
+            <div class="mt-3">
+                <a href="{% url 'tasks:available' %}" class="btn btn-success text-bg-success">Get some more tasks!</a>
+            </div>
+        </div>
+
+        <div class="active mt-3">
+            <h1 class="fw-bold display-1"><i class="bi bi-check2-square text-primary"></i>Done</h1>
+            {% if completed_tasks or pending_tasks %}
+                <table class="table table-dark w-100">
+                    <thead>
+                    <tr>
+                        <th scope="col">Task</th>
+                        <th scope="col">Points</th>
+                        <th scope="col">Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for task in completed_or_pending %}
+                        {% if task in completed_tasks %}
+                            <tr class="table-success">
+                            <td>{{ task.task.title }}</td>
+                            <td>+{{ task.task.points }}</td>
+                            <td>
+                                Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}
+                                <h5>
+                                    Tag Friends
+                                </h5>
+                                {% if friends %}
+                                    {% if task.tagged_someone %}
+                                        <p>You tagged {{ task.tagged_whom }} in this task!</p>
+                                    {% else %}
+                                        <form method="post" action="{% url 'tasks:tag' task.id %}">
+                                            {% csrf_token %}
+                                            <select name="username">
+                                                {% for friend in friends %}
+                                                    <option value="{{ friend.user.username }}">{{ friend.user.username }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="submit" class="btn btn-success mt-1">Tag</button>
+                                        </form>
+                                    {% endif %}
+                                {% else %}
+                                    <p>You have no friends yet, try making a request from your profile</p>
+                                {% endif %}
+                            </td>
+                            </tr>
+                        {% else %}
+                            <tr class="table-warning">
+                            <td>{{ task.task.title }}</td>
+                            <td>+{{ task.task.points }}</td>
+                            <td>
+                                <a href="{% url 'tasks:complete' task.id %}">Pending Approval</a>
+                                <p>
+                                    Once this task is approved you can tag a friend
+                                </p>
+                            </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>You have no completed tasks!</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+

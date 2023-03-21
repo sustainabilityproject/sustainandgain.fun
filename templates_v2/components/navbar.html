@@ -5,11 +5,7 @@
             <img src="{% static 'logo/icon.svg' %}" alt="Sustain+Gain" height="30">
             {% if request.resolver_match.namespaces.0 %}
                 <span class="display-5 align-middle text-white fw-bolder">
-                {% if request.resolver_match.namespaces.0 == "leagues" or request.resolver_match.namespaces.0 == "friends" %}
-                    Social
-                {% else %}
                     {{ request.resolver_match.namespaces.0|title }}
-                {% endif %}
                 </span>
             {% else %}
                 <img src="{% static 'logo/sustain-gain-text.svg' %}" alt="Sustain+Gain" height="20">
