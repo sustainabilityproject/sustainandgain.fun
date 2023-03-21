@@ -9,7 +9,11 @@
         </a>
         {% if request.resolver_match.namespaces.0 %}
             <span class="display-5 align-middle text-white fw-bolder">
-                    {{ request.resolver_match.namespaces.0|title }}
+            {% if request.resolver_match.url_name == "profile" %}
+                Profile
+            {% else %}
+                {{ request.resolver_match.namespaces.0|title }}
+            {% endif %}
                 </span>
         {% endif %}
 
