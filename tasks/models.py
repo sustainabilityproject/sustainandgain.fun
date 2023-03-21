@@ -291,7 +291,6 @@ class TaskInstance(models.Model):
 
         return self
 
-
     # Overwrite save method to resize photo if it is too large
     def save(self, *args, **kwargs):
         # Call the parent save() method to save the object as usual
@@ -326,7 +325,6 @@ class TaskInstance(models.Model):
             if img.size[0] > max_size[0] or img.size[1] > max_size[1]:
                 img.thumbnail(max_size, Image.ANTIALIAS)
                 img.save(self.photo.path)
-
 
     def report_task_complete(self):
         """
