@@ -113,11 +113,13 @@ class Task(models.Model):
             Boolean: Whether this task is available for the user.
         """
         this_task_instances = TaskInstance.objects.filter(task=self.pk, profile=profile.pk)
+        this_task_instances = this_task_instances.order_by('-time_accepted')
 
         for instance in this_task_instances:
             if instance.status in [TaskInstance.PENDING_APPROVAL, TaskInstance.ACTIVE]:
                 return False
-
+            elif instance.status in [TaskInstance.EXPLODED]:
+                return True
             else:
                 if timezone.now() < instance.time_completed + instance.task.time_to_repeat:
                     return False
