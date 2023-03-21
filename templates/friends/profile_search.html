@@ -14,12 +14,12 @@
             @{{ result_user.profile.user.username }}
         {% endif %}                            
         </a>
-        {% if searching_for_friend %}
+        {% if result_user not in friends %}
             <a>
             <form method="post" action="{% url 'friends:add' %}">
                 {% csrf_token %}
                 <input name="username" type="hidden" value="{{ result_user.username }}">
-                <button type="submit">Add</button>
+                <button type="submit"><i class="bi bi-person-fill-add">Add</i></button>
             </form>
             </a>
         {% endif %}
