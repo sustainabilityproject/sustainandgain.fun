@@ -169,6 +169,23 @@
                             'Oops!',
                         intro: 'You must have clicked the wrong button! Don\'t worry, we\'re now friends!',
                     }]
+                }).oncomplete(function () {
+                    window.location.href = "{% url 'friends:list' %}?tour=accepted";
+                }).start();
+            }
+        }
+
+        if (window.location.search === '?tour=accepted') {
+            document.querySelector('.messages').remove();
+            window.onload = function () {
+                introJs().setOptions({
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                        intro: 'Now that we are friends, you can view my tasks in the feed!',
+                    }]
+                }).oncomplete(function () {
+                    window.location.href = "{% url 'feed:feed' %}?tour=tasks";
                 }).start();
             }
         }

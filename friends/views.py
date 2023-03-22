@@ -312,6 +312,10 @@ class AcceptFriendRequestView(LoginRequiredMixin, View):
 
         messages.success(request, f'You are now friends with {friend_request.from_profile.user.username}!')
 
+        # If the friend request was from SusSteve, redirect to /friends/?tour=accepted
+        if friend_request.from_profile.user.username == 'SusSteve':
+            return redirect('/friends/?tour=accepted')
+
         return redirect('friends:list')
 
 
