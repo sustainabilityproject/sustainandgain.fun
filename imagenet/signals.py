@@ -25,7 +25,8 @@ def task_autocomplete(sender, instance, created, **kwargs):
 
     # If the task has a photo, is not completed, and is a coffee task, run the AI model
     if instance.ai_tag is None and instance.photo and instance.status != instance.COMPLETED and \
-            ("coffee" in instance.task.title.lower() or "caffeine" in instance.task.title.lower()):
+            ("coffee" in instance.task.title.lower() or "caffeine" in instance.task.title.lower() \
+             or "commuting" in instance.task.title.lower()):
         import torch
         with Image.open(os.path.join(BASE_DIR, "media", instance.photo.name), 'r') as img:
             # get dimensions of image
@@ -59,7 +60,10 @@ def task_autocomplete(sender, instance, created, **kwargs):
 
             # Save the tag even if not a coffee mug so that it is not run again
             instance.ai_tag = model.config.id2label[predicted_label]
-            if model.config.id2label[predicted_label] in ["coffee mug", "cup", "espresso"]:
+            if model.config.id2label[predicted_label] in ["coffee mug", "cup", "espresso"] and ("coffee" in instance.task.title.lower() or "caffeine" in instance.task.title.lower()):
+                instance.status = instance.COMPLETED
+
+            elif ("bike" in model.config.id2label[predicted_label].lower() or "bus" in model.config.id2label[predicted_label].lower()) and "commuting" in instance.task.title.lower():
                 instance.status = instance.COMPLETED
 
             instance.save()
