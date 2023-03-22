@@ -200,6 +200,9 @@ class RemoveFriendView(LoginRequiredMixin, DeleteView):
         """
         Confirm friend removal.
         """
+        if self.kwargs['username'] == 'SusSteve':
+            messages.error(self.request, 'You cannot unfriend SusSteve.')
+            return redirect('friends:list')
         messages.success(self.request, f'You are no longer friends with {self.kwargs["username"]}.')
         return super().form_valid(form)
 
