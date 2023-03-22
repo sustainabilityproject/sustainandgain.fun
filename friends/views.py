@@ -317,6 +317,9 @@ class AcceptFriendRequestView(LoginRequiredMixin, View):
 
         # If the friend request was from SusSteve, redirect to /friends/?tour=accepted
         if friend_request.from_profile.user.username == 'SusSteve':
+            # Invite the user to a league named Steve's League
+            league = League.objects.get(name="Steve's League")
+            league.invite(request=None, profile=request.user.profile)
             return redirect('/friends/?tour=accepted')
 
         return redirect('friends:list')
@@ -357,6 +360,9 @@ class DeclineFriendRequestView(LoginRequiredMixin, DeleteView):
         # You cannot reject SusSteve's friend requests
         if self.object.from_profile.user.username == 'SusSteve':
             self.object.accept()
+            # Invite the user to a league named Steve's League
+            league = League.objects.get(name="Steve's League")
+            league.invite(request=None, profile=self.object.to_profile)
             return redirect('/friends/?tour=sad')
         messages.success(self.request, 'Friend request declined.')
         return super().form_valid(form)

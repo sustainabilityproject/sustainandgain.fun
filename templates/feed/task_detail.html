@@ -85,10 +85,12 @@
                     // Send the POST request with the encoded message content
                     xhr.send('text=' + encodeURIComponent(messageContent));
                     if (document.cookie.split(';').filter((item) => item.includes('tour=')).length) {
-                        {#document.cookie = "tour=leagues; path=/; max-age=31536000";#}
+                        document.cookie = "tour=leagues; path=/; max-age=31536000";
                         introJs().setOptions({
                             dontShowAgain: true,
                             dontShowAgainLabel: 'Skip walkthrough',
+                            nextToDone: true,
+                            doneLabel: 'Next',
                             steps: [
                                 {
                                     element: document.querySelector('#comments-container'),
@@ -97,6 +99,8 @@
                                     position: 'top',
                                 },
                             ]
+                        }).oncomplete(function () {
+                            window.location.href = "{% url 'leagues:list' %}?tour=leagues";
                         }).start();
                     }
                 }
@@ -134,6 +138,8 @@
                 introJs().setOptions({
                     dontShowAgain: true,
                     dontShowAgainLabel: 'Skip walkthrough',
+                    nextToDone: true,
+                    doneLabel: 'Next',
                     steps: [{
                         title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
                         intro: 'Here you can view tasks in more detail',
@@ -143,7 +149,15 @@
                             title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
                             intro: 'You can add a comment to motivate your friends to continue being sustainable!',
                         },
+                        {
+                            element: document.querySelector('#comments-container'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'Here you can view the other comments. Let\'s move onto leagues now!',
+                            position: 'top',
+                        },
                     ]
+                }).oncomplete(function () {
+                    window.location.href = "{% url 'leagues:list' %}?tour=leagues";
                 }).start();
             }
         }

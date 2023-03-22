@@ -13,7 +13,9 @@
     <meta name="description"
           content="Sustain and Gain is a fun way to compete with your friends to become the most sustainable person.">
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
-    <script async src="{% static 'js/tour.js' %}"></script>
+    {% if user.is_authenticated %}
+        <script async src="{% static 'js/tour.js' %}"></script>
+    {% endif %}
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
     <script defer data-domain="sustainandgain.fun" src="https://on.invalidhost.com/js/on.js"></script>
     <script src="//unpkg.com/alpinejs" defer></script>

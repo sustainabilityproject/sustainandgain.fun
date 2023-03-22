@@ -105,7 +105,14 @@
                             title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
                             intro: 'You can also add comments to a task to congratulate your friends!',
                         },
+                        {
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'Let\'s go back to the leagues page!',
+                            position: 'top'
+                        }
                     ]
+                }).oncomplete(function () {
+                    window.location.href = "{% url 'leagues:list' %}?tour=leagues";
                 }).start();
             }
         }
