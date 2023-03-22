@@ -53,6 +53,10 @@ Change the value of AI in `.env` to `1`.
 
 ### Local email
 
+# IMPORTANT
+
+*If you do not want to setup Docker, set `ACCOUNT_EMAIL_VERIFICATION = 'none'` in `sustainability/settings.py`*
+
 You will need [docker](https://docs.docker.com/get-docker/) installed.
 
 Run local email server with the following

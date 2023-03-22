@@ -1,11 +1,14 @@
 import datetime
 
+from background_task import models as background_models
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
 from friends.models import Profile
 from PIL import Image, ExifTags
+
+from tasks.tasks import assign_tasks
 
 
 class TaskCategory(models.Model):
@@ -340,3 +343,6 @@ class TaskInstance(models.Model):
         """
         self.status = self.PENDING_APPROVAL
         self.time_completed = timezone.now()
+
+
+assign_tasks(repeat=background_models.Task.DAILY, repeat_until=None)

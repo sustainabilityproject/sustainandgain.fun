@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
     'django_bootstrap5',
     'notifications',
+    'background_task',
 
     'accounts.apps.AccountsConfig',
     'tasks.apps.TasksConfig',

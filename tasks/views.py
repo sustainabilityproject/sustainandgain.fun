@@ -97,7 +97,6 @@ class AcceptTaskView(LoginRequiredMixin, View):
         """
         task_accepted = Task.objects.get(pk=self.kwargs['pk'])
         if task_accepted.is_available(request.user.profile):
-
             # create new task instance for current profile, set it to active
             t = TaskInstance(
                 task=task_accepted,
@@ -160,6 +159,7 @@ class SendTagView(LoginRequiredMixin, View):
     Methods:
         post(self, request, *args, **kwargs): Put completed task on tagged friend's 'my tasks' page.
     """
+
     def post(self, request, *args, **kwargs):
         """
         Put completed task on tagged friend's 'my tasks' page.

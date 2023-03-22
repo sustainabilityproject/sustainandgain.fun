@@ -25,6 +25,7 @@ django-allauth = "*"
 django-notifications-hq = "*"
 torch = {version = "*", index = "downloadpytorch"}
 transformers = "*"
+django-background-tasks-updated = "*"
 
 [dev-packages]
 
