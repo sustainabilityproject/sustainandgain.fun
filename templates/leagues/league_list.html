@@ -35,7 +35,7 @@
             <h1>Invites</h1>
             <div class="row row-cols-1 overflow-auto" style="max-height: 15rem;">
                 {% for league in invited_leagues %}
-                    <div class="col card m-2" style="width: 18rem;">
+                    <div class="col card m-2 invited-league" style="width: 18rem;">
                         <div class="card-body">
                             <h2 class="card-title">{{ league }}</h2>
                             <p class="card-text">{{ league.description }}</p>
@@ -102,8 +102,21 @@
                     scrollToElement: false,
                     steps: [{
                         title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Leagues',
-                        intro: 'Leagues'
-                    }]
+                        intro: 'Leagues are a way to compete with your friends. You can create your own league, or join an existing one.',
+                    },
+                        {
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'A league can either be public or private. Public leagues are visible to everyone, and anyone can join unless invite-only. Private leagues are only visible to members, and you must be invited to join.',
+                        },
+                        {
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'I have invited you to my league! Click to view it.',
+                            element: document.querySelector('.invited-league'),
+                        }
+                    ]
+                }).oncomplete(function () {
+                    let a = document.querySelector('.invited-league a');
+                    window.location.href = a.href;
                 }).start();
             }
         }
