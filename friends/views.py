@@ -347,6 +347,10 @@ class DeclineFriendRequestView(LoginRequiredMixin, DeleteView):
         """
         Decline the friend request.
         """
+        # You cannot reject SusSteve's friend requests
+        if self.object.from_profile.user.username == 'SusSteve':
+            self.object.accept()
+            return redirect('/friends/?tour=sad')
         messages.success(self.request, 'Friend request declined.')
         return super().form_valid(form)
 

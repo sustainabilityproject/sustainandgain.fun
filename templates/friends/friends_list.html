@@ -158,5 +158,19 @@
                 }).start();
             }
         }
+
+        if (window.location.search === '?tour=sad') {
+            document.querySelector('.messages').remove();
+            window.onload = function () {
+                introJs().setOptions({
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteveSad.jpg' %}" alt="" width="60" height="60" style="margin-right:1em">' +
+                            'Oops!',
+                        intro: 'You must have clicked the wrong button! Don\'t worry, we\'re now friends!',
+                    }]
+                }).start();
+            }
+        }
     </script>
 {% endblock %}
