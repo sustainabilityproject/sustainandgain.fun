@@ -1,4 +1,4 @@
-<div class="col-sm-12 col-md-6 col-lg-3 mt-3">
+<div class="col-sm-12 col-md-6 col-lg-3 mt-3 feed-task">
     <div class="card h-100">
         {% if task.photo %}
             <a href="{{ task.photo.url }}">
@@ -72,9 +72,9 @@
                         <form method="post" action="{% url 'feed:like' task.id %}">
                             {% csrf_token %}
                             {% if user.profile in task.likes.all %}
-                                <button class="btn btn-success" type="submit" disabled>
+                                <button class="btn btn-success like-button" type="submit" disabled>
                             {% else %}
-                                <button class="btn btn-primary" type="submit">
+                                <button class="btn btn-primary like-button" type="submit">
                             {% endif %}
                             <i class="bi bi-hand-thumbs-up-fill"></i>
                             {{ task.likes.count }}
@@ -85,9 +85,9 @@
                         <form method="post" action="{% url 'feed:report' task.id %}">
                             {% csrf_token %}
                             {% if user.profile in task.reports.all %}
-                                <button class="btn btn-danger" type="submit" disabled>
+                                <button class="btn btn-danger report-button" type="submit" disabled>
                             {% else %}
-                                <button class="btn btn-light" type="submit">
+                                <button class="btn btn-light report-button" type="submit">
                             {% endif %}
                             <i class="bi bi-exclamation-octagon text-dark"></i>
                             Report
@@ -96,7 +96,7 @@
                     </div>
                 {% endif %}
             </div>
-            <a href="{% url 'feed:task_detail' task.id %}" class="btn btn-primary mt-2">Comments</a>
+            <a href="{% url 'feed:task_detail' task.id %}" class="btn btn-primary mt-2 comment-button">Comments</a>
         </div>
     </div>
 </div>

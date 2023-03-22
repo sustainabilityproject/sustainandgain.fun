@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Feed - Sustain+Gain{% endblock %}
 
@@ -10,9 +11,110 @@
                     {% include 'components/feed_task.html' with task=task %}
                 {% endfor %}
             </div>
-            </div>
         {% else %}
             <p>Be the first to complete a task!</p>
             <a class="btn btn-success" href="{% url 'tasks:list' %}">My Tasks</a>
         {% endif %}
+    </div>
+
+    <script>
+        if (window.location.search === '?tour=start') {
+            document.querySelector('.messages').remove();
+            window.onload = function () {
+                document.cookie = "tour=start; path=/; max-age=31536000";
+                introJs().setOptions({
+                    dontShowAgain: true,
+                    dontShowAgainLabel: 'Skip walkthrough',
+                    nextToDone: true,
+                    doneLabel: 'Next',
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' +
+                            'Hi {{ user.username }}!',
+                        intro: 'Welcome to Sustain and Gain, the best way to make sustainable choices and compete with your friends!'
+                    },
+                    {
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' +
+                            'Hi {{ user.username }}!',
+                        intro: 'I\'m Sustainability Steve, your personal guide to Sustain and Gain. I\'ll be showing you around the app today.'
+                    },
+                        {
+                            element: document.querySelector('.feed-nav'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Feed',
+                            intro: 'This is the feed page. Here you can see what your friends have been up to!',
+                        },
+                        {
+                            element: document.querySelector('.tasks-nav'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Tasks',
+                            intro: 'This is the tasks page. You can find tasks to complete here.',
+                        },
+                        {
+                            element: document.querySelector('.leagues-nav'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Leagues',
+                            intro: 'Here you can find leagues to join where you can compete with your friends!'
+                        },
+                        {
+                            element: document.querySelector('.friends-nav'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Friends',
+                            intro: 'Here you can connect with your friends to challenge each other with tasks!'
+                        },
+                        {
+                            element: document.querySelector('.notifications-nav'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Notifications',
+                            intro: 'It looks like you have a notification! Let\'s go check it out!',
+                            position: 'top'
+                        },
+                    ]
+                }).oncomplete(function () {
+                    window.location.href = "{% url 'notifications:unread' %}?tour=notifications";
+                }).start();
+            }
+        }
+
+        if (window.location.search === '?tour=tasks') {
+            document.querySelector('.messages').remove();
+            window.onload = function () {
+                document.cookie = "tour=tasks; path=/; max-age=31536000";
+                introJs().setOptions({
+                    dontShowAgain: true,
+                    dontShowAgainLabel: 'Skip walkthrough',
+                    nextToDone: true,
+                    doneLabel: 'Next',
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                        intro: 'All tasks that your friends have completed will now show in the feed.'
+                    },
+                        {
+                            element: document.querySelector('.feed-task'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'Here\'s a task I did earlier!',
+                        },
+                        {
+                            element: document.querySelector('.like-button'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'You can like a task by clicking the thumbs up icon.',
+                        },
+                        {
+                            element: document.querySelector('.report-button'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'You can report a task if it does not look right.',
+                        },
+                        {
+                            element: document.querySelector('.comment-button'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'You can also add comments to a task to congratulate your friends!',
+                        },
+                        {
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'Let\'s go back to the leagues page!',
+                            position: 'top'
+                        }
+                    ]
+                }).oncomplete(function () {
+                    window.location.href = "{% url 'leagues:list' %}?tour=leagues";
+                }).start();
+            }
+        }
+    </script>
 {% endblock %}

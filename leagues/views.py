@@ -145,6 +145,11 @@ class JoinLeagueView(LoginRequiredMixin, UpdateView):
         league = self.get_object()
 
         league.join(request, request.user.profile)
+
+        # If the league is "Steve's League", redirect to the league detail page + ?tour=joined
+        if league.name == "Steve's League":
+            url = league.get_absolute_url() + '?tour=joined'
+            return redirect(url)
         return redirect('leagues:detail', pk=league.pk)
 
 
@@ -179,6 +184,10 @@ class LeaveLeagueView(LoginRequiredMixin, UpdateView):
             redirect: Redirect to league detail page.
         """
         league = self.get_object()
+
+        if league.name == "Steve's League":
+            messages.error(request, "You cannot leave Steve's League")
+            return redirect('leagues:detail', pk=league.pk)
         league.leave(request, request.user.profile)
         return redirect('leagues:list')
 

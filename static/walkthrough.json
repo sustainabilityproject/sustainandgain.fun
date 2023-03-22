@@ -1,0 +1,38 @@
+[
+  {
+    "tour": "start",
+    "url": "/feed"
+  },
+  {
+    "tour": "notifications",
+    "url": "/notifications/unread"
+  },
+  {
+    "tour": "friends",
+    "url": "/friends"
+  },
+  {
+    "tour": "sad",
+    "url": "/friends"
+  },
+  {
+    "tour": "accepted",
+    "url": "/friends"
+  },
+  {
+    "tour": "tasks",
+    "url": "/feed"
+  },
+  {
+    "tour": "leagues",
+    "url": "/leagues"
+  },
+  {
+    "tour": "joined",
+    "url": "/leagues"
+  },
+  {
+    "tour": "mytasks",
+    "url": "/tasks"
+  }
+]
