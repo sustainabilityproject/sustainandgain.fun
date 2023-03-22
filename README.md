@@ -43,6 +43,12 @@ Create an admin user
 python manage.py createsuperuser
 ```
 
+Initialise Sustainability Steve
+
+```bash
+python manage.py create_sustainability_steve
+```
+
 ## Enable AI (optional)
 
 Install [PyTorch](https://pytorch.org/get-started/locally/) and [Transformers](https://pypi.org/project/transformers/) with pip.
