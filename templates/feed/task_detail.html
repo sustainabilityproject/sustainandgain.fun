@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
     {{ task_instance.task.title }} - Sustain+Gain
@@ -80,8 +81,24 @@
                             fetchComments();
                         }
                     };
+
                     // Send the POST request with the encoded message content
                     xhr.send('text=' + encodeURIComponent(messageContent));
+                    if (document.cookie.split(';').filter((item) => item.includes('tour=')).length) {
+                        {#document.cookie = "tour=leagues; path=/; max-age=31536000";#}
+                        introJs().setOptions({
+                            dontShowAgain: true,
+                            dontShowAgainLabel: 'Skip walkthrough',
+                            steps: [
+                                {
+                                    element: document.querySelector('#comments-container'),
+                                    title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                                    intro: 'Here you can view your comment! Let\'s move onto leagues now!',
+                                    position: 'top',
+                                },
+                            ]
+                        }).start();
+                    }
                 }
             }
         });
@@ -109,6 +126,26 @@
             };
             // Send the GET request
             xhr.send();
+        }
+
+        if (window.location.search === '?tour=tasks') {
+            document.querySelector('.messages').remove();
+            window.onload = function () {
+                introJs().setOptions({
+                    dontShowAgain: true,
+                    dontShowAgainLabel: 'Skip walkthrough',
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                        intro: 'Here you can view tasks in more detail',
+                    },
+                        {
+                            element: document.querySelector('#comment-form'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'You can add a comment to motivate your friends to continue being sustainable!',
+                        },
+                    ]
+                }).start();
+            }
         }
 
     </script>
