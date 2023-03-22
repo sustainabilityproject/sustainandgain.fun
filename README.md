@@ -108,8 +108,10 @@ apps, an explanation has been provided.
 ├───.github         Contains GitHub-specific information
 │   └───workflows   Actions automatically run on GitHub pushes (running tests, deployment)
 │
-├───accounts        A Django app that manages accounts and authentication (see above for Django app structure)
+├───about        A Django app that manages the 'about' page containing contact information and policies (see above for Django app structure)
 │   
+├───accounts        A Django app that manages accounts and authentication (see above for Django app structure)
+│
 ├───feed            A Django app that manages the home feed users see (see above for Django app structure)
 │   
 ├───friends         A Django app that manages the friend system (see above for Django app structure)

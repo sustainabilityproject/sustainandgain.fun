@@ -42,6 +42,9 @@ urlpatterns = [
 
     # Favicon
     path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=True), ),
+
+    # Policy path
+    path('about/', include('about.urls')),
 ]
 
 if settings.DEBUG:
