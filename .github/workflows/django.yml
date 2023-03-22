@@ -29,6 +29,7 @@ jobs:
       - name: Migrate
         run: |
           pipenv install --dev
+          pipenv run python manage.py makemigrations
           pipenv run python manage.py migrate
 
       - name: Run Tests
