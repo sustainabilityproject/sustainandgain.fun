@@ -11,6 +11,16 @@ class CompleteTaskForm(forms.ModelForm):
     """
     Form for a user to complete a task.
     Allows a user to upload a photo and add a note about the task.
+
+    Attributes:
+        photo (ImageField): Photo proof that the task was completed.
+        note (CharField): Optional caption of the task.
+        share_location (BooleanField): Whether the user will share their location.
+        latitude (FloatField): User's latitude.
+        longitude (FloatField): User's longitude.
+
+    Methods:
+        save(self, commit): Mark the task as Pending Approval and save the photo with a random UUID filename.
     """
 
     class Meta:
@@ -26,6 +36,9 @@ class CompleteTaskForm(forms.ModelForm):
     def save(self, commit=True):
         """
         Mark the task as Pending Approval and save the photo with a random UUID filename.
+
+        Returns:
+            task_instance (TaskInstance): The completed task instance.
         """
         task_instance = super().save(commit=False)
 

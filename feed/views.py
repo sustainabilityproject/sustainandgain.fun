@@ -74,7 +74,10 @@ class HomeView(TemplateView):
 
     def get(self, request):
         """
-        Send user to feed if authenticated and home if not TODO
+        Send user to feed if authenticated and home if not.
+
+        Returns:
+
         """
         if request.user.is_authenticated:
             return redirect('feed:feed')

@@ -38,7 +38,6 @@ class Profile(models.Model):
 
         Args:
             status (str): The type of relationship, accepted, pending, or both.
-            id: TODO
 
         Returns:
             friends (list): All friends with the appropriate status.

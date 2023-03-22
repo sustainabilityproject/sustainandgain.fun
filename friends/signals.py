@@ -8,6 +8,9 @@ from friends.models import FriendRequest
 
 @receiver(post_save, sender=FriendRequest)
 def send_friend_request_notification(sender, instance, created, **kwargs):
+    """
+    Notify the user when they have received a friend request or when their request has been accepted.
+    """
     if created:
         notify.send(instance.from_profile, recipient=instance.to_profile.user, verb='sent you a friend request.',
                     action_object=instance, target=instance.to_profile, url=reverse('friends:list'), public=False)
