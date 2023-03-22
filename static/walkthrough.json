@@ -22,5 +22,9 @@
   {
     "tour": "tasks",
     "url": "/feed"
+  },
+  {
+    "tour": "leagues",
+    "url": "/leagues"
   }
 ]
