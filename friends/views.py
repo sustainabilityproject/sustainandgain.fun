@@ -526,7 +526,7 @@ class ProfileSearchView(ListView):
         # flattens temp_obj_list
         object_list = [user for list in temp_obj_list for user in list]
 
-        # sets object_list to None so that the template knows there were no search results
+        # sets object_list to None so that the template knows there when no search results
         if len(object_list) == 0:
             object_list = None
 
@@ -541,11 +541,7 @@ class ProfileSearchView(ListView):
         """
 
         context = super().get_context_data(**kwargs)
-        # only exists of the search was made from the search page
-        f = self.request.GET.get("f")
 
-        if f is not None:
-            # lets the template know that the user has made the search from the friends page
-            context['searching_for_friend'] = True
+        context['friends'] = [friend.user for friend in self.request.user.profile.get_friends(status='all')]
 
         return context
