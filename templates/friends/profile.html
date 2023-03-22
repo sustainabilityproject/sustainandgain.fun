@@ -85,7 +85,7 @@
                     {% endif %}
                 {% endif %}
                 {% if not other_user %}
-                    <a href="{% url 'friends:list' %}">View Friends Page</a>
+                    <a class="btn btn-primary" href="{% url 'friends:list' %}">View Friends Page</a>
                 {% endif %}
             </div>
         </div>
@@ -138,7 +138,7 @@
                     {% endif %}
                 {% endif %}
                 {% if not other_user %}
-                    <a href="{% url 'leagues:list' %}">View Leagues Page</a>
+                    <a class="btn btn-primary" href="{% url 'leagues:list' %}">View Leagues Page</a>
                 {% endif %}
             </div>
         </div>
