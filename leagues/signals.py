@@ -6,6 +6,12 @@ from leagues.models import LeagueMember
 
 @receiver(post_save, sender=LeagueMember)
 def send_league_notification(sender, instance, created, **kwargs):
+    """
+    Handles league-related notifications.
+    When a user has requested to join a league owned by you.
+    When a user has joined a league owned by you.
+    When a user has invited you to join thier league.
+    """
     admins = instance.league.get_admins()
     if created and instance.status == 'pending':
         for admin in admins:
