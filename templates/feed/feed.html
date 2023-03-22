@@ -62,5 +62,41 @@
                 }).start();
             }
         }
+
+        if (window.location.search === '?tour=tasks') {
+            document.querySelector('.messages').remove();
+            window.onload = function () {
+                introJs().setOptions({
+                    nextToDone: true,
+                    doneLabel: 'Next',
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                        intro: 'All tasks that your friends have completed will now show in the feed.'
+                    },
+                        {
+                            element: document.querySelector('.feed-task'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'Here\'s a task I did earlier!',
+                        },
+                        {
+                            element: document.querySelector('.like-button'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'You can like a task by clicking the thumbs up icon.',
+                        },
+                        {
+                            element: document.querySelector('.report-button'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'You can report a task if it does not look right.',
+                        },
+                        {
+                            element: document.querySelector('.comment-button'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'You can also add comments to a task to congratulate your friends!',
+                        },
+                    ]
+                }).start();
+            }
+        }
     </script>
 {% endblock %}
