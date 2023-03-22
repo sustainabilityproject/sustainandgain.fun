@@ -23,6 +23,8 @@
             window.onload = function () {
                 document.cookie = "tour=start; path=/; max-age=31536000";
                 introJs().setOptions({
+                    dontShowAgain: true,
+                    dontShowAgainLabel: 'Skip walkthrough',
                     nextToDone: true,
                     doneLabel: 'Next',
                     scrollToElement: false,
@@ -65,9 +67,6 @@
                     ]
                 }).oncomplete(function () {
                     window.location.href = "{% url 'notifications:unread' %}?tour=notifications";
-                }).onexit(function () {
-                    document.cookie = "tour=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    window.location.href = window.location.href.split('?')[0];
                 }).start();
             }
         }
@@ -77,6 +76,8 @@
             window.onload = function () {
                 document.cookie = "tour=tasks; path=/; max-age=31536000";
                 introJs().setOptions({
+                    dontShowAgain: true,
+                    dontShowAgainLabel: 'Skip walkthrough',
                     nextToDone: true,
                     doneLabel: 'Next',
                     scrollToElement: false,
@@ -105,9 +106,6 @@
                             intro: 'You can also add comments to a task to congratulate your friends!',
                         },
                     ]
-                }).onexit(function () {
-                    document.cookie = "tour=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    window.location.href = window.location.href.split('?')[0];
                 }).start();
             }
         }
