@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ league }}{% endblock %}
 
@@ -39,7 +40,7 @@
                         <div class="mx-1">
                             <form action="{% url 'leagues:join' league.id %}" method="post">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-success">Accept</button>
+                                <button type="submit" class="btn btn-success invited-button">Accept</button>
                             </form>
                         </div>
                         <div class="mx-1">
@@ -126,4 +127,52 @@
             <p>This league is private. Request to join to view members.</p>
         {% endif %}
     </div>
+
+    <script>
+        if (window.location.search === '?tour=leagues') {
+            document.querySelector('.messages').remove();
+            document.cookie = "tour=leagues; path=/; max-age=31536000";
+            window.onload = function () {
+                introJs().setOptions({
+                    dontShowAgain: true,
+                    dontShowAgainLabel: 'Skip walkthrough',
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                        intro: 'Within a league you can compete with your friends to see who can get the most points!',
+                    },
+                        {
+                            element: document.querySelector('.table-responsive'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'Here you can see the members of the league and their points.',
+                        },
+                        {
+                            element: document.querySelector('.invited-button'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'Click here to accept my invitation!',
+                        },
+                    ]
+                }).start();
+            }
+        }
+
+        if (window.location.search === '?tour=joined') {
+            document.querySelector('.messages').remove();
+            document.cookie = "tour=joined; path=/; max-age=31536000";
+            window.onload = function () {
+                introJs().setOptions({
+                    dontShowAgain: true,
+                    dontShowAgainLabel: 'Skip walkthrough',
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                        intro: 'Yay! You have joined my league league! Let\'s get some points!',
+                    },
+                    ]
+                }).oncomplete(function () {
+                    window.location.href = "{% url 'tasks:list' %}?tour=mytasks";
+                }).start();
+            }
+        }
+    </script>
 {% endblock %}

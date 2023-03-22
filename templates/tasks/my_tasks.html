@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}My Tasks - Sustain+Gain{% endblock %}
 
@@ -17,7 +18,7 @@
                 <p>You have no active tasks!</p>
             {% endif %}
             <div class="mt-3">
-                <a href="{% url 'tasks:available' %}" class="btn btn-success text-bg-success">Get some more tasks!</a>
+                <a href="{% url 'tasks:available' %}" class="btn btn-success text-bg-success more-tasks">Get some more tasks!</a>
             </div>
         </div>
 
@@ -36,42 +37,42 @@
                     {% for task in completed_or_pending %}
                         {% if task in completed_tasks %}
                             <tr class="table-success">
-                            <td>{{ task.task.title }}</td>
-                            <td>+{{ task.task.points }}</td>
-                            <td>
-                                Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}
-                                <h5>
-                                    Tag Friends
-                                </h5>
-                                {% if friends %}
-                                    {% if task.tagged_someone %}
-                                        <p>You tagged {{ task.tagged_whom }} in this task!</p>
+                                <td>{{ task.task.title }}</td>
+                                <td>+{{ task.task.points }}</td>
+                                <td>
+                                    Completed at {{ task.time_completed|date:"H:i \o\n d/m/Y" }}
+                                    <h5>
+                                        Tag Friends
+                                    </h5>
+                                    {% if friends %}
+                                        {% if task.tagged_someone %}
+                                            <p>You tagged {{ task.tagged_whom }} in this task!</p>
+                                        {% else %}
+                                            <form method="post" action="{% url 'tasks:tag' task.id %}">
+                                                {% csrf_token %}
+                                                <select name="username">
+                                                    {% for friend in friends %}
+                                                        <option value="{{ friend.user.username }}">{{ friend.user.username }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                                <button type="submit" class="btn btn-success mt-1">Tag</button>
+                                            </form>
+                                        {% endif %}
                                     {% else %}
-                                        <form method="post" action="{% url 'tasks:tag' task.id %}">
-                                            {% csrf_token %}
-                                            <select name="username">
-                                                {% for friend in friends %}
-                                                    <option value="{{ friend.user.username }}">{{ friend.user.username }}</option>
-                                                {% endfor %}
-                                            </select>
-                                            <button type="submit" class="btn btn-success mt-1">Tag</button>
-                                        </form>
+                                        <p>You have no friends yet, try making a request from your profile</p>
                                     {% endif %}
-                                {% else %}
-                                    <p>You have no friends yet, try making a request from your profile</p>
-                                {% endif %}
-                            </td>
+                                </td>
                             </tr>
                         {% else %}
                             <tr class="table-warning">
-                            <td>{{ task.task.title }}</td>
-                            <td>+{{ task.task.points }}</td>
-                            <td>
-                                <a href="{% url 'tasks:complete' task.id %}">Pending Approval</a>
-                                <p>
-                                    Once this task is approved you can tag a friend
-                                </p>
-                            </td>
+                                <td>{{ task.task.title }}</td>
+                                <td>+{{ task.task.points }}</td>
+                                <td>
+                                    <a href="{% url 'tasks:complete' task.id %}">Pending Approval</a>
+                                    <p>
+                                        Once this task is approved you can tag a friend
+                                    </p>
+                                </td>
                             </tr>
                         {% endif %}
                     {% endfor %}
@@ -82,6 +83,33 @@
             {% endif %}
         </div>
     </div>
+    <script>
+        if (window.location.search === '?tour=mytasks') {
+            document.querySelector('.messages').remove();
+            window.onload = function () {
+                document.cookie = "tour=mytasks; path=/; max-age=31536000";
+                introJs().setOptions({
+                    dontShowAgain: true,
+                    dontShowAgainLabel: 'Skip walkthrough',
+                    nextToDone: true,
+                    doneLabel: 'Next',
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Tasks',
+                        intro: 'Here you can see all your tasks, both active and completed. You can also tag your friends in completed tasks to challenge them to do the same task!',
+                    },
+                        {
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'Let\'s get some tasks!',
+                            element: document.querySelector('.more-tasks'),
+                        }
+                    ]
+                }).oncomplete(function () {
+                    window.location.href = "{% url 'tasks:available' %}?tour=mytasks";
+                }).start();
+            }
+        }
+    </script>
 {% endblock %}
 
 

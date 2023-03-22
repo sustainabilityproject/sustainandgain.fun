@@ -1,6 +1,5 @@
 if (!document.cookie.split(';').filter((item) => item.includes('introjs-dontShowAgain=')).length) {
     if (window.location.search === undefined || window.location.search === '') {
-        console.log("hello")
         if (document.cookie.split(';').filter((item) => item.includes('tour=')).length) {
             let walkthrough = fetch('/static/walkthrough.json').then(response => response.json()).then(
                 (data) => {

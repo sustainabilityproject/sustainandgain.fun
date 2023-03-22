@@ -26,5 +26,13 @@
   {
     "tour": "leagues",
     "url": "/leagues"
+  },
+  {
+    "tour": "joined",
+    "url": "/leagues"
+  },
+  {
+    "tour": "mytasks",
+    "url": "/tasks"
   }
 ]

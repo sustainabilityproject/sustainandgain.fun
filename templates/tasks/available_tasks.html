@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block title %}Available Tasks - Sustain+Gain{% endblock %}
 
 {% block content %}
@@ -17,6 +18,24 @@
             {% endif %}
         </div>
     </div>
+    <script>
+        if (window.location.search === '?tour=mytasks') {
+            document.querySelector('.messages').remove();
+            window.onload = function () {
+                document.cookie = "tour=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                introJs().setOptions({
+                    dontShowAgain: true,
+                    dontShowAgainLabel: 'Skip walkthrough',
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                        intro: 'Here you can see all the tasks that are currently available. Pick your favourite and accept it! Good luck!',
+                    },
+                    ]
+                }).start();
+            }
+        }
+    </script>
 {% endblock %}
 
 
