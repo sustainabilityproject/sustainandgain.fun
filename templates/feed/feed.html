@@ -29,17 +29,22 @@
                     steps: [{
                         title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' +
                             'Hi {{ user.username }}!',
-                        intro: 'I am Sustainability Steve and I will help guide you through the game!'
+                        intro: 'Welcome to Sustain and Gain, the best way to make sustainable choices and compete with your friends!'
+                    },
+                    {
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' +
+                            'Hi {{ user.username }}!',
+                        intro: 'I\'m Sustainability Steve, your personal guide to Sustain and Gain. I\'ll be showing you around the app today.'
                     },
                         {
                             element: document.querySelector('.feed-nav'),
                             title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Feed',
-                            intro: 'This is the feed page. Here you can see what sustainable tasks your friends are doing.',
+                            intro: 'This is the feed page. Here you can see what your friends have been up to!',
                         },
                         {
                             element: document.querySelector('.tasks-nav'),
                             title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Tasks',
-                            intro: 'This is the tasks page. Here you can see all the sustainable tasks you have to complete.'
+                            intro: 'This is the tasks page. You can find tasks to complete here.',
                         },
                         {
                             element: document.querySelector('.leagues-nav'),
