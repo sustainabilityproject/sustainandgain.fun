@@ -184,6 +184,10 @@ class LeaveLeagueView(LoginRequiredMixin, UpdateView):
             redirect: Redirect to league detail page.
         """
         league = self.get_object()
+
+        if league.name == "Steve's League":
+            messages.error(request, "You cannot leave Steve's League")
+            return redirect('leagues:detail', pk=league.pk)
         league.leave(request, request.user.profile)
         return redirect('leagues:list')
 
