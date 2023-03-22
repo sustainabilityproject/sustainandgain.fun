@@ -76,12 +76,12 @@
                 </li>
             </ul>
             <ul class="navbar-nav me-right mb-2 mb-lg-0">
+                {% if user.is_authenticated %}
                 <li class="nav-item">
                     <form class="nav-link" action="{% url 'friends:profile_search' %}" method="get">
                         <input name="q" type="text" placeholder="Search Users...">
                     </form>
                 </li>
-                {% if user.is_authenticated %}
                     {% if user.is_superuser %}
                         <li class="nav-item">
                             <a class="btn btn-success text-white nav-item nav-link" href="{% url 'admin:index' %}">Gamekeeper

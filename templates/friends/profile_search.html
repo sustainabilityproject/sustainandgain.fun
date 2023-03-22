@@ -21,10 +21,10 @@
                     </a>
                     {% if result_user not in friends %}
                         <a>
-                            <form method="post" action="{% url 'friends:add' %}">
+                            <form class = "d-inline align-items-center" method="post" action="{% url 'friends:add' %}">
                                 {% csrf_token %}
                                 <input name="username" type="hidden" value="{{ result_user.username }}">
-                                <button type="submit"><i class="bi bi-person-fill-add">Add</i></button>
+                                <button class ="btn btn-success mt-1" type="submit"><i class="bi bi-person-fill-add"></i></button>
                             </form>
                         </a>
                     {% endif %}
