@@ -137,6 +137,7 @@
         if (window.location.search === '?tour=friends') {
             document.querySelector('.messages').remove();
             window.onload = function () {
+                document.cookie = "tour=friends; path=/; max-age=31536000";
                 introJs().setOptions({
                     scrollToElement: false,
                     steps: [{
@@ -162,6 +163,7 @@
         if (window.location.search === '?tour=sad') {
             document.querySelector('.messages').remove();
             window.onload = function () {
+                document.cookie = "tour=sad; path=/; max-age=31536000";
                 introJs().setOptions({
                     scrollToElement: false,
                     steps: [{
@@ -178,6 +180,7 @@
         if (window.location.search === '?tour=accepted') {
             document.querySelector('.messages').remove();
             window.onload = function () {
+                document.cookie = "tour=accepted; path=/; max-age=31536000";
                 introJs().setOptions({
                     scrollToElement: false,
                     steps: [{

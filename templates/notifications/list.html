@@ -21,6 +21,7 @@
         if (window.location.search === '?tour=notifications') {
             document.querySelector('.messages').remove();
             window.onload = function () {
+                document.cookie = "tour=notifications; path=/; max-age=31536000";
                 introJs().setOptions({
                     scrollToElement: false,
                     steps: [{

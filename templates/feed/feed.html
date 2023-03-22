@@ -21,6 +21,7 @@
         if (window.location.search === '?tour=start') {
             document.querySelector('.messages').remove();
             window.onload = function () {
+                document.cookie = "tour=start; path=/; max-age=31536000";
                 introJs().setOptions({
                     nextToDone: true,
                     doneLabel: 'Next',
@@ -66,6 +67,7 @@
         if (window.location.search === '?tour=tasks') {
             document.querySelector('.messages').remove();
             window.onload = function () {
+                document.cookie = "tour=tasks; path=/; max-age=31536000";
                 introJs().setOptions({
                     nextToDone: true,
                     doneLabel: 'Next',
