@@ -21,8 +21,10 @@
         if (window.location.search === '?tour=notifications') {
             document.querySelector('.messages').remove();
             window.onload = function () {
-                document.cookie = "tour=notifications; path=/; max-age=31536000";
+                document.cookie = "tour=friends; path=/; max-age=31536000";
                 introJs().setOptions({
+                    nextToDone: true,
+                    doneLabel: 'Next',
                     dontShowAgain: true,
                     dontShowAgainLabel: 'Skip walkthrough',
                     scrollToElement: false,
@@ -37,9 +39,6 @@
                             intro: 'It looks like you have a friend request from me! Let\'s go accept it!',
                         },
                     ]
-                }).setOptions({
-                    nextToDone: true,
-                    doneLabel: 'Next'
                 }).oncomplete(function () {
                     window.location.href = "{% url 'friends:list' %}?tour=friends";
                 }).start();
