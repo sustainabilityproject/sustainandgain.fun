@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Feed - Sustain+Gain{% endblock %}
 
@@ -10,9 +11,55 @@
                     {% include 'components/feed_task.html' with task=task %}
                 {% endfor %}
             </div>
-            </div>
         {% else %}
             <p>Be the first to complete a task!</p>
             <a class="btn btn-success" href="{% url 'tasks:list' %}">My Tasks</a>
         {% endif %}
+    </div>
+
+    <script>
+        if (window.location.search === '?tour=start') {
+            document.querySelector('.messages').remove();
+            window.onload = function () {
+                introJs().setOptions({
+                    nextToDone: true,
+                    doneLabel: 'Next',
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' +
+                            'Hi {{ user.username }}!',
+                        intro: 'I am Sustainability Steve and I will help guide you through the game!'
+                    },
+                        {
+                            element: document.querySelector('.feed-nav'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Feed',
+                            intro: 'This is the feed page. Here you can see what sustainable tasks your friends are doing.',
+                        },
+                        {
+                            element: document.querySelector('.tasks-nav'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Tasks',
+                            intro: 'This is the tasks page. Here you can see all the sustainable tasks you have to complete.'
+                        },
+                        {
+                            element: document.querySelector('.leagues-nav'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Leagues',
+                            intro: 'Here you can find leagues to join where you can compete with your friends!'
+                        },
+                        {
+                            element: document.querySelector('.friends-nav'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Friends',
+                            intro: 'Here you can connect with your friends to challenge each other with tasks!'
+                        },
+                        {
+                            element: document.querySelector('.notifications-nav'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Notifications',
+                            intro: 'It looks like you have a notification! Let\'s go check it out!'
+                        },
+                    ]
+                }).oncomplete(function () {
+                    window.location.href = "{% url 'notifications:unread' %}?tour=notifications";
+                }).start();
+            }
+        }
+    </script>
 {% endblock %}

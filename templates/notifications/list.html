@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Notifications - Sustain+Gain{% endblock %}
 
@@ -16,4 +17,30 @@
     {% else %}
         <p class="text-center">No notifications</p>
     {% endif %}
+    <script>
+        if (window.location.search === '?tour=notifications') {
+            document.querySelector('.messages').remove();
+            window.onload = function () {
+                introJs().setOptions({
+                    scrollToElement: false,
+                    steps: [{
+                        title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' +
+                            'Notifications',
+                        intro: 'On this page you can see all your notifications such as friend requests and league invites'
+                    },
+                        {
+                            element: document.querySelector('.notification'),
+                            title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
+                            intro: 'It looks like you have a friend request from me! Let\'s go accept it!',
+                        },
+                    ]
+                }).setOptions({
+                    nextToDone: true,
+                    doneLabel: 'Next'
+                }).oncomplete(function () {
+                    window.location.href = "{% url 'friends:list' %}?tour=friends";
+                }).start();
+            }
+        }
+    </script>
 {% endblock %}
