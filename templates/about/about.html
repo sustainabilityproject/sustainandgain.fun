@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}About - Sustain+Gain{% endblock %}
+
+
+{% block content %}
+    <h1>About Sustain and Gain</h1>
+    Sustain and Gain is a mobile web app where users compete to earn points by completing sustainable tasks.
+    It was created in 2023 by a group of Computer Science students at the University of Exeter.
+
+    <br>
+
+    If you're new to Sustain and Gain, you can read the user documentation
+    <a href="https://docs.sustainandgain.fun/">here</a>.
+
+    <br><hr>
+    <h3>Other useful links:</h3>
+    <ul class="list-unstyled">
+        <li><a href="{% url 'about:privacy' %}">Privacy Policy</a></li>
+        <li>Contact us at <a href="mailto:contact@sustainandgain.fun">contact@sustainandgain.fun</a> </li>
+    </ul>
+
+{% endblock %}
