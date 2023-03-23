@@ -142,6 +142,8 @@
                     dontShowAgain: true,
                     dontShowAgainLabel: 'Skip walkthrough',
                     scrollToElement: false,
+                    nextToDone: true,
+                    doneLabel: 'Next',
                     steps: [{
                         title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' +
                             'Friends',
@@ -168,6 +170,8 @@
                 document.cookie = "tour=sad; path=/; max-age=31536000";
                 introJs().setOptions({
                     scrollToElement: false,
+                    nextToDone: true,
+                    doneLabel: 'Next',
                     steps: [{
                         title: '<img src="{% static 'SusSteveSad.jpg' %}" alt="" width="60" height="60" style="margin-right:1em">' +
                             'Oops!',
@@ -187,6 +191,8 @@
                     dontShowAgain: true,
                     dontShowAgainLabel: 'Skip walkthrough',
                     scrollToElement: false,
+                    nextToDone: true,
+                    doneLabel: 'Next',
                     steps: [{
                         title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
                         intro: 'Now that we are friends, you can view my tasks in the feed!',
