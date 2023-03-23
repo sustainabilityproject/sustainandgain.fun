@@ -250,9 +250,11 @@ class AddFriendView(LoginRequiredMixin, View):
 
     def post(self, request, *args, **kwargs):
         """
-        Add a friend.
+        Attempts to add a friend and returns the relevant error message and redirect.
 
-        TODO the redirects
+        Returns:
+            redirect: Redirects to the relevant page.
+
         """
         # Get the profile of the user to be added
         profile = get_object_or_404(Profile, user__username=request.POST['username'])
@@ -378,7 +380,7 @@ class UpdateProfileView(LoginRequiredMixin, UpdateView):
         template_name (str): The html template this view uses.
 
     Methods:
-        get_success_url(self): TODO
+        get_success_url(self): Redirect to the current user's profile page.
         get_object(self, queryset): Return the profile of the current user.
         form_valid(self, form): Update profile.
     """
@@ -388,7 +390,10 @@ class UpdateProfileView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         """
-        TODO
+        Redirect to the current user's profile page.
+
+        Returns:
+            str: The url to redirect to.
         """
         return reverse('friends:profile', kwargs={'pk': self.request.user.profile.id})
 

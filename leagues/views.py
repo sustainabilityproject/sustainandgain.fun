@@ -117,11 +117,11 @@ class JoinLeagueView(LoginRequiredMixin, UpdateView):
     If the league is private and the user has not been invited, change their status to pending.
 
     Attributes:
-        model (League): The thing being displayed.
-        fields (list): TODO
+        model (League): The league being displayed.
+        fields (list): The fields to be displayed.
 
     Methods:
-        get(self, request, *args, **kwargs): TODO
+        get(self, request, *args, **kwargs): 
         post(self, request, *args, **kwargs): Join the league.
     """
     model = League
@@ -129,7 +129,8 @@ class JoinLeagueView(LoginRequiredMixin, UpdateView):
 
     def get(self, request, *args, **kwargs):
         """
-        TODO
+        Redirect to the league detail page.
+
         Returns:
             redirect: Redirects to the league detail page.
         """
@@ -159,10 +160,10 @@ class LeaveLeagueView(LoginRequiredMixin, UpdateView):
 
     Attributes:
         model (League): The thing being displayed.
-        fields (list): TODO
+        fields (list): The fields to be displayed.
 
     Methods:
-        get(self, request, *args, **kwargs): TODO
+        get(self, request, *args, **kwargs): Redirect to league detail page.
         post(self, request, *args, **kwargs): Leave the league.
     """
     model = League
@@ -170,7 +171,8 @@ class LeaveLeagueView(LoginRequiredMixin, UpdateView):
 
     def get(self, request, *args, **kwargs):
         """
-        TODO
+        Redirect to league detail page.
+
         Returns:
             redirect: Redirect to league detail page.
         """
@@ -211,7 +213,7 @@ class CreateLeagueView(LoginRequiredMixin, CreateView):
         Create the league and set current user as admin.
 
         Args:
-            form TODO
+            form (CreateLeagueForm): The form used.
 
         Returns:
             redirect: Redirect to league detail page.
@@ -236,7 +238,7 @@ class EditLeagueView(LoginRequiredMixin, UpdateView):
         template_name (str): The html template this view uses.
 
     Methods:
-        dispatch(self, request, *args, **kwargs): TODO
+        dispatch(self, request, *args, **kwargs): Check if the user is an admin of the league.
         form_valid(self, form): Update the league.
     """
     model = League
@@ -245,7 +247,11 @@ class EditLeagueView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         """
-        TODO
+        Check if the user is an admin of the league.
+        If not, redirect to the league detail page.
+
+        Returns:
+            redirect: Redirect to the league detail page.
         """
         obj = self.get_object()
         # Check if the user is an admin of the league
@@ -300,7 +306,7 @@ class InviteMemberView(LoginRequiredMixin, UpdateView):
         form_class (InviteMemberForm): The form being used.
 
     Methods:
-        dispatch(self, request, *args, **kwargs): Checks if user is admin of the league TODO
+        dispatch(self, request, *args, **kwargs): Checks if user is admin of the league
         get_context_data(self, **kwargs): Returns list of invited members.
         get_success_url(self): Gets url of the league.
         form_valid(self, form): If the user had requested to join the league, add them to the league.
@@ -311,7 +317,10 @@ class InviteMemberView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         """
-        Checks if user is admin of the league TODO
+        Checks if user is admin of the league
+
+        Returns:
+            redirect: Redirect to the league detail page.
         """
         obj = self.get_object()
         # Check if the user is an admin of the league
@@ -335,7 +344,7 @@ class InviteMemberView(LoginRequiredMixin, UpdateView):
         Gets url of the league.
 
         Returns:
-            TODO
+            reverse_lazy: Redirect to leagues:invite
         """
         return reverse_lazy('leagues:invite', kwargs={'pk': self.get_object().pk})
 
@@ -344,7 +353,7 @@ class InviteMemberView(LoginRequiredMixin, UpdateView):
         If the user had requested to join the league, add them to the league.
 
         Args:
-            form TODO
+            form (InviteMemberForm): The form used.
 
         Returns:
             redirect: Redirect to leagues:pending or leagues:invite
@@ -369,7 +378,7 @@ class RemoveMemberView(LoginRequiredMixin, UpdateView):
         model (League): The thing being displayed.
 
     Methods:
-        dispatch(self, request, *args, **kwargs): TODO
+        dispatch(self, request, *args, **kwargs): Checks if user is admin of the league
         get(self, request, *args, **kwargs): Redirect to leagues detail page.
         post(self, request, *args, **kwargs): Remove member from a league.
     """
@@ -377,7 +386,10 @@ class RemoveMemberView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         """
-        TODO
+        Checks if user is admin of the league
+
+        Returns:
+            redirect: Redirect to the league detail page if user is not an admin.
         """
         obj = self.get_object()
         if not LeagueMember.objects.filter(league=obj, profile=request.user.profile, role='admin').exists():
@@ -461,7 +473,7 @@ class PromoteMemberView(LoginRequiredMixin, UpdateView):
         model (League): The thing being displayed.
 
     Methods:
-        dispatch(self, request, *args, **kwargs): TODO
+        dispatch(self, request, *args, **kwargs): Checks if user is admin of the league.
         get(self, request, *args, **kwargs): Redirect to league detail page.
         post(self, request, *args, **kwargs): Promote the user.
     """
@@ -469,7 +481,7 @@ class PromoteMemberView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         """
-        TODO
+        Checks if user is admin of the league.
         """
         obj = self.get_object()
         if not LeagueMember.objects.filter(league=obj, profile=request.user.profile, role='admin').exists():
@@ -509,7 +521,7 @@ class DemoteMemberView(LoginRequiredMixin, UpdateView):
         model (League): The thing being displayed.
 
     Methods:
-        dispatch(self, request, *args, **kwargs): TODO
+        dispatch(self, request, *args, **kwargs): Checks if user is admin of the league.
         get(self, request, *args, **kwargs): Redirect to league detail page.
         post(self, request, *args, **kwargs): Demote league member.
     """
@@ -517,7 +529,7 @@ class DemoteMemberView(LoginRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         """
-        TODO
+        Checks if user is admin of the league and return to league detail page if not.
         """
         obj = self.get_object()
         if not LeagueMember.objects.filter(league=obj, profile=request.user.profile, role='admin').exists():

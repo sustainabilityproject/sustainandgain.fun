@@ -97,7 +97,10 @@ class ReportTaskView(LoginRequiredMixin, UpdateView):
 
     def get(self, request, pk):
         """
-        Redirect to the feed. TODO
+        Redirect to the feed.
+
+        Returns:
+            redirect: Redirects to feed:feed.
         """
         return redirect('feed:feed')
 
@@ -132,7 +135,10 @@ class LikeTaskView(LoginRequiredMixin, UpdateView):
 
     def get(self, request, pk):
         """
-        Redirect to the feed. TODO
+        Redirect to the feed.
+
+        Returns:
+            redirect: Redirects to feed:feed.
         """
         return redirect('feed:feed')
 
@@ -222,7 +228,10 @@ class DeleteTaskView(LoginRequiredMixin, UpdateView):
 
     def get(self, request, pk):
         """
-        Redirect to the reported page. TODO
+        Redirect to the reported page.
+
+        Returns:
+            redirect: Redirect to the reported page.
         """
         return redirect('feed:reported')
 
@@ -261,7 +270,10 @@ class RestoreTaskView(LoginRequiredMixin, UpdateView):
 
     def get(self, request, pk):
         """
-        Redirect to the reported page. TODO
+        Redirect to the reported page.
+
+        Returns:
+            redirect: Redirect to the reported page.
         """
         return redirect('feed:reported')
 
