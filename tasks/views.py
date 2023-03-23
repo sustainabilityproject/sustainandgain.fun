@@ -191,6 +191,7 @@ class SendTagView(LoginRequiredMixin, View):
                 task=task_sent,
                 profile=profile.user.profile,
                 status=TaskInstance.ACTIVE,
+                tagged_by=self.request.user.username,
                 origin_message=self.request.user.username + ' tagged you!'
             )
             t.save()

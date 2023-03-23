@@ -51,7 +51,8 @@ class Command(BaseCommand):
                         task=random_task,
                         profile=profile,
                         status=TaskInstance.ACTIVE,
-                        origin_message='Sustainable Steve tagged you with this task!'
+                        tagged_by='SusSteve',
+                        origin_message='Sustainable Steve tagged you!'
                     )
                     t.save()
 
