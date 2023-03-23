@@ -27,12 +27,13 @@ class Command(BaseCommand):
 
         for profile in Profile.objects.all():
 
-            available_tasks = [task for task in Task.objects.all() if task.is_available(profile)]
-            if len(available_tasks) > 5:
+            # filter task instances which are active and have not been completed
+            active_tasks = TaskInstance.objects.filter(profile=profile, status=TaskInstance.ACTIVE)
+            if len(active_tasks) > 5:
                 print(f"Assigned no tasks to user {profile.user.username} since they have more than 5 active tasks "
-                      f"({len(available_tasks)}).")
+                      f"({len(active_tasks)}).")
 
-            elif len(available_tasks) == Task.objects.all().count():
+            elif len(active_tasks) == Task.objects.all().count():
                 print(f"Assigned no tasks to user {profile.user.username} since they have all tasks active.")
 
             else:
