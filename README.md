@@ -11,6 +11,12 @@ Sustain and Gain is a mobile web app where users compete to earn points by compl
 
 ## Setup
 
+### Requirements
+
+- Python 3.7+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Rust](https://rustup.rs/) (optional)
+
 Install pipenv
 
 ```bash
@@ -57,15 +63,9 @@ Change the value of AI in `.env` to `1`.
 
 ## Run
 
-### Local email
+### Services
 
-# IMPORTANT
-
-*If you do not want to setup Docker, set `ACCOUNT_EMAIL_VERIFICATION = 'none'` in `sustainability/settings.py`*
-
-You will need [docker](https://docs.docker.com/get-docker/) installed.
-
-Run local email server with the following
+Run local email server and Redis with the following
 
 ```bash
 docker compose up
@@ -73,10 +73,44 @@ docker compose up
 
 You can now view emails by going to [http://localhost:8025](http://localhost:8025)
 
+> If you do not want to verify emails, you can set `ACCOUNT_EMAIL_VERIFICATION = 'none'` in `sustainability/settings.py`
+
 ### Server
 
 ```bash
 python manage.py runserver 8000
+```
+
+### Background workers (optional)
+
+#### Auto assign tasks to users
+
+```bash
+celery -A sustainability worker -l INFO -B
+```
+
+#### Email Notifications
+
+Sending emails uses a Rust worker. To run this, first install [Rust](https://rustup.rs/).
+You will also need to configure the app to use Postgres which is already setup by Docker.
+Set the following values in `.env`:
+
+```bash
+DATABASE_URL=postgres://sustain:sustain@localhost:5432/sustain
+```
+
+You will need to remigrate the database to use Postgres:
+
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py create_sustainability_steve
+```
+
+Then run the worker:
+
+```bash
+cd worker && cargo run --release
 ```
 
 ## Test

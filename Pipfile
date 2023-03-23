@@ -25,6 +25,9 @@ django-allauth = "*"
 django-notifications-hq = "*"
 torch = {version = "*", index = "downloadpytorch"}
 transformers = "*"
+celery = "*"
+django-celery-beat = "*"
+redis = "*"
 
 [dev-packages]
 

@@ -1,9 +1,9 @@
 import random
 
-from django.core.management.base import BaseCommand, CommandError
-from tasks.models import Task, TaskInstance
+from django.core.management.base import BaseCommand
+
 from friends.models import Profile
-from notifications.signals import notify
+from tasks.models import Task, TaskInstance
 
 
 class Command(BaseCommand):
@@ -37,9 +37,13 @@ class Command(BaseCommand):
             else:
                 random_task = random.choice(Task.objects.all())
 
-                # keep picking tasks until we get one available for the user
-                while not random_task.is_available(profile):
-                    random_task = random.choice(Task.objects.all())
+                # Check if the random task is available for the user.
+                # If not, keep trying until we find one that is available (max 100 tries).
+                for i in range(100):
+                    if random_task.is_available(profile):
+                        break
+                    else:
+                        random_task = random.choice(Task.objects.all())
 
                 # then create a new instance of that task for them
                 if random_task.is_available(profile):
