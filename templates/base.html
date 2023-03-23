@@ -38,7 +38,7 @@
 </main>
 
 {% if user.is_authenticated %}
-    <footer class="site-footer bottom-0 position-sticky w-100 d-sm-block d-md-block d-lg-none bg-secondary">
+    <footer class="site-footer bottom-0 position-sticky w-100 d-sm-block d-md-block d-lg-none bg-secondary" style="z-index: 9999999">
         {% include "components/footer.html" %}
     </footer>
 {% endif %}

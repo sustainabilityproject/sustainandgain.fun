@@ -56,7 +56,8 @@
                         {
                             element: document.querySelector('.friends-nav'),
                             title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">' + 'Friends',
-                            intro: 'Here you can connect with your friends to challenge each other with tasks!'
+                            intro: 'Here you can connect with your friends to challenge each other with tasks!',
+                            position: 'top',
                         },
                         {
                             element: document.querySelector('.notifications-nav'),
@@ -80,7 +81,7 @@
                     dontShowAgainLabel: 'Skip walkthrough',
                     nextToDone: true,
                     doneLabel: 'Next',
-                    scrollToElement: false,
+                    scrollToElement: true,
                     steps: [{
                         title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
                         intro: 'All tasks that your friends have completed will now show in the feed.'
@@ -99,6 +100,7 @@
                             element: document.querySelector('.report-button'),
                             title: '<img src="{% static 'SusSteve.png' %}" alt="" width="60" height="60" style="margin-right:1em">',
                             intro: 'You can report a task if it does not look right.',
+                            position: 'top',
                         },
                         {
                             element: document.querySelector('.comment-button'),
