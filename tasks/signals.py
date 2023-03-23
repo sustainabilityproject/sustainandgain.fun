@@ -14,5 +14,5 @@ def send_tag_notification(sender, instance, created, **kwargs):
     Applicable when another user or Steve tagged.
     """
     if 'tagged you' in instance.origin_message:
-        notify.send(User.objects.filter(username=instance.tagged_by).first().profile, recipient=instance.profile.user, verb='tagged you in a task.',
+        notify.send(instance.profile, recipient=instance.profile.user, verb=': You have been tagged!',
                     action_object=instance, target=instance.task, url=reverse('tasks:list'), public=False)
