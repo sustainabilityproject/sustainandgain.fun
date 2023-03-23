@@ -218,6 +218,9 @@ class TaskInstance(models.Model):
     # which person did you tag?
     tagged_whom = models.CharField(max_length=150, null=True, blank=True)
 
+    # who tagged you
+    tagged_by = models.CharField(max_length=150, null=True, blank=True, default=None)
+
     @property
     def bomb_instance_deadline(self):
         """
