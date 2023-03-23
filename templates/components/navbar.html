@@ -66,6 +66,15 @@
                             {% endif %}
                         </li>
                     {% endif %}
+                    {% if user.is_superuser %}
+                        <li class="nav-item">
+                            {% load poll_extras %}
+                            {% if get_reported_count %}
+                                <a class="nav-item nav-link" href="{% url 'feed:reported' %}">Reported Tasks
+                                    ({% get_reported_count %})</a>
+                            {% endif %}
+                        </li>
+                    {% endif %}
                 {% endif %}
                 <li class="nav-item">
                     <a class="nav-item nav-link" href="{% url 'leagues:list' %}">Leagues</a>
