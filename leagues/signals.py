@@ -24,7 +24,6 @@ def send_league_notification(sender, instance, created, **kwargs):
                         action_object=instance, target=instance.league, url=instance.league.get_absolute_url(), public=False)
 
     if not created and instance.status == 'invited':
-        if not created and instance.status == 'invited':
-            notify.send(instance.profile, recipient=instance.profile.user, verb='invited you to join their league.',
-                        action_object=instance, target=instance.league, url=instance.league.get_absolute_url(),
-                        public=False)
+        notify.send(instance.league.name, recipient=instance.profile.user, verb='invited you to become a member.',
+                    action_object=instance, target=instance.league, url=instance.league.get_absolute_url(),
+                    public=False)
